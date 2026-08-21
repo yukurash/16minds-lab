@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.plugin-src/
+.env
+
+# 実験完了まで封印（ハッシュのみ RULES.md に先出し）
+fixtures/ANSWERS.md
