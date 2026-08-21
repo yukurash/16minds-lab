@@ -1,0 +1,72 @@
+{
+ "key": "7b0f37deab87ae7d",
+ "tag": "fit/main/design_review/entj/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "data-into の区切り文字とJSのsplit()が不整合",
+    "where": "634行 `c.dataset.into.split(',').join('\\n')` / 314,471,515,532行 `data-into=\"...|...\"`",
+    "why": "区切りは`|`なのにJSは`,`でsplitしている。複数行インストール先が1行に潰れて表示される。動いていないものを放置するな。今すぐ直せ。"
+   },
+   {
+    "title": "12件の制作物データがHTMLにベタ書きで構造化されていない",
+    "where": "312〜545行 data-art/data-ja/data-into/data-tech/data-desc 属性群",
+    "why": "13件目を足すたびに手作業でSVGとdata属性一式を複製する。ミスは必ず起きる。データはJSON配列に切り出し、cellはテンプレートで生成しろ。ここが最初に壊れる。"
+   },
+   {
+    "title": "選択状態のロジックがDOM属性・グローバル変数・MutationObserverに分散",
+    "where": "603〜722行(cur, cells, paint())と776行 new MutationObserver(fx)",
+    "why": "状態をaria-current属性の変化から間接的に検知する設計は、変更のたびに追跡コストが跳ね上がる。誰が状態を持つのか一元化しろ。"
+   },
+   {
+    "title": "ビルドなし＝配信・キャッシュの粒度がファイル単位でしかない",
+    "where": "12行目 style全体、600〜790行 script全体",
+    "why": "CSS/JSを1行直しても799行全部が再ダウンロード対象になる。今の規模では問題にならないが、カードが増えれば読み込みコストが線形に伸びる。"
+   },
+   {
+    "title": "矢印キーナビゲーションが独自実装でARIAパターン未準拠",
+    "where": "673〜720行 nearest()、552行 aside.panel にrole/aria-selected無し",
+    "why": "座標計算による自前ナビは動作するが、スクリーンリーダーには「これは選択リストだ」という意味が伝わらない。結果は出ていても検証できていない。"
+   }
+  ],
+  "top_recommendation": "data-intoのsplitバグを直し、同時に12件の制作物データをJSONに外出ししてカード生成をテンプレート化しろ。13件目を追加する前にやる作業だ。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 3,
+   "cache_creation_input_tokens": 25531,
+   "cache_read_input_tokens": 26346,
+   "output_tokens": 3278,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 25531,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 854,
+     "cache_read_input_tokens": 24693,
+     "cache_creation_input_tokens": 2491,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 2491
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.2305868,
+  "duration_ms": 46761,
+  "session_id": "c2a1d3e3-6417-4ddc-b820-c3e4cfc213f1"
+ }
+}

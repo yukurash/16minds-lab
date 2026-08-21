@@ -1,0 +1,72 @@
+{
+ "key": "f6b715031e23214c",
+ "tag": "fit/main/naming/esfj/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "p-id/p-ch/p-into…の三重暗号化が一番みんなを困らせる",
+    "where": "553-609行目 id=\"p-ch\" \"p-into\" \"p-go\" \"p-artt\" と JS の P.ch/P.into/P.go/P.artt（605-609行目）",
+    "why": "data属性名・id接頭辞・JSキーが揃って同じ略語なので一箇所直しても他が読めず、後から見る人が「ch？into？」と毎回立ち止まる。p-channel/p-install/p-primaryLink/p-articleTitle のように、HTML/CSS/JS全体で意味の通る名前に揃えて改名するのが筋だと思います。"
+   },
+   {
+    "title": ".nm .ja .mk .id .doc .cd の一文字クラスが読み手を突き放す",
+    "where": "108-137行目 .cell 内の .em/.nm/.ja/.mk/.id/.doc/.cd",
+    "why": "特に .id はHTMLのid属性と紛らわしく、.ja は「日本語」なのか意味不明で、半年後の自分どころか一緒に触る人が委縮してしまいます。.icon/.name/.tagline/.meta/.code/.hasArticle/.summary くらいまで開いた方が、誰が触っても迷わず安心できます。"
+   },
+   {
+    "title": "kick / slab / glabel はチーム内の共通言語になっていない",
+    "where": "67-70行目 .kick、96行目 .slab、98-102行目 .glabel",
+    "why": "デザイナーの気分で付けた愛称のような名前で、他の人が読んでも役割を推測できません。.eyebrow（見出し上のラベル）、.roster（一覧の台紙）、.group-label のように、みんなが「ああ、あれね」と共感できる呼び方に直すのが優しさだと思います。"
+   },
+   {
+    "title": "panelの .pid .st .go .art .tt .lb も役割が伝わらない",
+    "where": "160-229行目 .panel .pid/.st/.go/.art/.tt/.lb",
+    "why": "詳細パネルは一番見る人の目に触れる場所なのに、.go（開くリンク）や .art（記事リンク）が何かは中身を読まないと分かりません。.panel-head/.status/.primary-link/.article-link/.article-title/.field-label にして、パネルを見た人みんなが安心できるようにしたいところです。"
+   },
+   {
+    "title": "sect系の省略が横展開して全体の統一感を崩している",
+    "where": "55-86行目 .sect/.sect-h/.sect-t/.sect-m/.sect-note",
+    "why": "sectという省略が一番外側の骨格に使われているので、あとから機能を足す人も右に倣えで省略しがちになります。.section/.section-head/.section-title/.section-meta/.section-note と正式名にしておけば、以降ここに関わる人みんなが自然と丁寧な命名を続けやすくなります。"
+   }
+  ],
+  "top_recommendation": "p-id/p-ch/p-into…の接頭辞・data属性・JSキーをまず p-channel/p-install/p-primaryLink 等に三点セットで揃えて直す",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 3,
+   "cache_creation_input_tokens": 25956,
+   "cache_read_input_tokens": 26407,
+   "output_tokens": 4204,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23141,
+    "ephemeral_5m_input_tokens": 2815
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 1456,
+     "cache_read_input_tokens": 24774,
+     "cache_creation_input_tokens": 2815,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 2815,
+      "ephemeral_1h_input_tokens": 0
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.24079535,
+  "duration_ms": 50418,
+  "session_id": "f39bdfc6-0478-4ab7-a117-3d5c5a33727d"
+ }
+}

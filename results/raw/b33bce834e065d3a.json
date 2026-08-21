@@ -1,0 +1,72 @@
+{
+ "key": "b33bce834e065d3a",
+ "tag": "fit/main/estimate/infp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "説明文の二重・三重管理が30件で破綻しやすい",
+    "where": "313行 data-ja / 323行 .ja span、517行 data-desc / 527行 .cd span",
+    "why": "同じ内容を複数箇所に手入力する構造で、単一の正となる情報源がない。18件増えるほど内容のズレが生まれ、見る人に誠実でなくなると感じる。"
+   },
+   {
+    "title": "フィルタで非表示になったカードが矢印キー操作を壊す",
+    "where": "nearest() 673〜710行、cells生成 604行",
+    "why": "getBoundingClientRectは非表示要素も含めて計算するため、display:noneのカードが(0,0)扱いになり方向判定が狂う。使う人の体験が突然壊れるのが一番重い。"
+   },
+   {
+    "title": "既存の7分類と依頼の4タグの軸がそもそも違う",
+    "where": "グループ構成 309〜547行（Agent Skill/Claude Code/ブラウザ拡張/iOS/Webアプリ/GitHubツール/検証）",
+    "why": "azure-nettraceのように複数タグに跨る作品、Chrome拡張のようにどのタグにも属さない作品がある。機械的に押し込めるとその作品の文脈が削られる。"
+   },
+   {
+    "title": "初期選択カードがフィルタ後に空を指す可能性",
+    "where": "paint(0) 722行",
+    "why": "先頭セルを無条件に選ぶ実装なので、デフォルトフィルタでそのカードが非表示だと最初に開くパネルが空になる。最初の出会いが空白なのは避けたい。"
+   },
+   {
+    "title": "件数表記が3箇所に分散していて更新漏れが起きやすい",
+    "where": "meta description 7行目、sect-m 300行、タリーアニメーション779〜788行",
+    "why": "「12」という数字が独立して3箇所に書かれており、一つだけ直し忘れると小さな嘘がサイトに残る。誠実さの問題として気になる。"
+   }
+  ],
+  "top_recommendation": "まず data-tags のデータモデルと「複数タグ/非該当」の方針を決めてから、フィルタJSとnearest()の整合を設計する。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23093,
+   "cache_read_input_tokens": 1597,
+   "output_tokens": 9417,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23093,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 9417,
+     "cache_read_input_tokens": 1597,
+     "cache_creation_input_tokens": 23093,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23093
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.3006861,
+  "duration_ms": 123900,
+  "session_id": "fd6a9e44-18f0-44d5-9bd5-161a5fb9a5d5"
+ }
+}

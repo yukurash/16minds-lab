@@ -1,0 +1,72 @@
+{
+ "key": "c2622dfa3caa454d",
+ "tag": "fit/main/design_review/isfp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "解説記事がない作品を選ぶと、空っぽのリンク欄が出る",
+    "where": "374行・388行(data-art欠落) / 641〜643行 paint()内 P.art.hidden",
+    "why": "この2枚だけdata-artがないのに、P.art.hiddenは常にfalse。触ってみて初めて『あれ、これ何も書いてない』と気づく違和感がある。なんとなくだけど、ここは事故りそう。"
+   },
+   {
+    "title": "同じ紹介文をdata属性と表示テキストで二重に持っている",
+    "where": "313行data-ja/323行.ja、316行data-desc/562行p-desc、325行.cd",
+    "why": "1つの情報を何箇所にも書き写しているので、直すとき片方を直し忘れてずれていく気がする。これは自分には合わない書き方だと肌感で思う。"
+   },
+   {
+    "title": "12枚同型カードのベタ書きが13枚目から重くなる",
+    "where": "307〜549行目 .slab 内の各<a class='cell'>群",
+    "why": "同じ形のカードを毎回手でコピーして貼っている。今はまだ読めるけど、作品が増えるたびにファイルがただ縦に伸び続けるのを想像すると、正直しんどい。"
+   },
+   {
+    "title": "演出の『間』がCSSとJSの両方に散らばっている",
+    "where": "194〜200行 animation-delay / 749行type()・762行roll()のsetInterval",
+    "why": "同じタイミング感覚を2つの言語で別々に管理していて、片方を触るともう片方とすぐずれる気がする。息を合わせるのが難しい作りに見える。"
+   },
+   {
+    "title": "デスクトップとモバイルで体験そのものが別物になる",
+    "where": "159行 @media(max-width:1080px) .panel / 253行 .panel{display:none}",
+    "why": "パネルが消えるとカードを『選ぶ』楽しさごと消えて、ただのリンク集に変わる。同じ1画面のはずなのに端末で気持ちよさが変わるのは、少し寂しい。"
+   }
+  ],
+  "top_recommendation": "まず374・388行のカードでP.art.hiddenをdata-artの有無で判定するよう直す。あの空っぽの欄は触ってすぐ気になる。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 3,
+   "cache_creation_input_tokens": 27517,
+   "cache_read_input_tokens": 26226,
+   "output_tokens": 5318,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23040,
+    "ephemeral_5m_input_tokens": 4477
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 908,
+     "cache_read_input_tokens": 24633,
+     "cache_creation_input_tokens": 4477,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 4477,
+      "ephemeral_1h_input_tokens": 0
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.26299355,
+  "duration_ms": 75254,
+  "session_id": "6a43fcf6-8bf6-4590-bd8b-730ab0af1c4a"
+ }
+}

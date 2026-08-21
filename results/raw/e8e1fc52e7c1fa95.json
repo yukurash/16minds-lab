@@ -1,0 +1,72 @@
+{
+ "key": "e8e1fc52e7c1fa95",
+ "tag": "fit/main/incident/istp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "X（旧Twitter）にサムネ・タイトルが出ないのは仕様どおり。バグですらない",
+    "where": "head内 4〜11行目。og:title / og:description / og:image / twitter:card が一つも無い",
+    "why": "X はOGPかtwitter:cardしか見ない。descriptionのmetaだけじゃ拾わない。実装してないから出ない、それだけ。直しようは一つ、タグを足すこと。"
+   },
+   {
+    "title": "『スマホで真っ白』はこのコードだけじゃ説明つかない",
+    "where": "body全体（285行〜）、scriptタグは600行・724行で末尾",
+    "why": "静的HTMLはscriptが動く前に描画される。JSがどこかで死んでも全消しにはならない構造。opacity:0で待たせるようなゲートもコードに無い。感覚で犯人を決めるより先に実機を見ろ。"
+   },
+   {
+    "title": "切り分け手順1：実機のコンソールを直接見る",
+    "where": "- (作業手順。DevTools remote debugging)",
+    "why": "iOSはMacのWeb InspectorでSafariにつなぐ、AndroidはPCでchrome://inspect。推測でCSSいじる前に、エラーが出てるかどうかを事実として確認してから動け。"
+   },
+   {
+    "title": "切り分け手順2：pushした版が本当に配信されているか疑え",
+    "where": "GitHub Pagesのビルド状況（Actions）とスマホ側のキャッシュ",
+    "why": "『pushした直後』は反映遅延の典型パターン。PCで見えてるのは古いキャッシュか別コミットの可能性がある。シークレットモードでスマホから開き直せば切り分けられる。やってみれば分かる。"
+   },
+   {
+    "title": "白画面の再現条件を先に絞れ、報告だけでは判断材料が薄い",
+    "where": "- (再現手順の確認: 機種・OS・ブラウザ・ネットワーク環境)",
+    "why": "『真っ白』が一瞬のFOIT（フォント読み込み待ち）なのか完全な描画崩壊なのか区別がついてない。コード上に真っ白になる論理的な仕掛けは見当たらないから、まず現象を事実として再現させる方が早い。"
+   }
+  ],
+  "top_recommendation": "まず実機でリモートデバッグしてコンソールを見ろ。推測でコード直す前に事実を取れ。Xカードの件は原因確定してるからOGPタグを足すだけでいい。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23084,
+   "cache_read_input_tokens": 1592,
+   "output_tokens": 5378,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23084,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 5378,
+     "cache_read_input_tokens": 1592,
+     "cache_creation_input_tokens": 23084,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23084
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.24004860000000003,
+  "duration_ms": 79531,
+  "session_id": "a85466d4-3992-4814-aba1-53e0ff4cc2da"
+ }
+}

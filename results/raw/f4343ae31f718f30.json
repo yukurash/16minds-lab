@@ -1,0 +1,72 @@
+{
+ "key": "f4343ae31f718f30",
+ "tag": "fit/main/tech_choice/estj/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "結論：SSG移行は却下。現状の素HTML運用を継続する",
+    "where": "index.html 全体（1ファイル構成）",
+    "why": "更新頻度が月1〜2回、担当は本人1人、公開先はGitHub Pages。この条件でビルドパイプラインの依存管理・保守コストを背負う効率上のメリットがない。実績のある今の手順を変える理由がない。"
+   },
+   {
+    "title": "再検討の基準を数値で明文化しておけ",
+    "where": "運用ルール（ドキュメント未整備）",
+    "why": "ESTJ的に『何が起きたら変えるか』を先に決めておくのが筋。基準：カード数が20〜30件超、行数1500行超、更新頻度が週1以上、編集者が2人以上に増えた時点で再判断。"
+   },
+   {
+    "title": "新規カード追加手順が未文書化。属人化のリスク",
+    "where": "312〜326行目（.cell 1件分のマークアップとdata属性8種）",
+    "why": "作品追加はHTMLブロックの複製作業。手順書がないと本人が誤って属性を漏らす・idを取り違えるミスが起きる。責任者が本人1人でも、手順の明文化は必須。"
+   },
+   {
+    "title": "グループ件数表示が手動カウントで同期漏れの危険あり",
+    "where": "310行目・332行目・372行目など .glabel 内の数字（例:「Agent Skill 1」）",
+    "why": "カード追加時にこの数字を手で書き換える運用になっている。ルール化されていないと、実カード数と表示件数がずれたまま公開される。"
+   },
+   {
+    "title": "移行するなら選定はEleventy一択でよい",
+    "where": "（仮に移行する場合の技術選定）",
+    "why": "Astro/Hugoはコンポーネント指向・独自テンプレート言語の学習コストが高く、月1更新の1人運用には過剰投資。Eleventyは素のHTML/Markdownに近く、GitHub Pages連携もシンプルで移行時の説明責任を果たしやすい。"
+   }
+  ],
+  "top_recommendation": "移行はしない。その代わり『再検討の閾値（件数・更新頻度・編集者数）』と『カード追加手順書』を今すぐ明文化しろ。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 3,
+   "cache_creation_input_tokens": 26496,
+   "cache_read_input_tokens": 26275,
+   "output_tokens": 4377,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23095,
+    "ephemeral_5m_input_tokens": 3401
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 1044,
+     "cache_read_input_tokens": 24685,
+     "cache_creation_input_tokens": 3401,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 3401,
+      "ephemeral_1h_input_tokens": 0
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.24523425,
+  "duration_ms": 62597,
+  "session_id": "ed796fef-9d65-4256-bdcd-a60995b26a9e"
+ }
+}

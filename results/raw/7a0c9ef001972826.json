@@ -1,0 +1,72 @@
+{
+ "key": "7a0c9ef001972826",
+ "tag": "fit/main/tech_choice/intp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "『移行する/しない』の二択という前提が厳密ではない",
+    "where": "依頼文全体の枠組み",
+    "why": "SSGの便益はテンプレート再利用とビルド時データ処理に分解できる。この2つが独立に成立しうるなら、ビルドツールなしでデータ側だけ解決する第三の道が定義上排除されていないはずでは。"
+   },
+   {
+    "title": "本質的な問題はSSGの有無ではなくデータの多重定義",
+    "where": "各 .cell の data-ja / data-desc（例: 313行, 375行）と panel 側 P.ja / P.desc（633,636行）、および .cd span（325行など）",
+    "why": "同じ情報が cell の data 属性・可視 span（.nm/.ja/.cd）・panel 更新用テキストに分散して手書きされている。1件足すたびに複数箇所を同期させる必要があり、更新頻度が低いほど『次回書くときに書き漏らす』リスクが高い。これはSSGでなくJSON配列+レンダリング関数化だけでも解消できる論点で、SSG導入の必要条件にはならない。"
+   },
+   {
+    "title": "結論：移行しない。ただしデータ一元化のリファクタは別途行う",
+    "where": "index.html 全体構成",
+    "why": "更新頻度（月1-2回）・単著・1ページ完結という前提のもとでは、SSGが持ち込むビルドパイプライン・依存管理・デプロイワークフローの管理コストが、得られる便益（テンプレート再利用）を上回る。前提が変われば結論も変わる、という条件を次に示す。"
+   },
+   {
+    "title": "移行を再検討すべき具体的トリガー",
+    "where": "-",
+    "why": "①作品の詳細を個別URLで共有したくなる（1画面の select 型が破綻する）②更新頻度が月1-2回から週次以上に増える③共同編集者が増える④OGP/SEOでページごとのメタデータが必要になる⑤データ重複起因の記載漏れが実際に発生し始める、のいずれかが起きたら再検討する。これらが起きない限り、SSG化は解決すべき問題のない解決策になりかねない。"
+   },
+   {
+    "title": "もし移行するなら Eleventy を選ぶ（Astro は過剰な可能性）",
+    "where": "-",
+    "why": "既存資産が生 HTML/CSS/vanilla JS で、フレームワーク的コンポーネント分割（Astroのアイランド等）を要求する複雑さは今のUIには不要では。Eleventy はテンプレートエンジン+データファイルのみを足す最小侵襲な移行で、既存の演出JSをほぼ無改修で流用できる点が条件（本人1人・低頻度更新）と整合する。ただしこれは移行する場合の話であり、上記の通り現時点では推奨しない。"
+   }
+  ],
+  "top_recommendation": "移行しない。まず cell の data 属性・可視span・panel 用テキストの三重管理をJS側のデータ配列に一元化するリファクタを先に行え。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23095,
+   "cache_read_input_tokens": 1654,
+   "output_tokens": 3221,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23095,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 3221,
+     "cache_read_input_tokens": 1654,
+     "cache_creation_input_tokens": 23095,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23095
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.2077332,
+  "duration_ms": 52086,
+  "session_id": "296120cb-8c4d-483f-924a-875a4406d9bc"
+ }
+}

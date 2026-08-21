@@ -1,0 +1,72 @@
+{
+ "key": "2294a32c75e3a61e",
+ "tag": "fit/main/naming/entp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "`.id`クラスがDOMの`id`属性と概念衝突、逆に紛らわしくない？",
+    "where": "CSS L131 `.cell .id`／JS L630 `c.querySelector('.id')`",
+    "why": "『id』という単語を属性名と同じ意味でクラス名に使うのは自爆に近い。半年後の自分が`getElementById`と検索して迷う。`.code-badge`か`.tag-code`に改名すべき。"
+   },
+   {
+    "title": "パネルid接頭辞`p-ch`/`p-into`/`p-ja`が推測ゲーム化してる",
+    "where": "HTML L553-570 `id=\"p-ch\"` `id=\"p-into\"` `id=\"p-ja\"`／JS L605-610 `P.ch` `P.into` `P.ja`",
+    "why": "chはchannel？chapter？intoはinstall-into？逆にフルスペルにするだけでコストゼロで解決する。`panel-channel`/`panel-install`/`panel-tagline`が妥当。"
+   },
+   {
+    "title": "カード内フィールド`.em/.nm/.ja/.mk/.cd/.doc`が2〜3文字略語の洪水",
+    "where": "CSS L108-137／HTML L317-326 `<span class=\"em\">`〜`<span class=\"doc\">`",
+    "why": "emはemoji？emphasis？markup言語みたいに詰め込むと、意味は分かっても『なぜこの略にしたか』の理由が消える。`.icon/.title/.tagline/.badges/.mobile-desc/.article-flag`なら自明。"
+   },
+   {
+    "title": "セクション構造`.sect/.sect-h/.kick/.slab`も暗号度が高い",
+    "where": "CSS L54-104／HTML L289-309",
+    "why": "sect-hは見出しかhero領域か紛らわしく、kickは何を蹴るのか不明、slabは背景板なのに地質学用語。`.section/.section-head/.eyebrow/.roster-panel`の方が構造が名前から読める。"
+   },
+   {
+    "title": "`.fx`という状態クラスが何のエフェクトか名前から読めない",
+    "where": "CSS L181,L188-201／JS L767-774 `panel.classList.add('fx')`",
+    "why": "fxは汎用語すぎて『何が起きているか』を隠す。逆に`.is-loading`のようなBEM風状態名にすれば、CSSとJSを行き来せずに挙動が追える。"
+   }
+  ],
+  "top_recommendation": "まず`.id`クラスをDOM idと衝突しない名前（`.tag-code`等）に改名する。誤読・誤検索リスクが最大なので最優先。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 3,
+   "cache_creation_input_tokens": 26272,
+   "cache_read_input_tokens": 26369,
+   "output_tokens": 4107,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23141,
+    "ephemeral_5m_input_tokens": 3131
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 1044,
+     "cache_read_input_tokens": 24755,
+     "cache_creation_input_tokens": 3131,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 3131,
+      "ephemeral_1h_input_tokens": 0
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.24052395,
+  "duration_ms": 48087,
+  "session_id": "391655d6-7464-4a6a-8ad7-801c094c1f93"
+ }
+}

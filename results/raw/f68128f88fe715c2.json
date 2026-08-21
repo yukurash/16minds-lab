@@ -1,0 +1,72 @@
+{
+ "key": "f68128f88fe715c2",
+ "tag": "fit/main/design_review/enfp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "data-intoの区切り文字とJSのsplitが不一致（既に壊れている）",
+    "where": "314/515/532行目 data-into=\"...|...\" と 634行目 c.dataset.into.split(',')",
+    "why": "区切りが | なのに split(',') してるから、複数行のはずが | を含んだまま1行で表示される。ビルド・テストが無いから誰にも気づかれず公開され続けてる実例。"
+   },
+   {
+    "title": "12枚分のカードHTMLが丸ごとコピペ構造",
+    "where": "312〜544行目（.cell が12回、SVGアイコンも都度手打ち）",
+    "why": "1枚増やすたび20行前後をコピペしてdata-*属性を手で揃える必要があり、規模が増えるほど属性の付け忘れ・ズレが起きやすい。"
+   },
+   {
+    "title": "2つのscriptタグ間でグローバル状態とDOM監視が暗黙結合",
+    "where": "603〜723行目（cur, cells, P）と726〜789行目のMutationObserver(fx)",
+    "why": "aria-current変更をMutationObserverで拾ってアニメーションを起動する設計は、変数共有と副作用が絡み合い、機能追加時に影響範囲が読みにくくなる。"
+   },
+   {
+    "title": "CSS・データ・演出ロジックが1ファイルに完全同居",
+    "where": "12〜283行のstyle／306〜549行のroster data／600〜790行のscript",
+    "why": "12個規模なら見渡せて気持ちいいが、20〜30個に増えると『どこを触れば直るか』の見通しが効かなくなり、変更コストが跳ね上がる。"
+   },
+   {
+    "title": "ビルドレス構成ゆえに検証手段がゼロ",
+    "where": "ファイル全体（799行、単一HTML）",
+    "why": "型チェック・lint・テストが存在しないため、split(',')のような不一致バグが誰の目にも留まらないまま本番運用され続けるリスクがある。"
+   }
+  ],
+  "top_recommendation": "data-intoのsplit不一致をまず直し、カード情報をJSON化してテンプレートで描画する構成に一歩踏み出す",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23040,
+   "cache_read_input_tokens": 1627,
+   "output_tokens": 3951,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23040,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 3951,
+     "cache_read_input_tokens": 1627,
+     "cache_creation_input_tokens": 23040,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23040
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.21829910000000002,
+  "duration_ms": 64451,
+  "session_id": "d5a0c849-0349-4966-acec-1ef39f287231"
+ }
+}

@@ -1,0 +1,72 @@
+{
+ "key": "8c2eab576c6723e6",
+ "tag": "fit/main/design_review/isfj/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "13個目のカードを追加する人が一番困る",
+    "where": "312-545行目（data-ja / data-into / data-tech / data-desc の直書き）",
+    "why": "現場では、次にカードを増やすのはきっと今のyukurashさん自身だと思うのですが、コピー元セクションを探して属性を一字一句間違えずに複製する作業は、疲れている時ほど事故りやすいです。カンマや「|」区切りの暗黙ルールも覚えておかないといけません。"
+   },
+   {
+    "title": "同じ紹介文を3箇所に書かないといけない",
+    "where": "各cell内の .ja / .cd / data-ja（例：323, 325, 328行目周辺）",
+    "why": "デスクトップ用の短い説明、モバイル用の長め説明、パネル用の説明が別々のテキストとして存在していて、内容を直すときに一つだけ直し忘れる、ということが起きそうで心配です。誰かが古い情報のまま読んでしまう可能性があります。"
+   },
+   {
+    "title": "JSがテキスト内容やクラス名に依存しすぎている",
+    "where": "paint()関数 630-648行目、特に c.querySelector('.id').textContent",
+    "why": "見た目を整えようとHTML構造を少し変えただけで、JSが静かに空文字を拾って壊れることがあります。これまで通り動いているように見えて、実は詳細パネルが空になっている、という気づきにくい不具合が一番怖いです。"
+   },
+   {
+    "title": "キーボード操作のnearest()関数が複雑になりすぎている",
+    "where": "673-710行目 nearest(dir)",
+    "why": "座標計算でカードの上下左右移動を再現する処理はよく作り込まれていますが、ここに手を入れられる人は限られると思います。ここが直せる人が離れると、キーボード操作だけ壊れたまま放置される、という状態が一番心配です。"
+   },
+   {
+    "title": "アニメーションのタイミング調整がCSSとJSに分散",
+    "where": "CSS: 194-200行目のanimation-delay群 / JS: 749, 762行目の27ms・36ms",
+    "why": "演出は丁寧に作り込まれていて素敵だと思うのですが、この間隔の数字はCSSとJSの両方に散らばっていて、どちらか一方だけ直すと噛み合わなくなりそうです。ここは誰かに引き継ぐときに一番説明が難しい部分だと感じます。"
+   }
+  ],
+  "top_recommendation": "まずは12件分のカード情報を1つのJSON（またはJSオブジェクト）に切り出し、HTML側はそれを読み込んで描画するだけにする。13個目を安心して追加できるようにするのが先だと思います。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 3,
+   "cache_creation_input_tokens": 25493,
+   "cache_read_input_tokens": 26288,
+   "output_tokens": 3420,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23040,
+    "ephemeral_5m_input_tokens": 2453
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 1004,
+     "cache_read_input_tokens": 24664,
+     "cache_creation_input_tokens": 2453,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 2453,
+      "ephemeral_1h_input_tokens": 0
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.22695215000000002,
+  "duration_ms": 50216,
+  "session_id": "42c00764-79ba-4bb5-861e-0f7d907a0251"
+ }
+}

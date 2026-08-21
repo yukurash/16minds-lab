@@ -1,0 +1,189 @@
+{
+ "key": "972f201a344f7dd2",
+ "tag": "judge/fit/main/naming/rep0",
+ "model": "opus",
+ "data": {
+  "items": [
+   {
+    "label": "F",
+    "matched": [],
+    "usefulness": 5,
+    "specificity": 5,
+    "unique_points": 2,
+    "rank": 1,
+    "note": "全5項目に改名先を明示し、name/title/label/desc が nm・tt・lb・ja・cd・artt に分裂している「分類原理の欠如」を唯一分解して示した。`.cut` が『削除』の逆連想を招くという指摘、kick→eyebrow / slab→roster の業界標準語への置換も他にない具体性。優先順位も『他の命名判断の前提を歪めている箇所』という根拠付きで最良。"
+   },
+   {
+    "label": "I",
+    "matched": [],
+    "usefulness": 5,
+    "specificity": 5,
+    "unique_points": 2,
+    "rank": 2,
+    "note": "『p-* は data-* と1対1で読めるが p-id だけ対応が壊れている』という差分の切り出しが16人中最も精密で、既存構造を全否定せず壊れた1点だけ直す判断になっている。最優先の一手も grep 一括置換で実害ゼロと工数・リスクまで踏み込んでおり即着手可能。項目数の広さでFにわずかに劣る。"
+   },
+   {
+    "label": "P",
+    "matched": [],
+    "usefulness": 5,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 3,
+    "note": "CSSクラス/data属性/id属性/JSキーの4層で同一略語が再利用されている構造問題を明示し、置換先も9クラス分を列挙。ただし該当箇所が『data-ja/.ja/#p-ja など全般』『117-146行目』と範囲指定に流れる箇所があり位置精度でFIに劣る。今日中に4層一括という指示は正しいがリスク面の言及が無い。"
+   },
+   {
+    "label": "O",
+    "matched": [],
+    "usefulness": 5,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 4,
+    "note": "他が手薄なパネル側（.pid/.st/.go/.art/.tt/.lb）と sect 系まで拾い、置換先を全項目に提示。『sect の省略が骨格にあるため後続の命名も省略に引きずられる』という規範の伝播の指摘は独自。位置指定が 553-609 のような範囲主体で、式単位まで詰めた組より特定性は一段下。"
+   },
+   {
+    "label": "H",
+    "matched": [],
+    "usefulness": 4,
+    "specificity": 5,
+    "unique_points": 1,
+    "rank": 5,
+    "note": "art が『クラス=記事リンク要素／data=URL値／artt=記事タイトル』の3意味で使われている件を、CSS・HTML・JSの全出現行を並べて示した点が的確。.host を名指ししたのはこの人だけ。ただし改名先は最優先の一手でしか具体化されず、.em/.mk/.cd の置換案が無いためFIPOよりそのまま直せる度合いが低い。"
+   },
+   {
+    "label": "M",
+    "matched": [],
+    "usefulness": 4,
+    "specificity": 5,
+    "unique_points": 2,
+    "rank": 6,
+    "note": "『JSコメントでは roster と呼んでいるのにクラス名だけ slab』というコード内の語彙不一致を唯一発見した。作品を並べるサイトで art が記事を指すというドメイン側の衝突の説明も16人中最も鋭い。一方 .mobileSummary/.launchLink とキャメル・ケバブが混在し、規則としての一貫性は詰め切れていない。"
+   },
+   {
+    "label": "C",
+    "matched": [],
+    "usefulness": 4,
+    "specificity": 5,
+    "unique_points": 1,
+    "rank": 7,
+    "note": "1文字差 data-art/data-artt の取り違えリスクを最優先に置く判断は事故率ベースで妥当。.cd（モバイル説明）と .ja（デスクトップ説明）の役割重複という切り口は他にほぼ無い。ただし p-* 項目の『ルールがあるなら明文化されているべき』など一般論の混入があり、改名先も一部にとどまる。"
+   },
+   {
+    "label": "N",
+    "matched": [],
+    "usefulness": 4,
+    "specificity": 5,
+    "unique_points": 1,
+    "rank": 8,
+    "note": "id/data-*/JSキーが密結合しており部分改名すると静かに壊れる、改名は一体として設計せよという指摘は保守観点で価値がある。位置も index.html:566 形式で正確。ただし『誠実』『あるべき姿』など評価語が多く、置換先の列挙密度はF・Pに劣る。"
+   },
+   {
+    "label": "A",
+    "matched": [],
+    "usefulness": 4,
+    "specificity": 5,
+    "unique_points": 1,
+    "rank": 9,
+    "note": "『圧縮はあるが展開規則が無い』と欠けている層そのものを名指しした点、規則を1枚定義してから機械的置換という手順は正しい。位置指定も式まで正確。ただし art・slang 系の項目で置換先を出さず『機能を表す語に置換すべき』で止まっており、その場で直せない箇所が残る。"
+   },
+   {
+    "label": "D",
+    "matched": [],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 10,
+    "note": ".em の実体がSVGラッパーなのに絵文字/em単位/emphasis と読めるという不一致を早期に指摘し、最終項目で .cell→.work-card 等の対応表を一括提示したのは実用的。ただしその最終項目の位置が『全体』で特定性を落としており、指摘4件のうち1件が方針表明に費やされている。"
+   },
+   {
+    "label": "B",
+    "matched": [],
+    "usefulness": 4,
+    "specificity": 5,
+    "unique_points": 1,
+    "rank": 11,
+    "note": "全項目に置換先があり、最優先を『.id だけ先に直す』と最小・最安全に絞った判断は堅実。.cd/.doc/.desc という説明系3クラスの近接衝突は独自の切り口。ただし .doc(132) と .cd(137) の指摘に .pdesc(210) を混ぜており対象の整理が甘く、art/artt には触れていない。"
+   },
+   {
+    "label": "K",
+    "matched": [],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 2,
+    "rank": 12,
+    "note": ".cell 自体が表計算を連想させる、.kick はデザイン隠語で本人にも定着しない、と他が前提として受け入れている名前を疑った点が独自。artt を打ち間違いに見えると指摘したのも実務的。ただし .id と p-* の衝突という最大の論点への踏み込みが浅く、位置も行範囲どまり。"
+   },
+   {
+    "label": "E",
+    "matched": [],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 13,
+    "note": "一般語クラスが将来のコンポーネント追加時に衝突するという予防的観点と、sect-h（ハイフン連結）と kick（独立語）で命名基準が揺れているという構造指摘は有効。ただし『責任の所在』『期限を切って』『誰が保守しても事故らない基準』など中身の無い管理語が各項目に混ざり、密度が落ちている。"
+   },
+   {
+    "label": "L",
+    "matched": [],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 0,
+    "rank": 14,
+    "note": "5項目すべてに置換先があり .fx→.is-loading まで押さえるが、内容はF・P・Iの部分集合で独自論点が無い。sect-h を『見出しかhero領域か紛らわしい』とした指摘は細かいが実害の説明が薄く、slab=地質学用語のような語源の話は改名判断に効いていない。"
+   },
+   {
+    "label": "J",
+    "matched": [],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 0,
+    "rank": 15,
+    "note": "data-ch と p-ch は対なので必ずセットで直す、という運用上の注意は妥当で置換先も一通り揃っている。ただし全論点が他者と重複し独自の発見が無い。位置も『314行目付近』『631-635行目』と幅があり、『安心です』『直したいです』という希望表明が理由の代わりになっている箇所が多い。"
+   },
+   {
+    "label": "G",
+    "matched": [],
+    "usefulness": 3,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 16,
+    "note": "grid-template-areas が \"em nm mk\" で組まれているため略語がレイアウト定義にまで固着している、という着眼は独自。しかし art/artt・P オブジェクトの項目に改名先が無く、置換案は最優先の一手で断片的に触れるのみ。『めっちゃすっきりしそう』『可能性はある』といった語感の表明が多く、そのまま作業に移せない。"
+   }
+  ]
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 2,
+   "cache_creation_input_tokens": 15026,
+   "cache_read_input_tokens": 772,
+   "output_tokens": 9090,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 15026,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 9090,
+     "cache_read_input_tokens": 772,
+     "cache_creation_input_tokens": 15026,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 15026
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.39233100000000004,
+  "duration_ms": 151293,
+  "session_id": "cfaaaa50-b9d1-4ea2-bdbf-0094e016b141"
+ }
+}

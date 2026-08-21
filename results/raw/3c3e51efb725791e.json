@@ -1,0 +1,72 @@
+{
+ "key": "3c3e51efb725791e",
+ "tag": "fit/main/naming/istp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": ".id クラスと id 属性が同じ単語で衝突",
+    "where": "CSS L131 `.cell .id`, HTML L324 `<span class=\"id\">`, JS L630, L553 `id=\"p-id\"`",
+    "why": "grepすれば分かる。`id`で検索すると本物のid属性とクラス名が両方ヒットして区別つかない。中身は2文字コード(AG/CL/PL等)。`.code`か`.tag`にすべき。"
+   },
+   {
+    "title": ".em の意味が実物と一致しない",
+    "where": "CSS L117-119, HTML L317, L321",
+    "why": "絵文字・em単位・強調、どれとも取れる名前だが実際はSVGアイコンのラッパー。動かして中身見ないと分からない時点で名前として機能してない。`.icon`一択。"
+   },
+   {
+    "title": "2-3文字省略が多すぎて用途がコードからだけでは分からない",
+    "where": ".mk L130 / .cd L132,249 / .st L165 / .go L211 / .fx L181 / .cut L172",
+    "why": "コメントに頼って初めて意味が繋がる名前は半年後読めない。`.meta`(mk) `.summary`(cd) `.status`(st) `.action`(go) `.loading`(fx) `.static`(cut) にすれば動かさなくても読める。"
+   },
+   {
+    "title": "p- 接頭辞方式は良いが p-id だけ中身を表していない",
+    "where": "HTML L553 `id=\"p-id\"`, JS L606 `P.id`",
+    "why": "p-ch/p-ja/p-into/p-tech/p-desc は data-* と1対1で対応が読める。p-id だけ「識別子」に見えて実際は表示用コード。`p-code` にすれば他と揃う。"
+   },
+   {
+    "title": "JS内オブジェクト P のプロパティ名も略語のまま",
+    "where": "JS L605-610 `const P = {id, ch, nm, ja, into, tech, desc, go, host, art, artt}`",
+    "why": "DOM参照の入れ物だからこそフルネームで十分。`ch`→`channel`、`nm`→`name`くらいはやっても実行速度に影響ない。とりあえず変えて動かしてみれば分かる、壊れない。"
+   }
+  ],
+  "top_recommendation": ".id クラスを .code に改名する。HTML/CSS/JS 3箇所を grep で一括置換すれば実害ゼロで即終わる。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 3,
+   "cache_creation_input_tokens": 26217,
+   "cache_read_input_tokens": 26325,
+   "output_tokens": 3912,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23141,
+    "ephemeral_5m_input_tokens": 3076
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 902,
+     "cache_read_input_tokens": 24733,
+     "cache_creation_input_tokens": 3076,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 3076,
+      "ephemeral_1h_input_tokens": 0
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.2373745,
+  "duration_ms": 48575,
+  "session_id": "0f9ed4d9-f759-4342-986e-81387e1a38da"
+ }
+}

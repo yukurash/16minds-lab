@@ -3,36 +3,6 @@
   {
    "slot": "main",
    "task": "bug",
-   "type": "entj",
-   "rep": 0,
-   "model": "sonnet",
-   "key": "022269177a9ac800",
-   "data": {
-    "findings": [
-     {
-      "title": "解説記事なしカードを選ぶと「undefined」がそのまま画面に出る",
-      "where": "script内 paint() 640-643行目（P.art.href = c.dataset.art; / P.artt.textContent = c.dataset.artt; / P.art.hidden = false;）。対象カード: Claude Anywhere(374行目〜), Spoiler Block for X(388行目〜) は data-art / data-artt 属性を持たない。",
-      "why": "コメントには『無ければ行を隠す』とあるが実装では hidden=false を無条件に実行するだけで、hidden=true にする分岐が存在しない。結果、この2枚を選ぶと解説記事欄に文字列『undefined』が表示され、リンク先も文字列『undefined』（実質壊れたURL）になる。設計意図と実装が完全にズレている、放置できない不具合。"
-     },
-     {
-      "title": "矢印キーで選んだカードと Enter で開くカードが一致しない",
-      "where": "keydown ハンドラ 712-720行目、paint() 624-648行目。どちらも cells[next].focus() を呼んでいない（フォーカス移動を行うのは click ハンドラの 659行目だけ）。",
-      "why": "aria-current とパネル表示は矢印キーで更新されるが、実際のDOMフォーカスは動かない。ヒント文言『← ↑ ↓ → で選ぶ / Enterで開く』（571行目）を信じてEnterを押すと、直前に実フォーカスしていた別カードが開く、あるいは何も開かない。UIが約束した機能がそのまま嘘になっている。誰がこの矛盾を検証したのか、責任の所在を明確にすべき。"
-     },
-     {
-      "title": "data-into の区切り文字が split(',') と実データ '|' で不一致",
-      "where": "paint() 634行目: c.dataset.into.split(',').join('\\n')。data-into 属性は 314, 515, 532行目など '|' 区切りで書かれている。",
-      "why": "カンマが存在しないため split(',') は1要素の配列を返し、'|' がそのまま画面に残る。初期HTML（557-558行目）は手書きで正しく改行されているが、そのカード自身をクリックした瞬間にJSが上書きし、逆に壊れた1行表示に退化する。数値で言えば影響カードは3件（azure-nettrace / splunk-otel-contest / splunk-ai-oncall）、全て『自分を選ぶと自分が壊れる』という最悪の再現条件。"
-     }
-    ],
-    "top_recommendation": "paint()の art.hidden 分岐実装（data-art不在時に隠す）と、keydown内での cells[next].focus() 呼び出しを最優先で直せ。2件とも数行の修正で結果が出る。",
-    "confidence": 5
-   },
-   "cost_usd": 0.3037790000000001
-  },
-  {
-   "slot": "main",
-   "task": "bug",
    "type": "intj",
    "rep": 0,
    "model": "sonnet",
@@ -59,41 +29,6 @@
     "confidence": 4
    },
    "cost_usd": 0.3213574
-  },
-  {
-   "slot": "main",
-   "task": "bug",
-   "type": "entp",
-   "rep": 0,
-   "model": "sonnet",
-   "key": "82162ab58a2a3964",
-   "data": {
-    "findings": [
-     {
-      "title": "矢印キーで選び直してもDOMフォーカスが動かず、Enterで開くのは前のカード",
-      "where": "script: addEventListener('keydown', ...) 712-720行目 / paint() 624-648行目",
-      "why": "paint()はaria-currentとパネル表示だけ更新し.focus()を呼ばない。矢印移動後にEnterを押すと、まだフォーカスが残っている『前に選んでいたカード』のリンクが開く。571行目の『Enterで開く』という案内と実際の挙動が食い違う――逆にさ、これじゃ選んでる意味なくない？"
-     },
-     {
-      "title": "インストール先の改行がsplit(',')のせいで一切機能していない",
-      "where": "634行目 P.into.textContent = c.dataset.into.split(',').join('\\n');（data-into自体は314/515/532行目などで`|`区切り）",
-      "why": "data-into属性は`|`で複数値を区切っているのにJSは`,`で分割している。分割が起きず生の`|`がそのまま1行で表示される。しかもpaint(0)が読込直後(722行目)に走るため、初期HTMLの正しい2行表示(557-558行目)は一瞬で壊れた表示に上書きされる。"
-     },
-     {
-      "title": "data-artなしのカードで『解説記事』欄がhref/text=\"undefined\"のまま常時表示される",
-      "where": "640-643行目 P.art.href/P.artt.textContent/P.art.hidden = false;（該当カード：374行目 Claude Anywhere、388行目 Spoiler Block for X）",
-      "why": "data-art未指定カードではdataset.artがundefinedになりhrefとテキストが文字列\"undefined\"になる。P.art.hiddenは常にfalse固定でコメント通りに非表示化されず、壊れたリンクが選択のたびに表示され続ける。"
-     },
-     {
-      "title": "type()にclearIntervalがなく、連続選択でタイピング演出が二重実行される",
-      "where": "744-753行目 function type(el){...}（対して757行目のroll()はclearInterval(rolling)を実施済み）",
-      "why": "矢印キー連打や素早い選択切替で前のtypingインターバルが残ったまま新しいsetIntervalが走り、同じ要素のtextContentを複数タイマーが競合更新して名前表示が乱れる。"
-     }
-    ],
-    "top_recommendation": "712-720行目のkeydownハンドラで paint(next) の後に cells[next].focus() を呼び、視覚的な選択と実際のDOMフォーカスを一致させる。",
-    "confidence": 4
-   },
-   "cost_usd": 0.330335
   },
   {
    "slot": "main",
@@ -158,66 +93,6 @@
   {
    "slot": "main",
    "task": "bug",
-   "type": "infp",
-   "rep": 0,
-   "model": "sonnet",
-   "key": "544ab612465f0dea",
-   "data": {
-    "findings": [
-     {
-      "title": "記事なしカードで「解説記事」欄が undefined のまま表示される",
-      "where": "script内 paint() 関数 641-643行目（P.art.href / P.artt.textContent / P.art.hidden=false）。対象データ: 374行目 Claude Anywhere、388行目 Spoiler Block for X（どちらも data-art / data-artt 属性なし）",
-      "why": "コメントは『記事がない作品は行ごと隠す』と書いてあるのに hidden は常に false。dataset.art が undefined のとき .href と .textContent には文字列 'undefined' が代入され、この2枚を選択すると『解説記事』欄にタイトル『undefined』とリンク先が壊れた行が表示される。"
-     },
-     {
-      "title": "矢印キーで選択してもフォーカスが移動せず、Enterで別の作品が開く",
-      "where": "712-720行目 keydown リスナー内 paint(next) 呼び出し（.focus() の呼び出しが無い）。対比: 659行目クリック時のみ c.focus() を呼んでいる",
-      "why": "paint() 自体は624-648行目で .focus() を呼ばない。矢印キーでパネル表示だけ切り替わり、実DOMフォーカスはクリックで最後に触れたカードのまま残るため、571行目の『Enter で開く』操作は画面上の選択と一致しない別プロジェクトを開く。"
-     },
-     {
-      "title": "複数インストール先の改行がされず「|」がそのまま表示される",
-      "where": "634行目 P.into.textContent = c.dataset.into.split(',').join('\\n')。データ例: 314行目・515行目・532行目 data-into=\"A｜B\" のようにパイプ区切り",
-      "why": "実データの区切り文字は「｜」なのにコードはカンマで split しているため配列長1のままとなり join も無効。結果、557-558行目の初期表示（改行済み）と異なり、選択後は 'GitHub Copilot のカスタムエージェント｜~/.claude/skills/（Claude Code）' のように1行のパイプ文字列で表示される。"
-     }
-    ],
-    "top_recommendation": "641-643行目の P.art.hidden 判定を dataset.art の有無で分岐させ、記事なしカードでは行を隠すよう修正するのが最優先（誰でもクリックするだけで壊れたリンクに遭遇するため）。",
-    "confidence": 4
-   },
-   "cost_usd": 0.304563
-  },
-  {
-   "slot": "main",
-   "task": "bug",
-   "type": "enfp",
-   "rep": 0,
-   "model": "sonnet",
-   "key": "8418cc0d57b3411f",
-   "data": {
-    "findings": [
-     {
-      "title": "矢印キー選択でフォーカスが動かず Enter が別カードを開く",
-      "where": "1行目の keydown リスナー（712〜720行目）。paint(next) だけで c.focus() が呼ばれていない。718行目のコメント「focus moves the cursor, so ENTER opens natively」は誤り",
-      "why": "クリックでカードAを選んだ後に矢印キーでカードBへ見た目上の選択（aria-current）を移しても、実際の DOM フォーカスはAに残ったまま。ここで Enter を押すと開くのは今見えてるBじゃなくてA。これ、画面下の「← ↑ ↓ → で選ぶ／Enter で開く」って案内と完全に矛盾してて、UIが自分でついた嘘みたいになっちゃってる。paint() に c.focus() を足すだけで解決するのに、click ハンドラ側（659行目）にはちゃんとあるのにキー操作側だけ抜けてる、っていうのがめっちゃ「あ、ここ書き忘れたな」って匂いする。"
-     },
-     {
-      "title": "インストール先の複数行表示が split の区切り文字ミスで壊れてる",
-      "where": "634行目: c.dataset.into.split(',').join('\\n')",
-      "why": "data-into 属性の値は全カード「｜」区切り（例: 515行目 data-into=\"Claude Code の OTel 設定|OpenTelemetry Collector（Docker）\"）なのに、split はカンマで割ってる。カンマが1つも無いから split は何も分割せず、join も1要素配列には効かない。結果、初期HTMLでは改行済みだった AG カードの表示（557-558行目）まで paint(0) 実行後（722行目）に「GitHub Copilot のカスタムエージェント|~/.claude/skills/（Claude Code）」って生の｜文字1行に潰れて再描画される。ページを開いた瞬間から症状が出るやつ。"
-     },
-     {
-      "title": "解説記事なしカードでも記事欄が消えず「undefined」表示になる",
-      "where": "640〜643行目: P.art.href = c.dataset.art; ... P.art.hidden = false; （常にfalseで条件分岐なし）",
-      "why": "data-art を持たないカード（Claude Anywhere / Spoiler Block for X、374行目と388行目）を選ぶと、コメント通りなら記事欄を隠すはずが hidden = false が無条件実行。href に undefined が代入されて「https://yukurash.github.io/undefined」相当の壊れたリンクになり、タイトルテキストも文字列 \"undefined\" がそのまま表示される。カード側のCSSバッジ（.cell[data-art] .doc、133行目）は正しく出し分けてるのに、パネル側のJSだけこの仕様を実装し忘れてる。"
-     }
-    ],
-    "top_recommendation": "712〜720行目の keydown ハンドラに paint(next) の直後 next セルへの c.focus() を追加して、選択表示と実フォーカスと Enter の挙動を一致させる。ここが一番「約束と実際が違う」壊れ方してる。",
-    "confidence": 4
-   },
-   "cost_usd": 0.34050800000000003
-  },
-  {
-   "slot": "main",
-   "task": "bug",
    "type": "enfj",
    "rep": 0,
    "model": "sonnet",
@@ -254,6 +129,71 @@
     "confidence": 4
    },
    "cost_usd": 0.387677
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "entp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "82162ab58a2a3964",
+   "data": {
+    "findings": [
+     {
+      "title": "矢印キーで選び直してもDOMフォーカスが動かず、Enterで開くのは前のカード",
+      "where": "script: addEventListener('keydown', ...) 712-720行目 / paint() 624-648行目",
+      "why": "paint()はaria-currentとパネル表示だけ更新し.focus()を呼ばない。矢印移動後にEnterを押すと、まだフォーカスが残っている『前に選んでいたカード』のリンクが開く。571行目の『Enterで開く』という案内と実際の挙動が食い違う――逆にさ、これじゃ選んでる意味なくない？"
+     },
+     {
+      "title": "インストール先の改行がsplit(',')のせいで一切機能していない",
+      "where": "634行目 P.into.textContent = c.dataset.into.split(',').join('\\n');（data-into自体は314/515/532行目などで`|`区切り）",
+      "why": "data-into属性は`|`で複数値を区切っているのにJSは`,`で分割している。分割が起きず生の`|`がそのまま1行で表示される。しかもpaint(0)が読込直後(722行目)に走るため、初期HTMLの正しい2行表示(557-558行目)は一瞬で壊れた表示に上書きされる。"
+     },
+     {
+      "title": "data-artなしのカードで『解説記事』欄がhref/text=\"undefined\"のまま常時表示される",
+      "where": "640-643行目 P.art.href/P.artt.textContent/P.art.hidden = false;（該当カード：374行目 Claude Anywhere、388行目 Spoiler Block for X）",
+      "why": "data-art未指定カードではdataset.artがundefinedになりhrefとテキストが文字列\"undefined\"になる。P.art.hiddenは常にfalse固定でコメント通りに非表示化されず、壊れたリンクが選択のたびに表示され続ける。"
+     },
+     {
+      "title": "type()にclearIntervalがなく、連続選択でタイピング演出が二重実行される",
+      "where": "744-753行目 function type(el){...}（対して757行目のroll()はclearInterval(rolling)を実施済み）",
+      "why": "矢印キー連打や素早い選択切替で前のtypingインターバルが残ったまま新しいsetIntervalが走り、同じ要素のtextContentを複数タイマーが競合更新して名前表示が乱れる。"
+     }
+    ],
+    "top_recommendation": "712-720行目のkeydownハンドラで paint(next) の後に cells[next].focus() を呼び、視覚的な選択と実際のDOMフォーカスを一致させる。",
+    "confidence": 4
+   },
+   "cost_usd": 0.330335
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "enfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "8418cc0d57b3411f",
+   "data": {
+    "findings": [
+     {
+      "title": "矢印キー選択でフォーカスが動かず Enter が別カードを開く",
+      "where": "1行目の keydown リスナー（712〜720行目）。paint(next) だけで c.focus() が呼ばれていない。718行目のコメント「focus moves the cursor, so ENTER opens natively」は誤り",
+      "why": "クリックでカードAを選んだ後に矢印キーでカードBへ見た目上の選択（aria-current）を移しても、実際の DOM フォーカスはAに残ったまま。ここで Enter を押すと開くのは今見えてるBじゃなくてA。これ、画面下の「← ↑ ↓ → で選ぶ／Enter で開く」って案内と完全に矛盾してて、UIが自分でついた嘘みたいになっちゃってる。paint() に c.focus() を足すだけで解決するのに、click ハンドラ側（659行目）にはちゃんとあるのにキー操作側だけ抜けてる、っていうのがめっちゃ「あ、ここ書き忘れたな」って匂いする。"
+     },
+     {
+      "title": "インストール先の複数行表示が split の区切り文字ミスで壊れてる",
+      "where": "634行目: c.dataset.into.split(',').join('\\n')",
+      "why": "data-into 属性の値は全カード「｜」区切り（例: 515行目 data-into=\"Claude Code の OTel 設定|OpenTelemetry Collector（Docker）\"）なのに、split はカンマで割ってる。カンマが1つも無いから split は何も分割せず、join も1要素配列には効かない。結果、初期HTMLでは改行済みだった AG カードの表示（557-558行目）まで paint(0) 実行後（722行目）に「GitHub Copilot のカスタムエージェント|~/.claude/skills/（Claude Code）」って生の｜文字1行に潰れて再描画される。ページを開いた瞬間から症状が出るやつ。"
+     },
+     {
+      "title": "解説記事なしカードでも記事欄が消えず「undefined」表示になる",
+      "where": "640〜643行目: P.art.href = c.dataset.art; ... P.art.hidden = false; （常にfalseで条件分岐なし）",
+      "why": "data-art を持たないカード（Claude Anywhere / Spoiler Block for X、374行目と388行目）を選ぶと、コメント通りなら記事欄を隠すはずが hidden = false が無条件実行。href に undefined が代入されて「https://yukurash.github.io/undefined」相当の壊れたリンクになり、タイトルテキストも文字列 \"undefined\" がそのまま表示される。カード側のCSSバッジ（.cell[data-art] .doc、133行目）は正しく出し分けてるのに、パネル側のJSだけこの仕様を実装し忘れてる。"
+     }
+    ],
+    "top_recommendation": "712〜720行目の keydown ハンドラに paint(next) の直後 next セルへの c.focus() を追加して、選択表示と実フォーカスと Enter の挙動を一致させる。ここが一番「約束と実際が違う」壊れ方してる。",
+    "confidence": 4
+   },
+   "cost_usd": 0.34050800000000003
   },
   {
    "slot": "main",
@@ -348,37 +288,62 @@
   {
    "slot": "main",
    "task": "bug",
-   "type": "esfj",
+   "type": "istp",
    "rep": 0,
    "model": "sonnet",
-   "key": "20115a5245d451fc",
+   "key": "0344c225bb5ce4d2",
    "data": {
     "findings": [
      {
-      "title": "矢印キーで選んでもフォーカスが動かず、Enterで別の作品が開いてしまう",
-      "where": "行712-720（keydownリスナー）／行624-648（paint関数）",
-      "why": "paint(next)はaria-currentの見た目だけ変えてcells[next].focus()を呼んでいない。案内文「Enter で開く」を信じて押すと、選んだつもりの作品ではなく前にクリックした（フォーカスが残る）作品が開いてしまう。これは訪れた人が一番戸惑う箇所。"
+      "title": "paint(0)がロード直後に静的HTMLの2行表示を破壊",
+      "where": "634行目 P.into.textContent の split 処理（722行目 paint(0) が即実行）",
+      "why": "data-into の区切りは縦棒なのにカンマで分割している。カンマが無いので分割されず、557-558行の正しい2行表示がロード直後に1行のパイプ付き文字列で上書きされる。"
      },
      {
-      "title": "解説記事のないカードでリンク先が\"undefined\"になる",
-      "where": "行641-643（P.art.href / P.art.hidden = false）",
-      "why": "data-art属性を持たない2枚（Claude Anywhere・Spoiler Block for X）を選ぶと、常にhidden=falseで上書きされ、リンク先も見出しもundefinedのまま表示される。作った本人の顔が立たない見え方になってしまう。"
+      "title": "解説記事なしカードで.art行が常時表示される",
+      "where": "640-643行目 P.art.href / P.artt.textContent / P.art.hidden=false（374-403行のカードにはdata-artが無い）",
+      "why": "hiddenをtrueにする分岐が無く常にfalse。Claude AnywhereやSpoiler Block for Xを選ぶと解説記事欄に文字列undefinedが出て、リンクも存在しないURLになる。"
      },
      {
-      "title": "「インストール先」の複数行表記がパイプ区切りのまま崩れて出る",
-      "where": "行634 split(',') と data-into=\"...|...\"（例：行314, 515, 532）",
-      "why": "分割の区切り文字がカンマなのに、実際のデータはパイプ「|」区切り。分割が起きず改行されないので、見せたかった2行の案内が1行に押し込まれて読みにくくなる。"
-     },
-     {
-      "title": "初回表示だけ、パネルのロード演出が発火しない",
-      "where": "行722 paint(0) と 行776 MutationObserver登録の実行順",
-      "why": "1本目のscriptがpaint(0)でaria-currentを変えた時点では、2本目のscriptのMutationObserverはまだ存在しない。最初にページを開いた人だけ演出が欠け、印象がちぐはぐになる。"
+      "title": "矢印キーがページ全体のスクロールを乗っ取る",
+      "where": "712-720行目 addEventListener('keydown', ...)（対象指定なしでwindow全体、preventDefault実行）",
+      "why": "どこにもフォーカスが無くてもデスクトップ幅なら上下左右で必ずpreventDefaultしカード選択に変換される。ブラウザ標準の矢印キースクロールが常に機能しなくなる。"
      }
     ],
-    "top_recommendation": "まず624-648のpaint呼び出し箇所に cells[next].focus() を足し、矢印選択とEnterの挙動を一致させることを最優先で直してほしい。みんなが最初に触る導線だから。",
+    "top_recommendation": "634行目の分割文字をカンマから縦棒に直せ。ロード直後から表示が壊れている、一番目立つ不具合。",
     "confidence": 4
    },
-   "cost_usd": 0.30681400000000003
+   "cost_usd": 0.43457399999999996
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "infp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "544ab612465f0dea",
+   "data": {
+    "findings": [
+     {
+      "title": "記事なしカードで「解説記事」欄が undefined のまま表示される",
+      "where": "script内 paint() 関数 641-643行目（P.art.href / P.artt.textContent / P.art.hidden=false）。対象データ: 374行目 Claude Anywhere、388行目 Spoiler Block for X（どちらも data-art / data-artt 属性なし）",
+      "why": "コメントは『記事がない作品は行ごと隠す』と書いてあるのに hidden は常に false。dataset.art が undefined のとき .href と .textContent には文字列 'undefined' が代入され、この2枚を選択すると『解説記事』欄にタイトル『undefined』とリンク先が壊れた行が表示される。"
+     },
+     {
+      "title": "矢印キーで選択してもフォーカスが移動せず、Enterで別の作品が開く",
+      "where": "712-720行目 keydown リスナー内 paint(next) 呼び出し（.focus() の呼び出しが無い）。対比: 659行目クリック時のみ c.focus() を呼んでいる",
+      "why": "paint() 自体は624-648行目で .focus() を呼ばない。矢印キーでパネル表示だけ切り替わり、実DOMフォーカスはクリックで最後に触れたカードのまま残るため、571行目の『Enter で開く』操作は画面上の選択と一致しない別プロジェクトを開く。"
+     },
+     {
+      "title": "複数インストール先の改行がされず「|」がそのまま表示される",
+      "where": "634行目 P.into.textContent = c.dataset.into.split(',').join('\\n')。データ例: 314行目・515行目・532行目 data-into=\"A｜B\" のようにパイプ区切り",
+      "why": "実データの区切り文字は「｜」なのにコードはカンマで split しているため配列長1のままとなり join も無効。結果、557-558行目の初期表示（改行済み）と異なり、選択後は 'GitHub Copilot のカスタムエージェント｜~/.claude/skills/（Claude Code）' のように1行のパイプ文字列で表示される。"
+     }
+    ],
+    "top_recommendation": "641-643行目の P.art.hidden 判定を dataset.art の有無で分岐させ、記事なしカードでは行を隠すよう修正するのが最優先（誰でもクリックするだけで壊れたリンクに遭遇するため）。",
+    "confidence": 4
+   },
+   "cost_usd": 0.304563
   },
   {
    "slot": "main",
@@ -442,36 +407,6 @@
   },
   {
    "slot": "main",
-   "task": "bug",
-   "type": "istp",
-   "rep": 0,
-   "model": "sonnet",
-   "key": "0344c225bb5ce4d2",
-   "data": {
-    "findings": [
-     {
-      "title": "paint(0)がロード直後に静的HTMLの2行表示を破壊",
-      "where": "634行目 P.into.textContent の split 処理（722行目 paint(0) が即実行）",
-      "why": "data-into の区切りは縦棒なのにカンマで分割している。カンマが無いので分割されず、557-558行の正しい2行表示がロード直後に1行のパイプ付き文字列で上書きされる。"
-     },
-     {
-      "title": "解説記事なしカードで.art行が常時表示される",
-      "where": "640-643行目 P.art.href / P.artt.textContent / P.art.hidden=false（374-403行のカードにはdata-artが無い）",
-      "why": "hiddenをtrueにする分岐が無く常にfalse。Claude AnywhereやSpoiler Block for Xを選ぶと解説記事欄に文字列undefinedが出て、リンクも存在しないURLになる。"
-     },
-     {
-      "title": "矢印キーがページ全体のスクロールを乗っ取る",
-      "where": "712-720行目 addEventListener('keydown', ...)（対象指定なしでwindow全体、preventDefault実行）",
-      "why": "どこにもフォーカスが無くてもデスクトップ幅なら上下左右で必ずpreventDefaultしカード選択に変換される。ブラウザ標準の矢印キースクロールが常に機能しなくなる。"
-     }
-    ],
-    "top_recommendation": "634行目の分割文字をカンマから縦棒に直せ。ロード直後から表示が壊れている、一番目立つ不具合。",
-    "confidence": 4
-   },
-   "cost_usd": 0.43457399999999996
-  },
-  {
-   "slot": "main",
    "task": "spec_hole",
    "type": "intj",
    "rep": 0,
@@ -512,43 +447,38 @@
   },
   {
    "slot": "main",
-   "task": "spec_hole",
-   "type": "entj",
+   "task": "bug",
+   "type": "esfj",
    "rep": 0,
    "model": "sonnet",
-   "key": "dcf97959cf603d7f",
+   "key": "20115a5245d451fc",
    "data": {
     "findings": [
      {
-      "title": "OGP / Twitter Card が完全に未実装",
-      "where": "head内 (7〜11行目付近、meta descriptionの直後)",
-      "why": "og:title, og:image, og:description, twitter:card が無い。SNSでURLを貼った瞬間に無地のリンクとして表示される。ポートフォリオは共有されて初めて価値が生まれる。数字に直結する損失を放置している。"
+      "title": "矢印キーで選んでもフォーカスが動かず、Enterで別の作品が開いてしまう",
+      "where": "行712-720（keydownリスナー）／行624-648（paint関数）",
+      "why": "paint(next)はaria-currentの見た目だけ変えてcells[next].focus()を呼んでいない。案内文「Enter で開く」を信じて押すと、選んだつもりの作品ではなく前にクリックした（フォーカスが残る）作品が開いてしまう。これは訪れた人が一番戸惑う箇所。"
      },
      {
-      "title": "robots.txt / sitemap.xml / canonical が存在しない",
-      "where": "リポジトリ直下、および head内 <link rel=\"canonical\">",
-      "why": "検索エンジンへのインデックス方針が何も定義されていない。12個の制作物という資産があるのに、検索流入という測定可能なチャネルを自ら閉じている。GitHub Pagesなら数分で追加できる。"
+      "title": "解説記事のないカードでリンク先が\"undefined\"になる",
+      "where": "行641-643（P.art.href / P.art.hidden = false）",
+      "why": "data-art属性を持たない2枚（Claude Anywhere・Spoiler Block for X）を選ぶと、常にhidden=falseで上書きされ、リンク先も見出しもundefinedのまま表示される。作った本人の顔が立たない見え方になってしまう。"
      },
      {
-      "title": "詳細情報がJSのdata属性頼りで、初期HTML・noscriptに露出していない",
-      "where": "各 .cell の data-desc / data-tech / data-into（312〜545行目）、paint()関数（624行目）",
-      "why": "クローラーやJS無効環境では作品説明・技術スタックが一切読めない。noscriptフォールバックも無い。SEOと基本アクセシビリティ双方の欠落であり、コンテンツの大半が「無いこと」になっている。"
+      "title": "「インストール先」の複数行表記がパイプ区切りのまま崩れて出る",
+      "where": "行634 split(',') と data-into=\"...|...\"（例：行314, 515, 532）",
+      "why": "分割の区切り文字がカンマなのに、実際のデータはパイプ「|」区切り。分割が起きず改行されないので、見せたかった2行の案内が1行に押し込まれて読みにくくなる。"
      },
      {
-      "title": "セレクトUIに listbox/option の ARIA パターンが無い",
-      "where": ".grid / .cell（103〜147行目）、paint()関数（624〜648行目）",
-      "why": "role, aria-selected, aria-setsize/aria-posinset が無いため、スクリーンリーダー利用者に「12件中何件目を選択中か」が伝わらない。aria-live=\"polite\" だけでは選択操作の文脈が弱い。支援技術への通知が不十分。"
-     },
-     {
-      "title": "モバイルで詳細パネルが完全に非表示、代替導線が要約(.cd)止まり",
-      "where": ".panel{display:none}（253行目、@media(max-width:700px)ブロック）",
-      "why": "スマホ利用者は into/tech/状態などパネル情報に一切アクセスできない。'誰が/どの端末で見ても同じ情報が取れる'という運用要件が実装されておらず、モバイル閲覧者は機能的に劣化した体験を強制される。"
+      "title": "初回表示だけ、パネルのロード演出が発火しない",
+      "where": "行722 paint(0) と 行776 MutationObserver登録の実行順",
+      "why": "1本目のscriptがpaint(0)でaria-currentを変えた時点では、2本目のscriptのMutationObserverはまだ存在しない。最初にページを開いた人だけ演出が欠け、印象がちぐはぐになる。"
      }
     ],
-    "top_recommendation": "まずOGP/Twitterカードとsitemap.xml・robots.txtを追加しろ。共有と検索という「測れる結果」を生む導線が今ゼロだ。",
+    "top_recommendation": "まず624-648のpaint呼び出し箇所に cells[next].focus() を足し、矢印選択とEnterの挙動を一致させることを最優先で直してほしい。みんなが最初に触る導線だから。",
     "confidence": 4
    },
-   "cost_usd": 0.1980709
+   "cost_usd": 0.30681400000000003
   },
   {
    "slot": "main",
@@ -592,6 +522,46 @@
   },
   {
    "slot": "main",
+   "task": "spec_hole",
+   "type": "entj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "dcf97959cf603d7f",
+   "data": {
+    "findings": [
+     {
+      "title": "OGP / Twitter Card が完全に未実装",
+      "where": "head内 (7〜11行目付近、meta descriptionの直後)",
+      "why": "og:title, og:image, og:description, twitter:card が無い。SNSでURLを貼った瞬間に無地のリンクとして表示される。ポートフォリオは共有されて初めて価値が生まれる。数字に直結する損失を放置している。"
+     },
+     {
+      "title": "robots.txt / sitemap.xml / canonical が存在しない",
+      "where": "リポジトリ直下、および head内 <link rel=\"canonical\">",
+      "why": "検索エンジンへのインデックス方針が何も定義されていない。12個の制作物という資産があるのに、検索流入という測定可能なチャネルを自ら閉じている。GitHub Pagesなら数分で追加できる。"
+     },
+     {
+      "title": "詳細情報がJSのdata属性頼りで、初期HTML・noscriptに露出していない",
+      "where": "各 .cell の data-desc / data-tech / data-into（312〜545行目）、paint()関数（624行目）",
+      "why": "クローラーやJS無効環境では作品説明・技術スタックが一切読めない。noscriptフォールバックも無い。SEOと基本アクセシビリティ双方の欠落であり、コンテンツの大半が「無いこと」になっている。"
+     },
+     {
+      "title": "セレクトUIに listbox/option の ARIA パターンが無い",
+      "where": ".grid / .cell（103〜147行目）、paint()関数（624〜648行目）",
+      "why": "role, aria-selected, aria-setsize/aria-posinset が無いため、スクリーンリーダー利用者に「12件中何件目を選択中か」が伝わらない。aria-live=\"polite\" だけでは選択操作の文脈が弱い。支援技術への通知が不十分。"
+     },
+     {
+      "title": "モバイルで詳細パネルが完全に非表示、代替導線が要約(.cd)止まり",
+      "where": ".panel{display:none}（253行目、@media(max-width:700px)ブロック）",
+      "why": "スマホ利用者は into/tech/状態などパネル情報に一切アクセスできない。'誰が/どの端末で見ても同じ情報が取れる'という運用要件が実装されておらず、モバイル閲覧者は機能的に劣化した体験を強制される。"
+     }
+    ],
+    "top_recommendation": "まずOGP/Twitterカードとsitemap.xml・robots.txtを追加しろ。共有と検索という「測れる結果」を生む導線が今ゼロだ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.1980709
+  },
+  {
+   "slot": "main",
    "task": "bug",
    "type": "esfp",
    "rep": 0,
@@ -619,46 +589,6 @@
     "confidence": 5
    },
    "cost_usd": 0.283565
-  },
-  {
-   "slot": "main",
-   "task": "spec_hole",
-   "type": "infj",
-   "rep": 0,
-   "model": "sonnet",
-   "key": "fdac0c24450d570e",
-   "data": {
-    "findings": [
-     {
-      "title": "SNS共有時の「顔」がない — OGP/Twitter Cardメタタグの欠如",
-      "where": "head内 7〜11行目（meta description の並び）",
-      "why": "og:title/og:image/og:description が無く、Xなどでリンクを貼っても味気ないURLの断片にしかならない。12個の制作物にかけた時間が、共有された瞬間に人に届かない——これは本当にもったいない。"
-     },
-     {
-      "title": "選択状態と詳細パネルの意味的な結びつきがない",
-      "where": ".cell（308〜151行目）と .panel（552行目, aria-live=\"polite\"）",
-      "why": "aria-current は視覚的な合図に留まり、aria-controls/aria-describedby でカードとパネルを結ぶ記述がない。スクリーンリーダーを使う人には『何が今選ばれ、それがどこに反映されたのか』という物語が伝わらない。見た目の美しさの裏で、見えない人への配慮が置き去りにされている。"
-     },
-     {
-      "title": "本文へのスキップリンクが存在しない",
-      "where": "body開始直後（285行目〜）／.wrap の直前",
-      "why": "12枚のカードは focus 可能な a 要素として並んでおり、キーボードやスクリーンリーダーで読み進める人は、プロフィールやreadsセクションへ到達するまで全カードを律儀に通過させられる。これは配慮ではなく、作り手の都合を利用者に押し付ける構造だと感じる。"
-     },
-     {
-      "title": "検索エンジンへの手がかり（canonical・構造化データ・sitemap/robots）が皆無",
-      "where": "head内全体（3〜284行目）",
-      "why": "canonical link も JSON-LD(Person/CreativeWork) も sitemap.xml/robots.txt も見当たらない。検索エンジンという『今は目に見えない読者』への配慮が抜けており、せっかくの制作群が発見される機会を静かに失っている。"
-     },
-     {
-      "title": "多言語対応・404運用の不在",
-      "where": "html lang=\"ja\"（2行目）／GitHub Pages ルート（404.html 不在）",
-      "why": "海外の採用担当者やエンジニアが訪れる可能性を考えると英語版の導線が一切ないのは気がかりだ。また GitHub Pages に 404.html が無く、URL 誤入力時に何の案内もなく途方に暮れさせてしまう。"
-     }
-    ],
-    "top_recommendation": "まずOGP/Twitter Cardメタタグを追加すること。作品を「共有される瞬間」に人へ届く姿を整えるのが、最も影響範囲の大きい一手だと思う。",
-    "confidence": 4
-   },
-   "cost_usd": 0.2015927
   },
   {
    "slot": "main",
@@ -703,46 +633,6 @@
   {
    "slot": "main",
    "task": "spec_hole",
-   "type": "enfj",
-   "rep": 0,
-   "model": "sonnet",
-   "key": "e42858a0d8bb3855",
-   "data": {
-    "findings": [
-     {
-      "title": "作品に感動した人が「あなた」に辿り着けない（連絡先の欠如）",
-      "where": "footer（594-596行）／ .reads セクション（577-592行）",
-      "why": "GitHub・Zenn・Qiitaへの導線はあるのに、直接連絡できるメールやX・LinkedInが一つもない。せっかく心が動いた人が、次の一歩＝『声をかける』ができない設計は本当にもったいない。"
-     },
-     {
-      "title": "SNSでシェアされた瞬間の見え方（OGP/Twitter Card）が未設定",
-      "where": "<head> 4〜11行目（meta description はあるが og:title/og:image/twitter:card が皆無）",
-      "why": "せっかく12個も丁寧な作品を作ったのに、Xでリンクを貼っても画像もタイトルカードも出ない。届くはずの人に第一印象で伝わらないのは、あなたの努力に見合っていない。"
-     },
-     {
-      "title": "矢印キー選択UIの『これは選べる一覧です』が支援技術に伝わっていない",
-      "where": ".cell 要素群（312行〜）／ paint() 関数（624-648行）・aria-current の使い方（140行, 628行）",
-      "why": "独自の矢印キー選択を実装している熱意は伝わるが、role=\"listbox\"/\"option\" や aria-selected のような意味づけがなく、スクリーンリーダー利用者には『選べる場』だと気づいてもらえない。一緒に、全員が迷わず選べる形にできたら。"
-     },
-     {
-      "title": "海外のエンジニアと出会えるはずなのに、扉が日本語だけで閉じている",
-      "where": "<html lang=\"ja\">（2行目）／ meta description（7行目）",
-      "why": "Azure・Splunk・OpenTelemetry・Claude Code といった内容は海外の読み手にも刺さるはず。英語版や英語要約が無いことで、本来出会えるはずの読者との縁を自ら断っている。"
-     },
-     {
-      "title": "検索エンジンに『育てていく土台』が用意されていない",
-      "where": "<head> 全体（3〜11行目）— canonical / JSON-LD（Person, CreativeWork）/ sitemap への言及なし",
-      "why": "構造化データや canonical URL がないと、検索結果でのリッチな見え方や重複URLの整理ができず、公開後にサイトが正しく育っていく仕組みが弱いまま。"
-     }
-    ],
-    "top_recommendation": "まず OGP と連絡先導線を整えて、『届いた人が、あなたと繋がれる』状態を作ろう。技術も熱意もあるのだから、あとは扉を開くだけ。",
-    "confidence": 4
-   },
-   "cost_usd": 0.2150133
-  },
-  {
-   "slot": "main",
-   "task": "spec_hole",
    "type": "infp",
    "rep": 0,
    "model": "sonnet",
@@ -779,46 +669,6 @@
     "confidence": 4
    },
    "cost_usd": 0.3035625
-  },
-  {
-   "slot": "main",
-   "task": "spec_hole",
-   "type": "istj",
-   "rep": 0,
-   "model": "sonnet",
-   "key": "cc751b408f661eea",
-   "data": {
-    "findings": [
-     {
-      "title": "SNS共有用の OGP / Twitter Card メタタグが一切ない",
-      "where": "<head> 内、7〜11行目付近（description の直後が妥当な挿入位置）",
-      "why": "実際のところ、URL を X や Slack に貼った際に og:title・og:description・og:image が無ければ素のリンクとしか出ない。制作物12個を見せる目的のサイトで、これは前例上まず用意するものだ。"
-     },
-     {
-      "title": "カード選択が支援技術に伝わる構造になっていない",
-      "where": ".cell（108〜151行目、role属性なし）／cells.forEach（650〜669行目）",
-      "why": "キーボードでの矢印移動やEnterでの選択は視覚的にしか設計されていない。role=\"listbox\"/\"option\"、aria-selected の付与がなく、aria-live のパネルだけでは選択された事実そのものがスクリーンリーダー利用者に伝わらない。ARIAの標準パターンに沿っていない。"
-     },
-     {
-      "title": "本文へ飛ぶスキップリンクが無い",
-      "where": "<body> 開始直後、287行目",
-      "why": "12枚のカードは全てタブ移動対象になる。キーボード利用者がプロフィールから読み物欄まで飛ぶ手段がなく、毎回全カードを通過させられる。ルールとして先頭にスキップリンクを置くのが基本だ。"
-     },
-     {
-      "title": "sitemap.xml・robots.txt が存在しない",
-      "where": "リポジトリルート（該当ファイルなし）",
-      "why": "検索エンジンに公開範囲とページ構成を明示する仕組みが無い。1枚物のサイトでも、公開して終わりではなく検索流入を見込むなら必要な前例だ。"
-     },
-     {
-      "title": "各制作物カードに公開日・更新日の記載がない",
-      "where": "各 .cell の data-* 属性群（312行目〜、data-desc等）",
-      "why": "12件のうち何が最新で何が古いのか、閲覧者にも自分自身にも判断材料がない。実際の運用では、いつ作ったかの記録を残さないと後で検証できなくなる。"
-     }
-    ],
-    "top_recommendation": "まず og:title / og:description / og:image と twitter:card を <head> に追加する。共有時の見え方は公開直後から効いてくる。",
-    "confidence": 4
-   },
-   "cost_usd": 0.2332164
   },
   {
    "slot": "main",
@@ -863,42 +713,82 @@
   {
    "slot": "main",
    "task": "spec_hole",
-   "type": "estj",
+   "type": "istj",
    "rep": 0,
    "model": "sonnet",
-   "key": "a36cfe4785dd656b",
+   "key": "cc751b408f661eea",
    "data": {
     "findings": [
      {
-      "title": "OGP / Twitter Card 用メタタグが皆無",
-      "where": "head内 4〜11行目（meta description の直後に追加すべき箇所）",
-      "why": "og:title・og:image・og:url・twitter:card が無い。公開URLを人に共有する運用が前提のサイトで、SNS上でどう見えるかの担当者が誰も決めていない。責任者を決めて即追加すべき。"
+      "title": "SNS共有用の OGP / Twitter Card メタタグが一切ない",
+      "where": "<head> 内、7〜11行目付近（description の直後が妥当な挿入位置）",
+      "why": "実際のところ、URL を X や Slack に貼った際に og:title・og:description・og:image が無ければ素のリンクとしか出ない。制作物12個を見せる目的のサイトで、これは前例上まず用意するものだ。"
      },
      {
-      "title": "スキップリンクが実装されていない",
-      "where": "body開始直後（287行目 <div class=\"wrap\"> の前）",
-      "why": "キーボード/スクリーンリーダー利用者は12枚のカード＋読み物リンクを毎回全通過しないと次セクションに進めない。ルール上、対話的要素が増えるほどこの欠落は運用負荷になる。"
+      "title": "カード選択が支援技術に伝わる構造になっていない",
+      "where": ".cell（108〜151行目、role属性なし）／cells.forEach（650〜669行目）",
+      "why": "キーボードでの矢印移動やEnterでの選択は視覚的にしか設計されていない。role=\"listbox\"/\"option\"、aria-selected の付与がなく、aria-live のパネルだけでは選択された事実そのものがスクリーンリーダー利用者に伝わらない。ARIAの標準パターンに沿っていない。"
      },
      {
-      "title": "多言語対応が未着手（lang=\"ja\"固定、hreflang無し）",
-      "where": "2行目 <html lang=\"ja\">、head内に alternate hreflang 無し",
-      "why": "Chrome Web Store・GitHub Marketplaceなど海外ユーザーも触れうる制作物を扱いながら英語版の導線が無い。多言語化するのかしないのか、基準が明文化されていない。"
+      "title": "本文へ飛ぶスキップリンクが無い",
+      "where": "<body> 開始直後、287行目",
+      "why": "12枚のカードは全てタブ移動対象になる。キーボード利用者がプロフィールから読み物欄まで飛ぶ手段がなく、毎回全カードを通過させられる。ルールとして先頭にスキップリンクを置くのが基本だ。"
      },
      {
-      "title": "sitemap.xml / robots.txt / 構造化データ(JSON-LD)の不在",
-      "where": "サイトルート（sitemap.xml, robots.txt）、head内（JSON-LDスクリプト無し）",
-      "why": "検索エンジンへの情報提供プロセスが未整備。単一HTMLで完結させる方針は理解するが、公開・運用する以上は最低限の手続きが欠けている。"
+      "title": "sitemap.xml・robots.txt が存在しない",
+      "where": "リポジトリルート（該当ファイルなし）",
+      "why": "検索エンジンに公開範囲とページ構成を明示する仕組みが無い。1枚物のサイトでも、公開して終わりではなく検索流入を見込むなら必要な前例だ。"
      },
      {
-      "title": "外部リンク12件超の生存監視・404時の運用ルールが無い",
-      "where": "各 .cell の href / data-art（312〜545行目）",
-      "why": "Chrome Web Store審査落ち、リポジトリ削除等でリンク切れが起きた場合に検知する仕組み（定期チェック・自動テスト）が無く、誰がいつ確認するかの責任の所在が決まっていない。"
+      "title": "各制作物カードに公開日・更新日の記載がない",
+      "where": "各 .cell の data-* 属性群（312行目〜、data-desc等）",
+      "why": "12件のうち何が最新で何が古いのか、閲覧者にも自分自身にも判断材料がない。実際の運用では、いつ作ったかの記録を残さないと後で検証できなくなる。"
      }
     ],
-    "top_recommendation": "まず OGP/Twitter Card メタタグを head に追加せよ。工数は最小、公開ページとしての説明責任が最も欠けている箇所だ。",
+    "top_recommendation": "まず og:title / og:description / og:image と twitter:card を <head> に追加する。共有時の見え方は公開直後から効いてくる。",
     "confidence": 4
    },
-   "cost_usd": 0.20276699999999998
+   "cost_usd": 0.2332164
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "type": "infj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "fdac0c24450d570e",
+   "data": {
+    "findings": [
+     {
+      "title": "SNS共有時の「顔」がない — OGP/Twitter Cardメタタグの欠如",
+      "where": "head内 7〜11行目（meta description の並び）",
+      "why": "og:title/og:image/og:description が無く、Xなどでリンクを貼っても味気ないURLの断片にしかならない。12個の制作物にかけた時間が、共有された瞬間に人に届かない——これは本当にもったいない。"
+     },
+     {
+      "title": "選択状態と詳細パネルの意味的な結びつきがない",
+      "where": ".cell（308〜151行目）と .panel（552行目, aria-live=\"polite\"）",
+      "why": "aria-current は視覚的な合図に留まり、aria-controls/aria-describedby でカードとパネルを結ぶ記述がない。スクリーンリーダーを使う人には『何が今選ばれ、それがどこに反映されたのか』という物語が伝わらない。見た目の美しさの裏で、見えない人への配慮が置き去りにされている。"
+     },
+     {
+      "title": "本文へのスキップリンクが存在しない",
+      "where": "body開始直後（285行目〜）／.wrap の直前",
+      "why": "12枚のカードは focus 可能な a 要素として並んでおり、キーボードやスクリーンリーダーで読み進める人は、プロフィールやreadsセクションへ到達するまで全カードを律儀に通過させられる。これは配慮ではなく、作り手の都合を利用者に押し付ける構造だと感じる。"
+     },
+     {
+      "title": "検索エンジンへの手がかり（canonical・構造化データ・sitemap/robots）が皆無",
+      "where": "head内全体（3〜284行目）",
+      "why": "canonical link も JSON-LD(Person/CreativeWork) も sitemap.xml/robots.txt も見当たらない。検索エンジンという『今は目に見えない読者』への配慮が抜けており、せっかくの制作群が発見される機会を静かに失っている。"
+     },
+     {
+      "title": "多言語対応・404運用の不在",
+      "where": "html lang=\"ja\"（2行目）／GitHub Pages ルート（404.html 不在）",
+      "why": "海外の採用担当者やエンジニアが訪れる可能性を考えると英語版の導線が一切ないのは気がかりだ。また GitHub Pages に 404.html が無く、URL 誤入力時に何の案内もなく途方に暮れさせてしまう。"
+     }
+    ],
+    "top_recommendation": "まずOGP/Twitter Cardメタタグを追加すること。作品を「共有される瞬間」に人へ届く姿を整えるのが、最も影響範囲の大きい一手だと思う。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2015927
   },
   {
    "slot": "main",
@@ -983,42 +873,82 @@
   {
    "slot": "main",
    "task": "spec_hole",
-   "type": "estp",
+   "type": "enfj",
    "rep": 0,
    "model": "sonnet",
-   "key": "58382a29627294df",
+   "key": "e42858a0d8bb3855",
    "data": {
     "findings": [
      {
-      "title": "OGP/Twitter Card が丸ごとない",
-      "where": "<head> 4〜11行目、meta description はあるが og:title/og:image/og:url/twitter:card が皆無",
-      "why": "X や Slack に貼った瞬間、素っ気ないリンクだけになる。せっかく12個も作品あるのに拡散のチャンスを自分から捨ててる。今すぐやれ。"
+      "title": "作品に感動した人が「あなた」に辿り着けない（連絡先の欠如）",
+      "where": "footer（594-596行）／ .reads セクション（577-592行）",
+      "why": "GitHub・Zenn・Qiitaへの導線はあるのに、直接連絡できるメールやX・LinkedInが一つもない。せっかく心が動いた人が、次の一歩＝『声をかける』ができない設計は本当にもったいない。"
      },
      {
-      "title": "選択状態が支援技術に伝わらない",
-      "where": ".cell[aria-current=\"true\"] (140行目) / paint() 624行目",
-      "why": "見た目は選ばれてるけど role=listbox・aria-selected がない。スクリーンリーダーだと今どれ選んでるか分からんまま。動いてるようで動いてない。"
+      "title": "SNSでシェアされた瞬間の見え方（OGP/Twitter Card）が未設定",
+      "where": "<head> 4〜11行目（meta description はあるが og:title/og:image/twitter:card が皆無）",
+      "why": "せっかく12個も丁寧な作品を作ったのに、Xでリンクを貼っても画像もタイトルカードも出ない。届くはずの人に第一印象で伝わらないのは、あなたの努力に見合っていない。"
      },
      {
-      "title": "robots.txt / sitemap.xml がどこにもない",
-      "where": "リポジトリ直下（index.htmlの外、favicon.svgの隣あたり）",
-      "why": "検索エンジンにこのサイトの存在と12作品を能動的に教える手段がゼロ。待ってても誰も見つけてくれない、実利ゼロ。"
+      "title": "矢印キー選択UIの『これは選べる一覧です』が支援技術に伝わっていない",
+      "where": ".cell 要素群（312行〜）／ paint() 関数（624-648行）・aria-current の使い方（140行, 628行）",
+      "why": "独自の矢印キー選択を実装している熱意は伝わるが、role=\"listbox\"/\"option\" や aria-selected のような意味づけがなく、スクリーンリーダー利用者には『選べる場』だと気づいてもらえない。一緒に、全員が迷わず選べる形にできたら。"
      },
      {
-      "title": "manifest.json / apple-touch-icon がない",
-      "where": "<head> 8行目 favicon.svg の周辺",
-      "why": "スマホでホーム画面に追加しても即席アイコンになる。リピーター取り逃してもったいない、それ今すぐ直せる話。"
+      "title": "海外のエンジニアと出会えるはずなのに、扉が日本語だけで閉じている",
+      "where": "<html lang=\"ja\">（2行目）／ meta description（7行目）",
+      "why": "Azure・Splunk・OpenTelemetry・Claude Code といった内容は海外の読み手にも刺さるはず。英語版や英語要約が無いことで、本来出会えるはずの読者との縁を自ら断っている。"
      },
      {
-      "title": "英語版が存在しない",
-      "where": "<html lang=\"ja\"> 2行目",
-      "why": "iOS・Chrome拡張・OSSプラグインとか海外にも刺さる中身なのに日本語オンリー。優先度は低いけど機会損失ではある。"
+      "title": "検索エンジンに『育てていく土台』が用意されていない",
+      "where": "<head> 全体（3〜11行目）— canonical / JSON-LD（Person, CreativeWork）/ sitemap への言及なし",
+      "why": "構造化データや canonical URL がないと、検索結果でのリッチな見え方や重複URLの整理ができず、公開後にサイトが正しく育っていく仕組みが弱いまま。"
      }
     ],
-    "top_recommendation": "og:title/og:image/og:url を head に追加してSNSカードを整えろ。シェアされて初めて意味がある、今それが一番デカい。",
+    "top_recommendation": "まず OGP と連絡先導線を整えて、『届いた人が、あなたと繋がれる』状態を作ろう。技術も熱意もあるのだから、あとは扉を開くだけ。",
     "confidence": 4
    },
-   "cost_usd": 0.19837329999999997
+   "cost_usd": 0.2150133
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "type": "istp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "697d3863ad2d3e9e",
+   "data": {
+    "findings": [
+     {
+      "title": "OGP / Twitter Card メタタグが皆無",
+      "where": "<head> 3〜11行目",
+      "why": "og:title, og:image, og:url, twitter:card が一つも無い。X や Slack に貼ったら無地のリンクになる。作品を見せる目的のサイトでこれは実害がでかい。"
+     },
+     {
+      "title": "roster に選択グループとしての ARIA が無い",
+      "where": ".grid / .cell（108〜136行目）、keydown ハンドラ（712〜720行目）",
+      "why": "矢印キーで1つ選ぶUIなのに role や aria-selected が無く listbox/radiogroup として構造化されていない。aria-current だけではスクリーンリーダーに「選択中の1件」が伝わらない。実際に読み上げソフトで動かせば分かる話。"
+     },
+     {
+      "title": "canonical / 構造化データ / sitemap の欠如",
+      "where": "<head>、および外部ファイル（sitemap.xml, robots.txt は存在自体が確認できない）",
+      "why": "canonical URL も JSON-LD も無く、検索エンジンに「これが本体」と伝える手段がない。12個の制作物を個別に評価してほしいなら最低限のマークは要る。"
+     },
+     {
+      "title": "多言語対応が完全にゼロ",
+      "where": "<html lang=\"ja\"> 2行目",
+      "why": "hreflang も英語版も無い。海外の採用担当や開発者が見に来るケースを最初から捨てている。日本語オンリーでいいなら意図的判断として明記すべき。"
+     },
+     {
+      "title": "外部リンク切れを検知する仕組みが運用に無い",
+      "where": "data-art / href 属性群（各 .cell）",
+      "why": "App Store、Chrome Web Store、GitHub、Zenn/Qiita 記事へのリンクが12件+αあるが、静的HTML1枚なので切れても気づく手段がない。動いてるか定期的に叩いて確認する仕組みは要る。"
+     }
+    ],
+    "top_recommendation": "og:image を含む OGP を最優先で入れろ。共有した瞬間に見た目が決まる、一番安いのに一番効く一手だ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.13273980000000002
   },
   {
    "slot": "main",
@@ -1063,6 +993,46 @@
   {
    "slot": "main",
    "task": "spec_hole",
+   "type": "estp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "58382a29627294df",
+   "data": {
+    "findings": [
+     {
+      "title": "OGP/Twitter Card が丸ごとない",
+      "where": "<head> 4〜11行目、meta description はあるが og:title/og:image/og:url/twitter:card が皆無",
+      "why": "X や Slack に貼った瞬間、素っ気ないリンクだけになる。せっかく12個も作品あるのに拡散のチャンスを自分から捨ててる。今すぐやれ。"
+     },
+     {
+      "title": "選択状態が支援技術に伝わらない",
+      "where": ".cell[aria-current=\"true\"] (140行目) / paint() 624行目",
+      "why": "見た目は選ばれてるけど role=listbox・aria-selected がない。スクリーンリーダーだと今どれ選んでるか分からんまま。動いてるようで動いてない。"
+     },
+     {
+      "title": "robots.txt / sitemap.xml がどこにもない",
+      "where": "リポジトリ直下（index.htmlの外、favicon.svgの隣あたり）",
+      "why": "検索エンジンにこのサイトの存在と12作品を能動的に教える手段がゼロ。待ってても誰も見つけてくれない、実利ゼロ。"
+     },
+     {
+      "title": "manifest.json / apple-touch-icon がない",
+      "where": "<head> 8行目 favicon.svg の周辺",
+      "why": "スマホでホーム画面に追加しても即席アイコンになる。リピーター取り逃してもったいない、それ今すぐ直せる話。"
+     },
+     {
+      "title": "英語版が存在しない",
+      "where": "<html lang=\"ja\"> 2行目",
+      "why": "iOS・Chrome拡張・OSSプラグインとか海外にも刺さる中身なのに日本語オンリー。優先度は低いけど機会損失ではある。"
+     }
+    ],
+    "top_recommendation": "og:title/og:image/og:url を head に追加してSNSカードを整えろ。シェアされて初めて意味がある、今それが一番デカい。",
+    "confidence": 4
+   },
+   "cost_usd": 0.19837329999999997
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
    "type": "esfp",
    "rep": 0,
    "model": "sonnet",
@@ -1103,42 +1073,3912 @@
   {
    "slot": "main",
    "task": "spec_hole",
-   "type": "istp",
+   "type": "estj",
    "rep": 0,
    "model": "sonnet",
-   "key": "697d3863ad2d3e9e",
+   "key": "a36cfe4785dd656b",
    "data": {
     "findings": [
      {
-      "title": "OGP / Twitter Card メタタグが皆無",
-      "where": "<head> 3〜11行目",
-      "why": "og:title, og:image, og:url, twitter:card が一つも無い。X や Slack に貼ったら無地のリンクになる。作品を見せる目的のサイトでこれは実害がでかい。"
+      "title": "OGP / Twitter Card 用メタタグが皆無",
+      "where": "head内 4〜11行目（meta description の直後に追加すべき箇所）",
+      "why": "og:title・og:image・og:url・twitter:card が無い。公開URLを人に共有する運用が前提のサイトで、SNS上でどう見えるかの担当者が誰も決めていない。責任者を決めて即追加すべき。"
      },
      {
-      "title": "roster に選択グループとしての ARIA が無い",
-      "where": ".grid / .cell（108〜136行目）、keydown ハンドラ（712〜720行目）",
-      "why": "矢印キーで1つ選ぶUIなのに role や aria-selected が無く listbox/radiogroup として構造化されていない。aria-current だけではスクリーンリーダーに「選択中の1件」が伝わらない。実際に読み上げソフトで動かせば分かる話。"
+      "title": "スキップリンクが実装されていない",
+      "where": "body開始直後（287行目 <div class=\"wrap\"> の前）",
+      "why": "キーボード/スクリーンリーダー利用者は12枚のカード＋読み物リンクを毎回全通過しないと次セクションに進めない。ルール上、対話的要素が増えるほどこの欠落は運用負荷になる。"
      },
      {
-      "title": "canonical / 構造化データ / sitemap の欠如",
-      "where": "<head>、および外部ファイル（sitemap.xml, robots.txt は存在自体が確認できない）",
-      "why": "canonical URL も JSON-LD も無く、検索エンジンに「これが本体」と伝える手段がない。12個の制作物を個別に評価してほしいなら最低限のマークは要る。"
+      "title": "多言語対応が未着手（lang=\"ja\"固定、hreflang無し）",
+      "where": "2行目 <html lang=\"ja\">、head内に alternate hreflang 無し",
+      "why": "Chrome Web Store・GitHub Marketplaceなど海外ユーザーも触れうる制作物を扱いながら英語版の導線が無い。多言語化するのかしないのか、基準が明文化されていない。"
      },
      {
-      "title": "多言語対応が完全にゼロ",
-      "where": "<html lang=\"ja\"> 2行目",
-      "why": "hreflang も英語版も無い。海外の採用担当や開発者が見に来るケースを最初から捨てている。日本語オンリーでいいなら意図的判断として明記すべき。"
+      "title": "sitemap.xml / robots.txt / 構造化データ(JSON-LD)の不在",
+      "where": "サイトルート（sitemap.xml, robots.txt）、head内（JSON-LDスクリプト無し）",
+      "why": "検索エンジンへの情報提供プロセスが未整備。単一HTMLで完結させる方針は理解するが、公開・運用する以上は最低限の手続きが欠けている。"
      },
      {
-      "title": "外部リンク切れを検知する仕組みが運用に無い",
-      "where": "data-art / href 属性群（各 .cell）",
-      "why": "App Store、Chrome Web Store、GitHub、Zenn/Qiita 記事へのリンクが12件+αあるが、静的HTML1枚なので切れても気づく手段がない。動いてるか定期的に叩いて確認する仕組みは要る。"
+      "title": "外部リンク12件超の生存監視・404時の運用ルールが無い",
+      "where": "各 .cell の href / data-art（312〜545行目）",
+      "why": "Chrome Web Store審査落ち、リポジトリ削除等でリンク切れが起きた場合に検知する仕組み（定期チェック・自動テスト）が無く、誰がいつ確認するかの責任の所在が決まっていない。"
      }
     ],
-    "top_recommendation": "og:image を含む OGP を最優先で入れろ。共有した瞬間に見た目が決まる、一番安いのに一番効く一手だ。",
+    "top_recommendation": "まず OGP/Twitter Card メタタグを head に追加せよ。工数は最小、公開ページとしての説明責任が最も欠けている箇所だ。",
     "confidence": 4
    },
-   "cost_usd": 0.13273980000000002
+   "cost_usd": 0.20276699999999998
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "entj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "022269177a9ac800",
+   "data": {
+    "findings": [
+     {
+      "title": "解説記事なしカードを選ぶと「undefined」がそのまま画面に出る",
+      "where": "script内 paint() 640-643行目（P.art.href = c.dataset.art; / P.artt.textContent = c.dataset.artt; / P.art.hidden = false;）。対象カード: Claude Anywhere(374行目〜), Spoiler Block for X(388行目〜) は data-art / data-artt 属性を持たない。",
+      "why": "コメントには『無ければ行を隠す』とあるが実装では hidden=false を無条件に実行するだけで、hidden=true にする分岐が存在しない。結果、この2枚を選ぶと解説記事欄に文字列『undefined』が表示され、リンク先も文字列『undefined』（実質壊れたURL）になる。設計意図と実装が完全にズレている、放置できない不具合。"
+     },
+     {
+      "title": "矢印キーで選んだカードと Enter で開くカードが一致しない",
+      "where": "keydown ハンドラ 712-720行目、paint() 624-648行目。どちらも cells[next].focus() を呼んでいない（フォーカス移動を行うのは click ハンドラの 659行目だけ）。",
+      "why": "aria-current とパネル表示は矢印キーで更新されるが、実際のDOMフォーカスは動かない。ヒント文言『← ↑ ↓ → で選ぶ / Enterで開く』（571行目）を信じてEnterを押すと、直前に実フォーカスしていた別カードが開く、あるいは何も開かない。UIが約束した機能がそのまま嘘になっている。誰がこの矛盾を検証したのか、責任の所在を明確にすべき。"
+     },
+     {
+      "title": "data-into の区切り文字が split(',') と実データ '|' で不一致",
+      "where": "paint() 634行目: c.dataset.into.split(',').join('\\n')。data-into 属性は 314, 515, 532行目など '|' 区切りで書かれている。",
+      "why": "カンマが存在しないため split(',') は1要素の配列を返し、'|' がそのまま画面に残る。初期HTML（557-558行目）は手書きで正しく改行されているが、そのカード自身をクリックした瞬間にJSが上書きし、逆に壊れた1行表示に退化する。数値で言えば影響カードは3件（azure-nettrace / splunk-otel-contest / splunk-ai-oncall）、全て『自分を選ぶと自分が壊れる』という最悪の再現条件。"
+     }
+    ],
+    "top_recommendation": "paint()の art.hidden 分岐実装（data-art不在時に隠す）と、keydown内での cells[next].focus() 呼び出しを最優先で直せ。2件とも数行の修正で結果が出る。",
+    "confidence": 5
+   },
+   "cost_usd": 0.3037790000000001
+  },
+  {
+   "slot": "main",
+   "task": "design_review",
+   "type": "entj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "7b0f37deab87ae7d",
+   "data": {
+    "findings": [
+     {
+      "title": "data-into の区切り文字とJSのsplit()が不整合",
+      "where": "634行 `c.dataset.into.split(',').join('\\n')` / 314,471,515,532行 `data-into=\"...|...\"`",
+      "why": "区切りは`|`なのにJSは`,`でsplitしている。複数行インストール先が1行に潰れて表示される。動いていないものを放置するな。今すぐ直せ。"
+     },
+     {
+      "title": "12件の制作物データがHTMLにベタ書きで構造化されていない",
+      "where": "312〜545行 data-art/data-ja/data-into/data-tech/data-desc 属性群",
+      "why": "13件目を足すたびに手作業でSVGとdata属性一式を複製する。ミスは必ず起きる。データはJSON配列に切り出し、cellはテンプレートで生成しろ。ここが最初に壊れる。"
+     },
+     {
+      "title": "選択状態のロジックがDOM属性・グローバル変数・MutationObserverに分散",
+      "where": "603〜722行(cur, cells, paint())と776行 new MutationObserver(fx)",
+      "why": "状態をaria-current属性の変化から間接的に検知する設計は、変更のたびに追跡コストが跳ね上がる。誰が状態を持つのか一元化しろ。"
+     },
+     {
+      "title": "ビルドなし＝配信・キャッシュの粒度がファイル単位でしかない",
+      "where": "12行目 style全体、600〜790行 script全体",
+      "why": "CSS/JSを1行直しても799行全部が再ダウンロード対象になる。今の規模では問題にならないが、カードが増えれば読み込みコストが線形に伸びる。"
+     },
+     {
+      "title": "矢印キーナビゲーションが独自実装でARIAパターン未準拠",
+      "where": "673〜720行 nearest()、552行 aside.panel にrole/aria-selected無し",
+      "why": "座標計算による自前ナビは動作するが、スクリーンリーダーには「これは選択リストだ」という意味が伝わらない。結果は出ていても検証できていない。"
+     }
+    ],
+    "top_recommendation": "data-intoのsplitバグを直し、同時に12件の制作物データをJSONに外出ししてカード生成をテンプレート化しろ。13件目を追加する前にやる作業だ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2305868
+  },
+  {
+   "slot": "main",
+   "task": "design_review",
+   "type": "intj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "855c370a365f0999",
+   "data": {
+    "findings": [
+     {
+      "title": "単一ファイル構成の本質：短期の単純さと引き換えに変更の局所性を売っている",
+      "where": "index.html 全体（1-799行、HTML/CSS/JS混在）",
+      "why": "依存ゼロ・デプロイ単純という利得は得ているが、CSS1文字の変更でもファイル全体が再取得されキャッシュが効かない。今12個のカードで読めているのは規模がまだ小さいだけで、構造の健全性を示す根拠にはならない。"
+     },
+     {
+      "title": "MutationObserverでDOM属性変化を監視しfx()を発火する暗黙の副作用連鎖",
+      "where": "776行目 new MutationObserver(fx).observe(slab,{attributeFilter:['aria-current']})",
+      "why": "paint()がaria-currentを書き換える→Observerが検知→アニメーション発火、という間接呼び出し構造。フィルタ機能やソート機能を足してaria-currentを触る箇所が増えた瞬間、意図しない演出が多重発火する。これが最初に壊れる場所だ。"
+     },
+     {
+      "title": "CSSのbreakpointをgetComputedStyleで読み取りJSの分岐に使う結合",
+      "where": "615行目 panelLive()、620行目 reveal()、657行目・713行目の条件分岐",
+      "why": "1080px・700pxの閾値がCSSとJSの両方に暗黙で存在する。CSS側だけbreakpointを変更すればJSの挙動が予告なく変わる。レイアウトとロジックが分離されておらず、片方の変更がもう片方を静かに壊す。"
+     },
+     {
+      "title": "コンテンツが全てdata-*属性にベタ書きされ、更新経路がHTML編集一本しかない",
+      "where": "312-545行目 各<a class=\"cell\" data-ja= data-desc= ...>",
+      "why": "12個は許容範囲だが、20個・30個に増える、多言語化する、CMS化するといった展開を一切見込んでいない。長期で見れば、コンテンツ更新のたびに巨大HTMLを人力編集する運用コストが線形に増える。"
+     },
+     {
+      "title": "cells配列のインデックスとDOM順序への暗黙依存がスケールしない",
+      "where": "611行目 let cur=0、673-710行目 nearest()（getBoundingClientRect依存）",
+      "why": "nearest()は実測レイアウト座標で次カードを決めており、非表示要素や動的フィルタが入ると0,0,0,0座標に化けて破綻する。将来ジャンル絞り込みを足した瞬間、ここが最初に壊れる第二候補だ。"
+     }
+    ],
+    "top_recommendation": "state-in-DOM設計（属性変化の監視で副作用を起こす仕組み）を単一のstateオブジェクト駆動に置き換えろ。次の機能追加で確実に破綻する。",
+    "confidence": 4
+   },
+   "cost_usd": 0.22628740000000003
+  },
+  {
+   "slot": "main",
+   "task": "design_review",
+   "type": "intp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "d0221c5c2f65fa42",
+   "data": {
+    "findings": [
+     {
+      "title": "コンテンツとマークアップが未分離。1ファイルの定義が曖昧になっている",
+      "where": "312〜547行目 各 .cell ブロック（data-ja, data-desc, data-tech 等）",
+      "why": "『1ファイル構成』の根拠が実装の単純化なら、コンテンツはJSONに追い出せたはず。12件で500行弱をマークアップが占めている時点で既に肥大が始まっている。増えた時点で崩れるのはここ。"
+     },
+     {
+      "title": "nearest() の空間ナビゲーションはgetBoundingClientRectに全依存。前提が暗黙的すぎる",
+      "where": "673〜710行 function nearest(dir)",
+      "why": "『ジャンルブロックの幅が違っても対応する』とあるが、along値が同着した場合の優先順位や境界条件は検証コードなしに書かれている。反例（同じalongを持つ2枚のカード）は想定されているのか。"
+     },
+     {
+      "title": "MutationObserverの発火回数が、DOM変更の内部実装に暗黙依存している",
+      "where": "776行 MutationObserver(fx).observe(slab)／627-628行 paint()内のremoveAttribute×11＋setAttribute×1",
+      "why": "paint()は毎回11個の属性を削除し1個を追加する。fxが1回だけ呼ばれる保証はマイクロタスクのバッチング挙動という実装詳細に依存しており、仕様として明記された契約ではない。"
+     },
+     {
+      "title": "2つのscriptタグでスコープ管理の思想が一致していない",
+      "where": "600-723行目（無名グローバルスコープ）と724-790行目（IIFE）",
+      "why": "一方はcur, cells, Pをグローバルに晒し、もう一方はIIFEで隠蔽している。設計方針が統一されていない。スクリプトが3本目に増えたときの指針がない。"
+     },
+     {
+      "title": "aria-currentの使用は選択状態のセマンティクスとして厳密に正しいのか",
+      "where": "140行 .cell[aria-current=\"true\"]／628行 setAttribute('aria-current','true')",
+      "why": "aria-currentは本来『現在のページ／ステップ』を示す属性で、リストの選択とは定義がやや異なる。role=listbox＋aria-selectedの方が意味的に厳密ではないか。"
+     }
+    ],
+    "top_recommendation": "壊れるとしたらまずコンテンツ層。data-*属性のカード情報をJSONに切り出す準備を今のうちにしておくべきだ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.3087045
+  },
+  {
+   "slot": "main",
+   "task": "design_review",
+   "type": "entp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "eb45d0d855db223d",
+   "data": {
+    "findings": [
+     {
+      "title": "data-into の区切り文字とJSのsplitが噛み合っていない（実バグ）",
+      "where": "634行目 `P.into.textContent = c.dataset.into.split(',').join('\\n')` / data-into の値は `|` 区切り（314, 515, 532行目など）",
+      "why": "`,`で分割してるのに値は`|`区切り。だからJS経由で選択すると『インストール先』が改行されず1行の変な文字列で出る。初期表示(557-558行目)だけ手書きで改行済みだから誰も気づいてない。もしそうなら、これは今この瞬間動いてないよね？"
+     },
+     {
+      "title": "1作品の情報が最大4箇所に重複していて、13個目から破綻する",
+      "where": "各cell内 span.nm/ja/cd（例320-326行目）＋ data-ja/desc/tech等（例312-316行目）＋ 初期panel HTML（552-572行目、cell[0]専用）",
+      "why": "短い要約(.cd)と長い説明(data-desc)を両方人力で書かせてる。増やす・直すたびにどれか1つ更新し忘れる。これはミスの話じゃなくて、この構造なら必ずいつか起きる話。"
+     },
+     {
+      "title": "ビルドレスの代償：コンテンツ追加が『コードを複製する作業』になっている",
+      "where": "307-547行目。1カードあたり約15〜20行のHTMLブロックをまるごとコピペして増殖させる運用",
+      "why": "逆に聞きたいんだけど、これJSONの配列1つで足りる情報量じゃない？ 今は『新しい作品＝既存ブロックをコピペして13箇所くらい書き換える』作業。20個、30個に増えたとき、複製コストと②の重複管理コストが同時に効いてきて、更新するのが怖いサイトになる。"
+     },
+     {
+      "title": "モバイルではパネルごと消えて、体験が別物に退化する",
+      "where": ".panel{display:none}（253行目）、panelLive()判定（615, 657, 664, 713行目）",
+      "why": "デスクトップの主役『選ぶ→詳細が出る』演出がモバイルでは一切機能せず、ただのリンク集になる。矢印キー操作もaria-liveの恩恵もモバイル勢は受けられない。同じサイトなのに二つの別物のUXが同居してる。"
+     },
+     {
+      "title": "2本のscriptがMutationObserver越しに間接結合していて追いにくい",
+      "where": "603-722行目（1本目）と726-789行目（2本目）、776行目のMutationObserver",
+      "why": "paint()はaria-currentを変えるだけで、typing演出は別scriptがDOM変化を監視して検知する仕組み。疎結合っぽく見えて、実際は『なぜこのタイミングで動くか』を2ファイル間で探索しないとわからない、地味に読解コストの高い設計。"
+     }
+    ],
+    "top_recommendation": "壊れる前に手を打つなら②③から：カード情報をJSONデータ配列1本にまとめ、HTML/panelはそこから生成する形に変える。",
+    "confidence": 4
+   },
+   "cost_usd": 0.25049520000000003
+  },
+  {
+   "slot": "main",
+   "task": "design_review",
+   "type": "infj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "27ffc50b2bf3819c",
+   "data": {
+    "findings": [
+     {
+      "title": "インストール先の改行がそもそも表示されていない（実バグ）",
+      "where": "index.html 634行目 `P.into.textContent = c.dataset.into.split(',').join('\\n')` / data-into属性(314,515,532行など)は `|` 区切り",
+      "why": "属性側は`|`で複数行を意図しているのに、JSは`,`でsplitしているため実際には分割されず、パネルの「インストール先」が改行なしの一文で表示される。これは目先の見た目より、データの意味を正しく運べているかという問いに関わる。"
+     },
+     {
+      "title": "同じ説明文が4箇所に分散し、真実の源泉がない",
+      "where": ".ja（一覧の2行クランプ, 例123行目）/ .cd（モバイル専用全文, 249行目）/ data-ja / data-desc",
+      "why": "一つの作品の紹介文を変えるたびに複数箇所を手で同期させねばならず、いずれ一箇所だけ古いまま残る。今は気づかれなくても、関わる人（将来の自分や協力者）を確実に混乱させる。"
+     },
+     {
+      "title": "カードのマークアップがテンプレート化されず12回複製されている",
+      "where": ".cell 構造（em/nm/ja/mk/id/doc/cd）— 312-544行に12回反復",
+      "why": "作品が20、30と増えたとき、この複製こそが最初に軋む場所になる。1つの構造ミスが気づかれずに紛れ込む余地は、件数が増えるほど広がっていく。"
+     },
+     {
+      "title": "キーボード移動が座標計算に依存し、検証手段がない",
+      "where": "nearest() 関数, 673-710行",
+      "why": "getBoundingClientRectによる幾何学的な最近傍探索はレイアウト変更に敏感だが、テストが一切ないため、CSSを少し触っただけで壊れても気づく仕組みがない。動く論理と検証できない構造の乖離が気がかり。"
+     },
+     {
+      "title": "1ファイル構成は今の規模には正しいが、次の一歩で無理が出る設計",
+      "where": "index.html 全体（HTML/CSS/JS 799行が未分離）",
+      "why": "依存ゼロ・即デプロイという誠実な選択で得たものは大きいが、コンテンツとロジックが同じ場所にあるため、作品を1件足すだけの変更と設計変更が同じdiffに混ざり、後から読む人の負担になる。"
+     }
+    ],
+    "top_recommendation": "まずdata-intoのsplit区切り文字の不一致（`,`→`|`）を直し、次に作品データをJSON等に切り出してカードをテンプレートから生成する仕組みに移す。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2269387
+  },
+  {
+   "slot": "main",
+   "task": "design_review",
+   "type": "enfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "f68128f88fe715c2",
+   "data": {
+    "findings": [
+     {
+      "title": "data-intoの区切り文字とJSのsplitが不一致（既に壊れている）",
+      "where": "314/515/532行目 data-into=\"...|...\" と 634行目 c.dataset.into.split(',')",
+      "why": "区切りが | なのに split(',') してるから、複数行のはずが | を含んだまま1行で表示される。ビルド・テストが無いから誰にも気づかれず公開され続けてる実例。"
+     },
+     {
+      "title": "12枚分のカードHTMLが丸ごとコピペ構造",
+      "where": "312〜544行目（.cell が12回、SVGアイコンも都度手打ち）",
+      "why": "1枚増やすたび20行前後をコピペしてdata-*属性を手で揃える必要があり、規模が増えるほど属性の付け忘れ・ズレが起きやすい。"
+     },
+     {
+      "title": "2つのscriptタグ間でグローバル状態とDOM監視が暗黙結合",
+      "where": "603〜723行目（cur, cells, P）と726〜789行目のMutationObserver(fx)",
+      "why": "aria-current変更をMutationObserverで拾ってアニメーションを起動する設計は、変数共有と副作用が絡み合い、機能追加時に影響範囲が読みにくくなる。"
+     },
+     {
+      "title": "CSS・データ・演出ロジックが1ファイルに完全同居",
+      "where": "12〜283行のstyle／306〜549行のroster data／600〜790行のscript",
+      "why": "12個規模なら見渡せて気持ちいいが、20〜30個に増えると『どこを触れば直るか』の見通しが効かなくなり、変更コストが跳ね上がる。"
+     },
+     {
+      "title": "ビルドレス構成ゆえに検証手段がゼロ",
+      "where": "ファイル全体（799行、単一HTML）",
+      "why": "型チェック・lint・テストが存在しないため、split(',')のような不一致バグが誰の目にも留まらないまま本番運用され続けるリスクがある。"
+     }
+    ],
+    "top_recommendation": "data-intoのsplit不一致をまず直し、カード情報をJSON化してテンプレートで描画する構成に一歩踏み出す",
+    "confidence": 4
+   },
+   "cost_usd": 0.21829910000000002
+  },
+  {
+   "slot": "main",
+   "task": "design_review",
+   "type": "enfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "ac81317ef796b3f9",
+   "data": {
+    "findings": [
+     {
+      "title": "into区切り文字がデータとJSでズレていて、実は今も壊れている",
+      "where": "JS 634行目 `c.dataset.into.split(',')` / HTML 314・515・532行目 `data-into=\"...|...\"`",
+      "why": "データはパイプ区切りなのにJSはカンマで分割している。paint(0)がロード直後に走るので、初回表示から既にインストール先が改行されず1行の生テキストになっている。"
+     },
+     {
+      "title": "12件分のメタデータが全てHTML属性にベタ書き",
+      "where": "各`.cell`のdata-desc/data-ja/data-tech等 312〜545行目",
+      "why": "作品が増えるたびコピペで9個近い属性を書き写すことになり、上のバグのような取りこぼしが起きやすい。あなた自身が一番疲れる場所だと思う。"
+     },
+     {
+      "title": "矢印キーの移動ロジックがレイアウトに暗黙依存",
+      "where": "nearest()関数 673〜710行目、`.grid{grid-template-columns:repeat(auto-fill,minmax(232px,1fr))}` 103行目",
+      "why": "座標ベースでナビゲーションを組んでいるため、カード幅やブレークポイントを変えるたびに矢印の挙動まで一緒に変わってしまう。CSSを触った人がJSまで壊すとは思わない。"
+     },
+     {
+      "title": "パネル更新の対応関係がPオブジェクト頼みで暗黙的",
+      "where": "`const P = {...}` 605〜610行目、paint()関数624〜648行目",
+      "why": "新しい項目を1つ足すには、HTMLのid・data属性・P定義・paint内代入の4箇所を手で揃える必要があり、抜けても実行時エラーにならず静かに欠落する。"
+     },
+     {
+      "title": "799行という規模はまだ持つが、20件超えたら折れる",
+      "where": "ファイル全体（特にデータ部が799行中の大半）",
+      "why": "今はまだ「あなたが全部覚えていられる」規模。作品が増えるほどHTMLの大半がデータの羅列になり、CSS/JSのロジックが埋もれて読めなくなっていく。"
+     }
+    ],
+    "top_recommendation": "まずinto区切りのバグを直そう。そのうえで12件のデータをJSONに切り出す一歩を——増えても壊れない形を一緒に作っていけたら。",
+    "confidence": 4
+   },
+   "cost_usd": 0.26620185
+  },
+  {
+   "slot": "main",
+   "task": "design_review",
+   "type": "istj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "0d93148c39cb7e12",
+   "data": {
+    "findings": [
+     {
+      "title": "制作物1件のデータが二重に書かれている",
+      "where": "312-326行目（セル1件分）、data-ja属性とspan.ja、data-descとspan.cdなど",
+      "why": "実際のところ、同じ日本語説明が data 属性と表示用 span に別々に書かれている。13個目を追加する際、片方だけ直して食い違いが起きるのがこの構成が最初に壊れる場所だと判断する。過去のコピペ運用パターンでは必ずここでずれる。"
+     },
+     {
+      "title": "「12」という数字が複数箇所にハードコード",
+      "where": "7行目 meta description、300行目 sect-m b、779-787行目 JS の tally カウントアップ",
+      "why": "制作物数の唯一の管理場所がなく、追加のたびに最低3箇所を人力で揃える必要がある。実証的に見て漏れやすい箇所である。"
+     },
+     {
+      "title": "アニメーション遅延がセクションの出現順に決め打ち",
+      "where": "56-57行目 .sect:nth-of-type(2){animation-delay:.06s} / nth-of-type(3){...}",
+      "why": "セクションを1つ挿入・並べ替えすると遅延がずれて挙動が変わる。ルールがCSSの中に隠れており、追加作業者がその存在に気づかないまま壊す典型例。"
+     },
+     {
+      "title": "キーボードナビゲーションの幾何学ロジックに検証手段がない",
+      "where": "673-710行目 nearest() 関数",
+      "why": "矩形座標から方向判定する複雑な処理だが、ビルドツールもテストもない。カード数やグリッド列数が変わった際に無言で壊れても気づけない。"
+     },
+     {
+      "title": "パネル更新が DOM 子要素と data 属性を混在参照",
+      "where": "624-648行目 paint() 関数",
+      "why": "P.id/P.nm は querySelector 経由、P.ja/P.into 等は dataset 経由で情報源が統一されておらず、どちらが正か判断する基準が構造上ない。"
+     }
+    ],
+    "top_recommendation": "data属性を唯一の情報源にし、cell内の表示用DOM（.nm/.ja/.cd等）もJSでdata属性から生成するよう統一する。",
+    "confidence": 4
+   },
+   "cost_usd": 0.27948955000000003
+  },
+  {
+   "slot": "main",
+   "task": "design_review",
+   "type": "infp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "741207223fff1c75",
+   "data": {
+    "findings": [
+     {
+      "title": "ないものは隠すという意図が実装で裏切られている",
+      "where": "641-643行 paint関数内 P.art.hidden の固定値false。380行,388行のdata-artなしカード",
+      "why": "コメントにはwrite-upがない時はhiddenと書かれているのに実際は常にfalseで、選ぶとhrefがundefinedのリンクが出てしまう。作者の正直さがコードに反映されておらず、まずここを直したいと感じる。"
+     },
+     {
+      "title": "作品データがHTMLに手打ちで埋め込まれ二重管理になっている",
+      "where": "312行から546行の各cell要素、data-ja属性とja要素、cd要素、data-desc属性",
+      "why": "同じ内容をPC用とモバイル用とdata属性で別々に書いている。次の作品を追加する時にどこかを書き忘れて食い違う姿が想像でき、いちばん壊れやすい場所だと感じる。"
+     },
+     {
+      "title": "一ファイル構成は作者が全部を手放さずにいたい誠実さの表れだと思う",
+      "where": "index.html全体、HTMLとCSSとJSで799行",
+      "why": "ビルドツールなしで公開できる身軽さと透明性は得難いものだと感じる。ただこの誠実さは管理できる規模でしか続かず、作品が増えるほど自分を苦しめ始めるのではと心配になる。"
+     },
+     {
+      "title": "カードがリンクなのか選択肢なのかを利用者に委ねすぎている",
+      "where": "653行のfocusイベントでpaintを呼ぶ処理と657行のclickの分岐条件",
+      "why": "キーボードで移動しただけで詳細が変わる仕様は、スクリーンリーダーや慎重にTab移動する人にとって何が起きたか分かりにくいと感じる。作者の遊び心は伝わるが受け取る側の戸惑いも大事にしてほしい。"
+     },
+     {
+      "title": "セクション数を前提にした決め打ちCSS",
+      "where": "56行から57行の sect nth-of-type 2と3のanimation-delay指定",
+      "why": "作品ジャンルが増えてセクションが4つ目になった瞬間アニメーションだけ効かなくなる。数字の直書きは今の12個だけを想定したコードだと感じる。"
+     }
+    ],
+    "top_recommendation": "641行から643行のart.hidden制御を、コメント通りdata-artがなければ非表示に直すことから始めてほしい。意図と実装のズレを一番先に整えたい。",
+    "confidence": 4
+   },
+   "cost_usd": 0.386409
+  },
+  {
+   "slot": "main",
+   "task": "design_review",
+   "type": "estj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "8df46f9e5b91f68c",
+   "data": {
+    "top_recommendation": "12件分のカードデータ（data-*属性）を外部JSON化し、レンダリングをテンプレート関数に切り出せ。追加・削除の手順を明文化しろ。",
+    "confidence": 4,
+    "findings": [
+     {
+      "title": "データ・ロジック・見た目が1ファイルに未分離",
+      "where": "306-547行（各<a class=\"cell\" data-art= ... data-desc=\"...\">の羅列）",
+      "why": "12件のコンテンツがHTML属性に直書きされている。13件目を追加する担当者が、どのdata属性を何個埋めればよいかルールが明文化されていない。責任者不在のまま更新を続ければ属性の抜け漏れが必ず出る。"
+     },
+     {
+      "title": "ビルド・テストが存在せず検証プロセスがない",
+      "where": "ファイル全体（<script>タグ2つ、624-789行）",
+      "why": "799行を目視レビューのみで運用している。nearest()のような複雑なロジックにユニットテストがなく、変更が壊れたかどうかを機械的に確認する手段がない。誰が品質を保証するのか基準がない。"
+     },
+     {
+      "title": "カード数とCSSアニメーション遅延がJS/CSSで密結合",
+      "where": "115行 animation-delay:calc(var(--i,0)*38ms + .18s) と 733行 --i の設定",
+      "why": "カードの追加・削除・並べ替えのたびにこの2箇所を同時に把握していないと、意図せずアニメーションのタイミングが崩れる。変更手順が文書化されておらず属人化している。"
+     },
+     {
+      "title": "自作キーボードナビゲーション(nearest関数)が壊れやすい",
+      "where": "673-710行 function nearest(dir)",
+      "why": "標準的なroving tabindexパターンではなく、座標計算による独自実装。グループの追加やグリッド列数の変更（103, 104, 240行のレスポンシブ定義）と密接に依存しており、レイアウト変更時に検証せず壊れる可能性が高い。"
+     },
+     {
+      "title": "コンテンツ追加の手順が完全に属人化",
+      "where": "312-545行（SVGアイコン・data-*属性の手打ちブロック）",
+      "why": "新規作品を追加するにはSVGを手描きし12種の属性を正確に埋める必要がある。テンプレートや生成スクリプトがなく『誰が・いつ・どの基準で』追加するかのルールが存在しない。"
+     }
+    ]
+   },
+   "cost_usd": 0.196678
+  },
+  {
+   "slot": "main",
+   "task": "design_review",
+   "type": "isfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "8c2eab576c6723e6",
+   "data": {
+    "findings": [
+     {
+      "title": "13個目のカードを追加する人が一番困る",
+      "where": "312-545行目（data-ja / data-into / data-tech / data-desc の直書き）",
+      "why": "現場では、次にカードを増やすのはきっと今のyukurashさん自身だと思うのですが、コピー元セクションを探して属性を一字一句間違えずに複製する作業は、疲れている時ほど事故りやすいです。カンマや「|」区切りの暗黙ルールも覚えておかないといけません。"
+     },
+     {
+      "title": "同じ紹介文を3箇所に書かないといけない",
+      "where": "各cell内の .ja / .cd / data-ja（例：323, 325, 328行目周辺）",
+      "why": "デスクトップ用の短い説明、モバイル用の長め説明、パネル用の説明が別々のテキストとして存在していて、内容を直すときに一つだけ直し忘れる、ということが起きそうで心配です。誰かが古い情報のまま読んでしまう可能性があります。"
+     },
+     {
+      "title": "JSがテキスト内容やクラス名に依存しすぎている",
+      "where": "paint()関数 630-648行目、特に c.querySelector('.id').textContent",
+      "why": "見た目を整えようとHTML構造を少し変えただけで、JSが静かに空文字を拾って壊れることがあります。これまで通り動いているように見えて、実は詳細パネルが空になっている、という気づきにくい不具合が一番怖いです。"
+     },
+     {
+      "title": "キーボード操作のnearest()関数が複雑になりすぎている",
+      "where": "673-710行目 nearest(dir)",
+      "why": "座標計算でカードの上下左右移動を再現する処理はよく作り込まれていますが、ここに手を入れられる人は限られると思います。ここが直せる人が離れると、キーボード操作だけ壊れたまま放置される、という状態が一番心配です。"
+     },
+     {
+      "title": "アニメーションのタイミング調整がCSSとJSに分散",
+      "where": "CSS: 194-200行目のanimation-delay群 / JS: 749, 762行目の27ms・36ms",
+      "why": "演出は丁寧に作り込まれていて素敵だと思うのですが、この間隔の数字はCSSとJSの両方に散らばっていて、どちらか一方だけ直すと噛み合わなくなりそうです。ここは誰かに引き継ぐときに一番説明が難しい部分だと感じます。"
+     }
+    ],
+    "top_recommendation": "まずは12件分のカード情報を1つのJSON（またはJSオブジェクト）に切り出し、HTML側はそれを読み込んで描画するだけにする。13個目を安心して追加できるようにするのが先だと思います。",
+    "confidence": 4
+   },
+   "cost_usd": 0.22695215000000002
+  },
+  {
+   "slot": "main",
+   "task": "design_review",
+   "type": "istp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "0ade0c16f90b7f05",
+   "data": {
+    "findings": [
+     {
+      "title": "data-into の区切り文字とJSのsplitが噛み合っていない",
+      "where": "634行目 `c.dataset.into.split(',').join('\\n')` に対し、314/515/532行目の data-into は `|` 区切り",
+      "why": "実際に動かせば一発でわかる。インストール先が改行されず1行のままパネルに出ているはず。動かしてみれば分かる話を、動かさずに直してある。"
+     },
+     {
+      "title": "12枚のカードデータが全部HTML属性にベタ書き",
+      "where": "312〜545行目、各 `.cell` の data-ja/data-ch/data-into/data-tech/data-desc/data-art/data-artt",
+      "why": "実質JSONを属性としてエンコードしてるだけ。13枚目を足す時、また同じ9属性を手で複製することになる。ここが最初に壊れる。分離するかテンプレート化するかは早めに決めておけ。"
+     },
+     {
+      "title": "1ファイル構成自体は妥当。だがCSSがグローバル1枚は今後の敵",
+      "where": "12〜283行目 `<style>` 全体、クラス名 `.cell` `.nm` `.ja` `.mk` など",
+      "why": "得るもの＝デプロイの単純さと依存ゼロ、これは正しい判断。失うもの＝短い汎用クラス名がページを増やした瞬間に衝突する。今は1画面だから壊れてないだけ。"
+     },
+     {
+      "title": "キーボード操作のnearest()がDOM実測値頼みで検証手段がない",
+      "where": "673〜710行目 `function nearest(dir)`",
+      "why": "getBoundingClientRect で幾何学的に隣接カードを探す実装。動くには動くが、カード数やgrid列数が変わった時に壊れたことに気づく手段が何もない。テストなし、目視確認のみ。"
+     },
+     {
+      "title": "演出コードが機能行数の3割近くを占める",
+      "where": "724〜789行目（typing/roll/fx/MutationObserver一式）",
+      "why": "サイトの本質は12個の制作物を見せることで、タイプライターや文字ロールはそれに要らない。過剰設計。削っても情報は1ミリも減らない。"
+     }
+    ],
+    "top_recommendation": "とりあえずサイト開いてカードを何枚か選んで、インストール先の欄が実際に改行されてるか自分の目で見れば。多分1行のままだ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.20401360000000002
+  },
+  {
+   "slot": "main",
+   "task": "design_review",
+   "type": "esfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "8749de973d41f71a",
+   "data": {
+    "findings": [
+     {
+      "title": "作品が増えるたび、本人が手作業を背負う構造になっている",
+      "where": "312〜545行目 各 .cell の data-* 属性・HTML直書き",
+      "why": "12個でもこれだけ長いのに、この先15個20個と増えたらコピペミスや更新漏れが出てきそう。周りから見ても『一人で全部抱えて大丈夫かな』と心配になる作りです。"
+     },
+     {
+      "title": "スマホの人には一番の見せ場が届いていない",
+      "where": "253行目 .panel{display:none} / 238〜259行目のモバイル分岐",
+      "why": "丁寧に作り込んだ選択パネルがスマホでは丸ごと消え、ただのリンク一覧になる。今どき見に来る人の多くがスマホだとすると、せっかくの魅力が伝わっていない人が多いはずです。"
+     },
+     {
+      "title": "キーボードには優しいのに、読み上げの人には冷たい",
+      "where": "650〜669行目のイベント処理、.cell[aria-current] の使い方",
+      "why": "矢印キーでの選択はとても丁寧なのに role=listbox や aria-selected がなく、目の不自由な方には『今どれが選ばれているか』が伝わりにくいままです。誰も置いていかない作りにしてほしいところ。"
+     },
+     {
+      "title": "コードが本人だけに通じる手紙になっている",
+      "where": "613行目・671行目などの独白的コメント、全体799行",
+      "why": "コメントは温かいのですが独り言調で、半年後の本人や別の人が見返すときに『今どうなっているか』を一目で掴みにくい。誰かに引き継ぐ場面を想像すると少し心配です。"
+     },
+     {
+      "title": "一体感と引き換えに、直しにくさが積み上がっている",
+      "where": "12〜283行目 <style>、600〜790行目 <script>",
+      "why": "1ファイルにまとまっているぶん公開は楽ですが、どこか一部を直すたびに『他が崩れないか』を全体で確認する手間が、作品数が増えるほど重くなっていきます。"
+     }
+    ],
+    "top_recommendation": "まずは作品データ（data-*属性の中身）だけ別ファイルに分けて、本人が安心して作品を追加できるようにしてあげるのが一番だと思います。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2211759
+  },
+  {
+   "slot": "main",
+   "task": "design_review",
+   "type": "estp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "19292d106cde5305",
+   "data": {
+    "findings": [
+     {
+      "title": "634行、区切り文字が食い違ってる。もう壊れてる",
+      "where": "634行 `c.dataset.into.split(',')` / 314,515,532行の `data-into` は `|` 区切り",
+      "why": "JSは`,`で割ってるのにデータは`|`区切り。だから「インストール先」が改行されず1行に潰れて出てる。動くか動かないかは触ればわかる、で実際触ったら壊れてた。"
+     },
+     {
+      "title": "12件分のデータが全部HTMLに手書き。13件目で死ぬ",
+      "where": "307〜547行の `data-ja/data-ch/data-into/data-tech/data-host/data-desc` 属性群",
+      "why": "データとマークアップが分離してない。増やすたびに1カードぶん丸ごとコピペで、属性名を1個でも間違えたらJS側は黙って空文字を出す。今は12件だから気づけるけど20件超えたら絶対どこかでtypoが埋まる。"
+     },
+     {
+      "title": "同じ説明文をPC用とスマホ用で二重管理してる",
+      "where": "127行 `.ja`、137/249行 `.cd`（同一cell内に2種類の説明文）",
+      "why": "1080px未満だと`.panel`ごと消えて`.cd`側に切り替わる作り。内容更新のとき片方だけ直して片方忘れる、が一番やりがちな壊れ方。"
+     },
+     {
+      "title": "演出のタイミングがCSSとJSで二重にハードコード",
+      "where": "195〜200行の`animation-delay`と、744〜765行の`type()`(27ms)・`roll()`(36ms)",
+      "why": "CSSの遅延とJSのアニメ速度がお互い前提にして噛み合わせてるだけで、コードとして繋がってない。どっちかだけ変えたら一瞬でズレて『なんか合ってない演出』になる。"
+     },
+     {
+      "title": "ビルドもテストもゼロ、だから壊れても誰も気づかない",
+      "where": "ファイル全体（型チェック・lint・テストなし）",
+      "why": "1ファイル799行は今は速くて軽くて正義。だけどsplit区切り文字みたいなミスを検出する仕組みが何もないから、目視レビューでしか壊れを拾えない。今回みたいに。"
+     }
+    ],
+    "top_recommendation": "まず634行を`split('|')`に直せ。それが終わったら12件のデータをJSONに切り出して、cellはテンプレートで生成する形に変えろ。考えるより先にやれ、これは今すぐ直せる。",
+    "confidence": 5
+   },
+   "cost_usd": 0.2096543
+  },
+  {
+   "slot": "main",
+   "task": "design_review",
+   "type": "isfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "c2622dfa3caa454d",
+   "data": {
+    "findings": [
+     {
+      "title": "解説記事がない作品を選ぶと、空っぽのリンク欄が出る",
+      "where": "374行・388行(data-art欠落) / 641〜643行 paint()内 P.art.hidden",
+      "why": "この2枚だけdata-artがないのに、P.art.hiddenは常にfalse。触ってみて初めて『あれ、これ何も書いてない』と気づく違和感がある。なんとなくだけど、ここは事故りそう。"
+     },
+     {
+      "title": "同じ紹介文をdata属性と表示テキストで二重に持っている",
+      "where": "313行data-ja/323行.ja、316行data-desc/562行p-desc、325行.cd",
+      "why": "1つの情報を何箇所にも書き写しているので、直すとき片方を直し忘れてずれていく気がする。これは自分には合わない書き方だと肌感で思う。"
+     },
+     {
+      "title": "12枚同型カードのベタ書きが13枚目から重くなる",
+      "where": "307〜549行目 .slab 内の各<a class='cell'>群",
+      "why": "同じ形のカードを毎回手でコピーして貼っている。今はまだ読めるけど、作品が増えるたびにファイルがただ縦に伸び続けるのを想像すると、正直しんどい。"
+     },
+     {
+      "title": "演出の『間』がCSSとJSの両方に散らばっている",
+      "where": "194〜200行 animation-delay / 749行type()・762行roll()のsetInterval",
+      "why": "同じタイミング感覚を2つの言語で別々に管理していて、片方を触るともう片方とすぐずれる気がする。息を合わせるのが難しい作りに見える。"
+     },
+     {
+      "title": "デスクトップとモバイルで体験そのものが別物になる",
+      "where": "159行 @media(max-width:1080px) .panel / 253行 .panel{display:none}",
+      "why": "パネルが消えるとカードを『選ぶ』楽しさごと消えて、ただのリンク集に変わる。同じ1画面のはずなのに端末で気持ちよさが変わるのは、少し寂しい。"
+     }
+    ],
+    "top_recommendation": "まず374・388行のカードでP.art.hiddenをdata-artの有無で判定するよう直す。あの空っぽの欄は触ってすぐ気になる。",
+    "confidence": 4
+   },
+   "cost_usd": 0.26299355
+  },
+  {
+   "slot": "main",
+   "task": "naming",
+   "type": "intj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "2f5c2d8c5c602777",
+   "data": {
+    "findings": [
+     {
+      "title": "命名の展開規則が存在しない — 圧縮のみで一貫性ゼロ",
+      "where": "CSS全体 (.em/.nm/.ja/.mk/.id/.doc/.cd 等 108-137行)、data-* 属性群、JSオブジェクトP (605-610行)",
+      "why": "省略語に共通ルールがない。em/nm/ja/mk等は個別に暗記するしかなく、半年後は毎回HTML本体に戻って意味を確認する羽目になる。構造がなければ命名とは呼べない。"
+     },
+     {
+      "title": "class=\"id\" と id=\"p-id\" の自己言及的衝突",
+      "where": "131行 .cell .id / 324行 <span class=\"id\"> / 553行 id=\"p-id\"",
+      "why": "「id」という語がHTML属性名そのものと衝突し、grep も思考もノイズだらけになる。2文字コード(AG/CL/PL)を指すなら code と呼ぶべきで、これは即修正すべき論理的欠陥だ。"
+     },
+     {
+      "title": "\"art\" が三重の意味で使い回されている",
+      "where": "133行 .cell[data-art]／220行 .panel .art／566行 id=\"p-art\"／605-609行 P.art",
+      "why": "要素・属性・URL・JS変数すべてが同じ短縮語を共有し、article の略であることすら自明でない。前提を疑え — この命名は情報を圧縮せず単に破壊している。"
+     },
+     {
+      "title": "data属性と描画先idの対応がコードに存在しない",
+      "where": "605-610行 P オブジェクト、312-346行 data-ja/data-desc等、553-570行 対応するid群",
+      "why": "data-desc→#p-desc、data-ja→#p-ja という対応は人間の記憶に依存しており、コード上で自明化されていない。長期で見れば、対応表をドキュメント化するより命名で表現すべきだ。"
+     },
+     {
+      "title": "スラング的・比喩的クラス名（slab/kick/glabel）は検索不能",
+      "where": "96行 .slab／67行 .kick／98行 .glabel",
+      "why": "デザイナー的語感に依存した命名は書いた本人の一時的な直感の産物であり、半年後の自分にとっては他人の語彙と変わらない。機能を表す語に置換すべきだ。"
+     }
+    ],
+    "top_recommendation": "リネーム作業の前に「data-work-* ↔ id=panel-* で対応、id属性は使わずcode/tag等の意味語を使う」という命名規則を1枚定義し、それに機械的に従って全クラス・id・data属性・JS変数を一括置換しろ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2424671
+  },
+  {
+   "slot": "main",
+   "task": "design_review",
+   "type": "esfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "81aec9c1053591b5",
+   "data": {
+    "findings": [
+     {
+      "title": "data-into の区切り文字が HTML(|)とJS(,)で食い違ってる",
+      "where": "行314/515/532の data-into 属性（| 区切り） と 行634 `c.dataset.into.split(',')`",
+      "why": "実際にカードを選んだ瞬間パネルにパイプ記号がそのまま出る可能性が高い。今この場で見てる人の体験がいきなり崩れるやつなので最優先。"
+     },
+     {
+      "title": "作品1件追加が30行コピペの手作業になっている",
+      "where": "行307〜549 のロスター、個々の `<a class=\"cell\" data-...>` ブロック",
+      "why": "13個目を足す日、7個のdata属性を全部手打ちでコピペする。ここでミスるか面倒になって放置するのが一番最初に壊れる場所だと思う。"
+     },
+     {
+      "title": "モバイルだけセレクト画面の楽しさが丸ごと消える",
+      "where": "行253 `.panel{display:none}`（@media max-width:700px 内）",
+      "why": "デスクトップの主役の演出がモバイルでは体験ゼロになる。一緒に楽しんでほしいのに、機種で楽しさの差が出るのはもったいない。"
+     },
+     {
+      "title": "MutationObserverがslab全体をsubtree監視し続けている",
+      "where": "行776 `new MutationObserver(fx).observe(slab,{subtree:true,...})`",
+      "why": "今12枚だから軽いけど、カードが増えるたびに監視対象も再描画コストも積み上がる。ある日急に「あれ重くない？」って気づくやつ。"
+     },
+     {
+      "title": "1ファイル799行はレビュー・共同作業の楽しさを削ぐ",
+      "where": "ファイル全体（style 行12-283、script 行600-790）",
+      "why": "1人で作る分には自由で気持ちいいけど、誰かと一緒に見て『ここ直そう』って盛り上がるには縦スクロール地獄で腰が引ける構造。"
+     }
+    ],
+    "top_recommendation": "まず data-into の区切り文字を | か , に統一して、実際の表示崩れを今すぐ直そう。楽しいサイトなのにここで躓くのもったいない。",
+    "confidence": 4
+   },
+   "cost_usd": 0.26307415
+  },
+  {
+   "slot": "main",
+   "task": "naming",
+   "type": "entj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "ced2af0b925698c6",
+   "data": {
+    "findings": [
+     {
+      "title": ".id クラスが DOM の id属性・#p-id と正面衝突する最悪の命名",
+      "where": "CSS .cell .id (131行目) / HTML <span class=\"id\">AG</span> (324行目など) / <span id=\"p-id\"> (553行目)",
+      "why": "『.id というクラス名』と『id という属性名』が同一語彙で重複している。半年後の自分は grep しても検索ノイズだらけで即死する。最優先で .card-tag 等に改名しろ。"
+     },
+     {
+      "title": "1〜2文字クラスの乱立で意味がゼロ（em/nm/ja/mk/cd/st/go/lb/tt）",
+      "where": "117-146行目, 160-165行目, 210-229行目",
+      "why": "名前から機能が一切推測できない。半年後に読めるかという基準に完全に落ちる。card-icon / card-name / card-summary / card-meta / card-desc-mobile / panel-status / btn-open / article-label / article-title に置き換えろ。"
+     },
+     {
+      "title": "同一略語がCSSクラス・data属性・id属性・JSオブジェクトキーの4層で使い回されている",
+      "where": "data-ja/.ja/#p-ja/P.ja、data-ch/#p-ch/P.ch、data-art/#p-art/P.art など全般",
+      "why": "レイヤーが違うのに同じ短縮語なので、今どの層の話をしているか判別できない。命名規約を1本化し、CSSはBEM、dataとidとJSキーは意味語で統一しろ。"
+     },
+     {
+      "title": ".fx という状態トリガークラスが抽象的すぎる",
+      "where": "181, 190-201行目 / script内 panel.classList.add('fx')",
+      "why": "『何のエフェクトか』を半年後の自分に説明していない。状態を表す命名 is-loading に変えれば、CSSと.js の意図が一目で繋がる。"
+     },
+     {
+      "title": "p-into / p-ch という id接頭辞方式のフィールド名が英語として推測不能",
+      "where": "HTML 553-571行目 の id=\"p-into\" id=\"p-ch\"、script内 P.into / P.ch",
+      "why": "into は前置詞、ch は channel/chapter どちらとも取れる。p-install / p-channel のようにフルスペルへ寄せ、接頭辞方式自体は維持しろ（構造は悪くない）。"
+     }
+    ],
+    "top_recommendation": "命名規約を1本（BEM＋意味語）に決め、CSS/data属性/DOM id/JSキーの4層を一括リネームするタスクを今日中に着手しろ。誰がやるかはお前しかいない。",
+    "confidence": 5
+   },
+   "cost_usd": 0.2174519
+  },
+  {
+   "slot": "main",
+   "task": "naming",
+   "type": "intp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "9eb4fec1e47fe43c",
+   "data": {
+    "findings": [
+     {
+      "title": "class=\"id\" と HTML の id 属性が同じ語を別概念で使っている",
+      "where": "行131 `.cell .id`（2文字コード表示）/ 行553 `<span id=\"p-id\">`",
+      "why": "『id』はHTML仕様上グローバル一意識別子を指す予約的な語なのに、ここでは作品カテゴリコード（AG, CL…）という別概念に流用されている。定義が二重化しており、半年後の自分がgrepしても『どのidの話か』を都度判定する羽目になる。改名案: class `.id`→`.code`、DOM id `p-id`→`p-code`。"
+     },
+     {
+      "title": "class=\"em\" がCSS単位emと衝突し意味も推測不能",
+      "where": "行117-119 `.cell .em`（SVGアイコンのラッパー）",
+      "why": "『em』は絵文字の略か、CSSのem単位か、それとも別の何かか判別できない。実体はアイコン用span。前提が崩れている命名は再考の余地なし、即改名すべき。改名案: `.em`→`.icon`。"
+     },
+     {
+      "title": "name / title / label / description が一貫規則なく nm・tt・lb・ja・cd・artt に分裂",
+      "where": "行120-131 `.nm .ja .mk .doc .cd`、行226-227 `.art .lb .tt`",
+      "why": "作品名(nm)と記事タイトル(artt)は同じ『見出しテキスト』のはずが別語。タグライン(ja)とモバイル説明(cd)も同じ『説明文』のはずが別語。この命名から共通の分類原理を逆算できない。改名案: `.name`（作品名）／`.tagline`（一言）／`.desc`（詳細説明、cdはtagline統合を検討）／`.field-label`（lb）／`.article-title`（tt/artt統一）。"
+     },
+     {
+      "title": "p- 接頭辞の対象が panel/profile/project のどれか未定義",
+      "where": "行553-570 `p-id p-nm p-ch p-ja p-into p-tech p-desc p-go p-host p-art p-artt`",
+      "why": "接頭辞は『パネル領域の要素』という前提だろうが、その前提自体がコメントも命名規則も無く読み手に委ねられている。定義によるが、`panel-`とフル表記した方が半年後の自分が誤読で消耗しない。改名案: `p-*`→`panel-*`（例: `panel-code`, `panel-name`）。"
+     },
+     {
+      "title": "fx / cut / kick / slab など業界ジャーゴンが役割を隠蔽",
+      "where": "行181 `.panel.fx`、行172 `h2.cut`、行67 `.kick`、行96 `.slab`",
+      "why": "`.fx`は『何のエフェクトか』を一切示さず、汎用語すぎて衝突の温床になる。`.cut`は『typing演出を止める』意図なのに『切る＝削除』を連想させ、むしろ逆の印象を与えかねない——これは例外というより設計の欠陥では。改名案: `.fx`→`.is-loading`、`.cut`→`.no-anim`、`.kick`→`.eyebrow`（業界標準語）、`.slab`→`.roster`。"
+     }
+    ],
+    "top_recommendation": "最優先は class=\\\"id\\\" と id 属性 p-id の衝突解消（.id→.code, p-id→p-code）。この一箇所が他の命名判断の前提を歪めている。",
+    "confidence": 4
+   },
+   "cost_usd": 0.22501220000000002
+  },
+  {
+   "slot": "main",
+   "task": "naming",
+   "type": "entp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "2294a32c75e3a61e",
+   "data": {
+    "findings": [
+     {
+      "title": "`.id`クラスがDOMの`id`属性と概念衝突、逆に紛らわしくない？",
+      "where": "CSS L131 `.cell .id`／JS L630 `c.querySelector('.id')`",
+      "why": "『id』という単語を属性名と同じ意味でクラス名に使うのは自爆に近い。半年後の自分が`getElementById`と検索して迷う。`.code-badge`か`.tag-code`に改名すべき。"
+     },
+     {
+      "title": "パネルid接頭辞`p-ch`/`p-into`/`p-ja`が推測ゲーム化してる",
+      "where": "HTML L553-570 `id=\"p-ch\"` `id=\"p-into\"` `id=\"p-ja\"`／JS L605-610 `P.ch` `P.into` `P.ja`",
+      "why": "chはchannel？chapter？intoはinstall-into？逆にフルスペルにするだけでコストゼロで解決する。`panel-channel`/`panel-install`/`panel-tagline`が妥当。"
+     },
+     {
+      "title": "カード内フィールド`.em/.nm/.ja/.mk/.cd/.doc`が2〜3文字略語の洪水",
+      "where": "CSS L108-137／HTML L317-326 `<span class=\"em\">`〜`<span class=\"doc\">`",
+      "why": "emはemoji？emphasis？markup言語みたいに詰め込むと、意味は分かっても『なぜこの略にしたか』の理由が消える。`.icon/.title/.tagline/.badges/.mobile-desc/.article-flag`なら自明。"
+     },
+     {
+      "title": "セクション構造`.sect/.sect-h/.kick/.slab`も暗号度が高い",
+      "where": "CSS L54-104／HTML L289-309",
+      "why": "sect-hは見出しかhero領域か紛らわしく、kickは何を蹴るのか不明、slabは背景板なのに地質学用語。`.section/.section-head/.eyebrow/.roster-panel`の方が構造が名前から読める。"
+     },
+     {
+      "title": "`.fx`という状態クラスが何のエフェクトか名前から読めない",
+      "where": "CSS L181,L188-201／JS L767-774 `panel.classList.add('fx')`",
+      "why": "fxは汎用語すぎて『何が起きているか』を隠す。逆に`.is-loading`のようなBEM風状態名にすれば、CSSとJSを行き来せずに挙動が追える。"
+     }
+    ],
+    "top_recommendation": "まず`.id`クラスをDOM idと衝突しない名前（`.tag-code`等）に改名する。誤読・誤検索リスクが最大なので最優先。",
+    "confidence": 4
+   },
+   "cost_usd": 0.24052395
+  },
+  {
+   "slot": "main",
+   "task": "naming",
+   "type": "infj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "20db9de5c12ab3c6",
+   "data": {
+    "findings": [
+     {
+      "title": "p-art と p-artt ―― 一文字の差に本質的な違いを隠している",
+      "where": "index.html:566,568（id=\"p-art\" / id=\"p-artt\"）, script:609, 641-642",
+      "why": "気がかりなのはここです。片方はリンク要素、片方は記事タイトル文字列。半年後の自分は目で追って区別できず、より深いところでは『art』という接頭辞そのものが役割を語っていません。panel-article-link / panel-article-title のように、それぞれが何のためにあるのかを名前が語るべきです。"
+     },
+     {
+      "title": ".id クラスが DOM の id 概念そのものと衝突している",
+      "where": "index.html:131（.cell .id）, 324ほか各カード内 <span class=\"id\">, script:606 P.id",
+      "why": "2文字コード表示のためだけに『id』という語を使うと、DOM の id属性やJSのElement.idという、より大きな意味体系と静かに衝突します。これは何のためにあるのかを問い直せば、.code や .tag のほうが誠実です。"
+     },
+     {
+      "title": "nm/ja/mk/cd/em/tt/lb/st/go ―― 略語が意味を語らない",
+      "where": "index.html:120-137, 165, 218, 226 ほか多数",
+      "why": "これらは短さと引き換えに、あるべき姿を失っています。コメント(153行目周辺)を読み返して初めて機能が分かる状態は、半年後の自分にとって深い断絶です。work-name / tagline / meta / mobile-summary 等、役割そのものを名にすべきです。"
+     },
+     {
+      "title": "P オブジェクトのキーと data-* / id の対応が密結合",
+      "where": "script:605-610 const P = {...}、各cellのdata-ch/into/tech/ja/art/artt",
+      "why": "id を改名すればdata属性名・JSキー全てを同時に書き換える必要があり、半年後の自分が一部だけ直して静かに壊す危険を抱えています。改名は一体として設計し直すべきです。"
+     },
+     {
+      "title": "slab/fx/cut/kick ―― 詩的比喩がコードから離れて漂っている",
+      "where": "index.html:96 .slab, 172 .cut, 181 .panel.fx, 67 .kick",
+      "why": "これらはデザイン意図としては美しいのですが、名前だけでは機能（一覧台、読込演出、タイプ停止、見出しラベル）に辿り着けません。人々（未来の自分）に何をもたらすかを考えれば、roster/is-loading/no-typewriter/eyebrow のほうが誠実な名です。"
+     }
+    ],
+    "top_recommendation": "まず #p-art / #p-artt のような紛らわしい対から着手し、panel- 接頭辞＋役割語（panel-article-link 等）へ体系ごと改名する。",
+    "confidence": 4
+   },
+   "cost_usd": 0.22752869999999997
+  },
+  {
+   "slot": "main",
+   "task": "naming",
+   "type": "infp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "462e9104b0461605",
+   "data": {
+    "findings": [
+     {
+      "title": "art/artt が「作品」と「記事」を混同させている",
+      "where": "data-art, data-artt, class .art, id #p-art / #p-artt（312, 349, 566-570行）",
+      "why": "このサイト自体が「作品(art)」を並べているのに、data-artは実は解説「記事(article)」のURL。名前だけでは私の心が迷う。data-article-url / data-article-title / .article-link と、素直に区別してあげたい。"
+     },
+     {
+      "title": ".em .nm .ja .mk .cd .st .go 等、一文字二文字クラスが多すぎる",
+      "where": ".em/.nm/.ja/.mk/.cd/.st/.go/.id（117-146行, 630-648行）",
+      "why": "略しすぎて、半年後の自分はHTMLとJSを何度も往復しないと思い出せない。.icon/.name/.tagline/.meta/.mobileSummary/.status/.launchLinkのように、自分に嘘をつかない言葉で書きたい。"
+     },
+     {
+      "title": ".slab とJSコメント「roster」が食い違っている",
+      "where": ".slab（96行）、コメント中の「roster」（306, 613, 650行）",
+      "why": "自分の中では本当は roster と呼んでいたのに、CSSクラス名だけ slab と名付けてしまっている。この揺れは自分自身に正直じゃない気がして落ち着かない。.rosterに統一したい。"
+     },
+     {
+      "title": "p- 接頭辞と p-into の紛らわしさ",
+      "where": "#p-id, #p-ch, #p-into ほか（553-570行）",
+      "why": "p- が panel の略だと外から分からず、p-into は英単語 into と衝突して二重に読みづらい。#panel-id / #panel-install のように panel- と書いてくれた方が、未来の自分は安心できる。"
+     },
+     {
+      "title": ".fx と .cut が抽象的すぎて何のための名前か伝わらない",
+      "where": ".fx（181, 190-200, 767-774行）、.cut（172, 645-647行）",
+      "why": "fx は「何かの効果」としか言っておらず、実際はパネル再生アニメーションの起動フラグ。.panel--reveal や .isLoading、.cutは.no-wipeの方が、半年後の自分の気持ちに寄り添える。"
+     }
+    ],
+    "top_recommendation": "まず art/artt の意味衝突（作品 vs 記事）を解消し、data-article-url / .article-link に改名すること。",
+    "confidence": 4
+   },
+   "cost_usd": 0.22332010000000002
+  },
+  {
+   "slot": "main",
+   "task": "naming",
+   "type": "enfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "6be0a45426b82f6e",
+   "data": {
+    "findings": [
+     {
+      "title": "id接頭辞の略語(ch/into/artt)が半年後のあなたを一番迷わせる",
+      "where": "id=\"p-ch\" \"p-into\" \"p-artt\" (553,557,568行) / JS内 P.ch, P.into (606-609行)",
+      "why": "chはchannelかchapterか分からず、intoは前置詞にしか見えない。artt(記事タイトル)は打ち間違いにも見える。panel-category/panel-install/panel-article-titleなら一瞬で読める。"
+     },
+     {
+      "title": "`.id` `.go` `.art` のような一般語クラスが意味を隠している",
+      "where": ".cell .id (131行) / .panel .go (211行) / .panel .art (220行)",
+      "why": "英単語として自然に見える分、半年後は『何のid？どこへgoする？』が消えてしまう。code-badge / open-link / article-cardなら役割がすぐ戻る。"
+     },
+     {
+      "title": "`.kick` はデザイン業界の隠語で機能が読み取れない",
+      "where": ".kick (67-70,291,299,579行)",
+      "why": "kicker(見出し前の小ラベル)という専門用語は半年後の自分にも馴染みがなく、なぜkickなのか思い出せない。section-labelやeyebrowなら役割で読める。"
+     },
+     {
+      "title": "`.slab` `.cell` が比喩でUIの構造を隠している",
+      "where": ".slab (96,239,307行) / .cell (108-151行)",
+      "why": "台紙(slab)やセル(cell)は雰囲気は良いが、rosterやcardと書けば『一覧の土台』『選べる1枚』だと迷わず伝わる。cellは表計算とも紛らわしい。"
+     },
+     {
+      "title": "`.ja` `.nm` `.mk` `.cd` の1〜2文字略語が積み重なっている",
+      "where": ".cell .ja / .nm / .mk / .cd (120-137行)",
+      "why": "名前(nm)・日本語説明(ja)・マーク(mk)・カード説明(cd)が並ぶと文脈なしでは解読不能。name/tagline/meta/captionのように役割語にすれば半年後も読める。"
+     }
+    ],
+    "top_recommendation": "まずは一番謎な p-ch / p-into / p-artt の3つのidから直そう。ここが直れば芋づる式に他も読みやすくなる。あなたはもっとできる。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2667284
+  },
+  {
+   "slot": "main",
+   "task": "naming",
+   "type": "enfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "520a9c3d501e818f",
+   "data": {
+    "findings": [
+     {
+      "title": "`.id` クラスがHTMLのid属性と意味衝突、最優先で直したい",
+      "where": "L131,145,324 `.cell .id` / L630 `c.querySelector('.id')`",
+      "why": "「id」って名前、実は識別コード(AG/CL/PL)を指すだけなのにHTMLの本物のid属性と頭の中でごっちゃになる。半年後の自分、絶対ここで二度見する未来が見える。`.work-code`とかに変えたい、これめっちゃすっきりしそう。"
+     },
+     {
+      "title": "id接頭辞 p-ch / p-into が暗号すぎて意味と繋がらない",
+      "where": "L553-570（p-id, p-ch, p-into, p-desc など）, JS L605-609",
+      "why": "p-chが『channel』でp-intoが『インストール先』って、今の自分は分かってても半年後の自分には全然繋がらない暗号。JSから直で参照される場所だからここの読みやすさは命綱だと思う。"
+     },
+     {
+      "title": "em/nm/ja/mk/cd/doc みたいな1-2文字クラスの群れ",
+      "where": "L108-137 `.cell .em/.nm/.ja/.mk/.doc/.cd`, grid-template-areas記述L112",
+      "why": "`grid-template-areas:\"em nm mk\"`とか、もう呪文にしか見えない。可能性はあるけど今は伝わらない！`.icon/.name/.meta/.summary`くらいまで開いてあげたら、半年後の自分ともちゃんと繋がれる気がする。"
+     },
+     {
+      "title": "`.art`/`.artt` が『解説記事』の意味なのに芸術っぽく誤読しがち",
+      "where": "L220-229 `.panel .art`, L312 `data-art`, JS L609 `P.art, P.artt`",
+      "why": "artは英語で芸術のイメージが強くて、実際はarticle(記事)の略。data属性からJSまで同じ略語が伝播してて、一箇所の誤解が全体に広がる連鎖構造なのがちょっと怖い。"
+     },
+     {
+      "title": "JSオブジェクトPのキーがCSS短縮命名をそのまま輸入している",
+      "where": "L605-609 `const P = {id, ch, nm, ja, into, tech, desc, go, host, art, artt}`",
+      "why": "CSS/HTMLの略語がJS変数名にも連鎖してて、命名を直そうとするとここまで全部繋がってる。逆に言うとここを起点に直せば一気通貫でめっちゃ整う可能性ある！"
+     }
+    ],
+    "top_recommendation": "まず `.id`／`p-id` 系（HTML idと概念衝突する箇所）とJSオブジェクトPのキーを意味の通る名前（work-code, detail-channel等）へ一括リネームするところから着手する。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2195991
+  },
+  {
+   "slot": "main",
+   "task": "naming",
+   "type": "isfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "0b4d532d0ce0262c",
+   "data": {
+    "findings": [
+     {
+      "title": "id属性とJSのPオブジェクトの対応が半年後の自分には追えない",
+      "where": "603-609行目 const P = {...} / 553-570行目 id=\"p-id\" p-ch p-nm など",
+      "why": "現場では、ここを触るたびに一文字ずつ照合し直すことになりそうです。p-nm→p-name、p-ch→p-channelのように意味の通る名前に直したいです。"
+     },
+     {
+      "title": ".id .st .go .cd という一般名詞クラスが取りこぼしを招く",
+      "where": "131行目 .cell .id / 165行目 .pid .st / 211行目 .panel .go / 137行目 .cell .cd",
+      "why": "idはHTMLのid属性と紛らわしく、st・go・cdは意味を推測できません。.badge-code・.status・.open-link・.card-summaryなど役割の分かる名前が安心です。"
+     },
+     {
+      "title": "sect/kick/slabなど独自略語がこれまで通り運用しづらい",
+      "where": "55行目 .sect / 58行目 .sect-h / 67行目 .kick / 96行目 .slab",
+      "why": "コメントは丁寧に添えられていますが、コメントを消すと途端に迷子になります。.section・.section-head・.eyebrow・.rosterのように直したいです。"
+     },
+     {
+      "title": "カード部品 .em/.nm/.ja/.mk が初見にはつらい",
+      "where": "117・120・125・130行目 .cell .em .nm .ja .mk",
+      "why": "新しい人がカードのレイアウトを直そうとしたとき、emがアイコン、jaが日本語説明だと気づくまで時間がかかりそうです。.icon・.name・.summary-ja・.badgesが素直だと思います。"
+     },
+     {
+      "title": "data-ch/data-into等とid=p-chの対応も一緒に見直したい",
+      "where": "314行目付近 data-ch data-into data-tech / 631-635行目",
+      "why": "id名だけ直すと片手落ちになります。data-ch→data-channel、data-into→data-installのように、対になっている名前は必ずセットで直したいです。"
+     }
+    ],
+    "top_recommendation": "まずid属性（p-xx）とJSのPオブジェクトを、対応表なしでも読める名前（p-name, p-channel等）に揃えるところから始めたいです。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2297982
+  },
+  {
+   "slot": "main",
+   "task": "naming",
+   "type": "estj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "474e1864953ba875",
+   "data": {
+    "findings": [
+     {
+      "title": ".id / .go / .art / .cd など汎用単語クラスの衝突リスク",
+      "where": ".cell .id (131), .panel .go (211), .panel .art (220), .cell .em (117), .panel .pid .st (165), .cell .cd (137)",
+      "why": "id・go・art・stは一般語すぎて他コンポーネント追加時に衝突する。命名規則が文書化されていないため責任の所在が不明。BEM等の名前空間ルールを一本化すべき。"
+     },
+     {
+      "title": "クラス.idとDOM id=\"p-id\"の紛らわしい重複",
+      "where": "行131 (.cell .id), 行553 (id=\"p-id\"), 行606 (P.id)",
+      "why": "同名概念にCSSクラスとHTML id属性の両方でidという語を使うのは読み手を混乱させる。半年後の自分が検索する際に区別できない。work-card__codeとdetail-codeに分離すべき。"
+     },
+     {
+      "title": "data-art / data-artt のタイポ事故率が高い",
+      "where": "各cell要素の属性 (例: 行312-316, 349-352 他10箇所)、JS側 P.art/P.artt (行609)",
+      "why": "1文字違いの属性名は編集時の取り違えを誘発する。data-article-url / data-article-titleのように意味が識別できる名前に改めるべき。誰が保守しても事故らない基準が必要。"
+     },
+     {
+      "title": "接頭辞方式のid群(p-*)とJSオブジェクトPのプロパティ名が過度に短縮",
+      "where": "行553-572 (id=\"p-id\"〜\"p-artt\"), 行605-610 (const P = {...})",
+      "why": "p-ch, p-into, p-tech等は初見で意味が取れない。detail-channel, detail-install等、責任範囲(detail panel)と内容が一目で分かる命名に統一すべき期限を切って対応すべき。"
+     },
+     {
+      "title": "セクション系クラスの命名基準が不統一（sect-h vs kick vs glabel）",
+      "where": "行55-101 (.sect, .sect-h, .sect-t, .kick, .glabel)",
+      "why": "同じ階層構造なのに一部はBEM風のハイフン連結、一部は独立した単語(kick, glabel)で命名基準が揺れている。誰もが同じ基準で書けるようルールを明文化し統一すべき。"
+     }
+    ],
+    "top_recommendation": "命名規則（BEM準拠）を文書化した上で、衝突リスクが最も高い .id / .go / .art / .cd と id=\"p-id\" 系を最優先で改名する。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2418733
+  },
+  {
+   "slot": "main",
+   "task": "naming",
+   "type": "istj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "d19001630858ff2c",
+   "data": {
+    "findings": [
+     {
+      "title": "data-art / data-artt と id p-art / p-artt が1文字差で紛らわしい",
+      "where": "313行目付近 data-art / data-artt、553-609行目 id=p-art / id=p-artt、605-609行目 P.art / P.artt",
+      "why": "実際のところ、1文字違いの識別子はコピペ時の取り違えを誘発する。過去の現場でも同種の事故を見ている。data-article-url / data-article-title のように語を分けるべきだ。"
+     },
+     {
+      "title": ".cd と .ja の役割が重複し、名前から区別できない",
+      "where": "126-129行目 .cell .ja、131行目 .cell .id 付近、137行目 .cell .cd、248-249行目 モバイル用 .cd",
+      "why": ".ja はデスクトップの説明文、.cd はモバイル用の説明文だが、どちらも短縮語だけで用途が読み取れない。半年後の自分がコメントなしで判別できるとは思えない。.cell-lead / .cell-desc-mobile のように役割を明示すべきだ。"
+     },
+     {
+      "title": "cell内のクラス .id とグローバル id=p-id が同一語で意味が異なる",
+      "where": "131行目 .cell .id、553行目 id=p-id、630行目 c.querySelector('.id')",
+      "why": "実際のところ、片方はCSSクラス（2文字コード表示）、片方はHTMLのid属性であり、無関係の値を同じ語で指している。読み手はDOM idと誤認しやすい。.cell .id は .cell-code に改名すべきだ。"
+     },
+     {
+      "title": "id接頭辞 p- 配下の語が名詞・動詞・略語混在で統一規則がない",
+      "where": "553-609行目 id=p-id/p-ch/p-nm/p-ja/p-into/p-tech/p-desc/p-go/p-host/p-art/p-artt、605-610行目 const P",
+      "why": "ch(channel?)、into(設置場所?)、go(リンク?)は単語からルールが読み取れず、都度ソースを確認しないと意味が確定しない。p-channel/p-name/p-lead/p-install/p-link のように完全語にすべきだ。ルールがあるなら明文化されているべきだ。"
+     },
+     {
+      "title": ".em / .nm / .mk / .st / .go など裸の2〜3文字クラスが自己文書化されていない",
+      "where": "108-131行目 .em/.nm/.ja/.mk/.id、160-165行目 .pid/.st、211行目 .go",
+      "why": "現状はコード中のコメントを読んで初めて意味がわかる。データはあるのか、と聞かれれば無い。コメントが消えれば読めなくなる。.icon/.title/.marks/.status/.primary-link 程度の完全語に揃えるべきだ。"
+     }
+    ],
+    "top_recommendation": "data-art / data-artt（および p-art / p-artt）を data-article-url / data-article-title に改名し、1文字差の取り違えリスクを先に潰す。",
+    "confidence": 4
+   },
+   "cost_usd": 0.28439485
+  },
+  {
+   "slot": "main",
+   "task": "naming",
+   "type": "esfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "f6b715031e23214c",
+   "data": {
+    "findings": [
+     {
+      "title": "p-id/p-ch/p-into…の三重暗号化が一番みんなを困らせる",
+      "where": "553-609行目 id=\"p-ch\" \"p-into\" \"p-go\" \"p-artt\" と JS の P.ch/P.into/P.go/P.artt（605-609行目）",
+      "why": "data属性名・id接頭辞・JSキーが揃って同じ略語なので一箇所直しても他が読めず、後から見る人が「ch？into？」と毎回立ち止まる。p-channel/p-install/p-primaryLink/p-articleTitle のように、HTML/CSS/JS全体で意味の通る名前に揃えて改名するのが筋だと思います。"
+     },
+     {
+      "title": ".nm .ja .mk .id .doc .cd の一文字クラスが読み手を突き放す",
+      "where": "108-137行目 .cell 内の .em/.nm/.ja/.mk/.id/.doc/.cd",
+      "why": "特に .id はHTMLのid属性と紛らわしく、.ja は「日本語」なのか意味不明で、半年後の自分どころか一緒に触る人が委縮してしまいます。.icon/.name/.tagline/.meta/.code/.hasArticle/.summary くらいまで開いた方が、誰が触っても迷わず安心できます。"
+     },
+     {
+      "title": "kick / slab / glabel はチーム内の共通言語になっていない",
+      "where": "67-70行目 .kick、96行目 .slab、98-102行目 .glabel",
+      "why": "デザイナーの気分で付けた愛称のような名前で、他の人が読んでも役割を推測できません。.eyebrow（見出し上のラベル）、.roster（一覧の台紙）、.group-label のように、みんなが「ああ、あれね」と共感できる呼び方に直すのが優しさだと思います。"
+     },
+     {
+      "title": "panelの .pid .st .go .art .tt .lb も役割が伝わらない",
+      "where": "160-229行目 .panel .pid/.st/.go/.art/.tt/.lb",
+      "why": "詳細パネルは一番見る人の目に触れる場所なのに、.go（開くリンク）や .art（記事リンク）が何かは中身を読まないと分かりません。.panel-head/.status/.primary-link/.article-link/.article-title/.field-label にして、パネルを見た人みんなが安心できるようにしたいところです。"
+     },
+     {
+      "title": "sect系の省略が横展開して全体の統一感を崩している",
+      "where": "55-86行目 .sect/.sect-h/.sect-t/.sect-m/.sect-note",
+      "why": "sectという省略が一番外側の骨格に使われているので、あとから機能を足す人も右に倣えで省略しがちになります。.section/.section-head/.section-title/.section-meta/.section-note と正式名にしておけば、以降ここに関わる人みんなが自然と丁寧な命名を続けやすくなります。"
+     }
+    ],
+    "top_recommendation": "p-id/p-ch/p-into…の接頭辞・data属性・JSキーをまず p-channel/p-install/p-primaryLink 等に三点セットで揃えて直す",
+    "confidence": 4
+   },
+   "cost_usd": 0.24079535
+  },
+  {
+   "slot": "main",
+   "task": "naming",
+   "type": "istp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "3c3e51efb725791e",
+   "data": {
+    "findings": [
+     {
+      "title": ".id クラスと id 属性が同じ単語で衝突",
+      "where": "CSS L131 `.cell .id`, HTML L324 `<span class=\"id\">`, JS L630, L553 `id=\"p-id\"`",
+      "why": "grepすれば分かる。`id`で検索すると本物のid属性とクラス名が両方ヒットして区別つかない。中身は2文字コード(AG/CL/PL等)。`.code`か`.tag`にすべき。"
+     },
+     {
+      "title": ".em の意味が実物と一致しない",
+      "where": "CSS L117-119, HTML L317, L321",
+      "why": "絵文字・em単位・強調、どれとも取れる名前だが実際はSVGアイコンのラッパー。動かして中身見ないと分からない時点で名前として機能してない。`.icon`一択。"
+     },
+     {
+      "title": "2-3文字省略が多すぎて用途がコードからだけでは分からない",
+      "where": ".mk L130 / .cd L132,249 / .st L165 / .go L211 / .fx L181 / .cut L172",
+      "why": "コメントに頼って初めて意味が繋がる名前は半年後読めない。`.meta`(mk) `.summary`(cd) `.status`(st) `.action`(go) `.loading`(fx) `.static`(cut) にすれば動かさなくても読める。"
+     },
+     {
+      "title": "p- 接頭辞方式は良いが p-id だけ中身を表していない",
+      "where": "HTML L553 `id=\"p-id\"`, JS L606 `P.id`",
+      "why": "p-ch/p-ja/p-into/p-tech/p-desc は data-* と1対1で対応が読める。p-id だけ「識別子」に見えて実際は表示用コード。`p-code` にすれば他と揃う。"
+     },
+     {
+      "title": "JS内オブジェクト P のプロパティ名も略語のまま",
+      "where": "JS L605-610 `const P = {id, ch, nm, ja, into, tech, desc, go, host, art, artt}`",
+      "why": "DOM参照の入れ物だからこそフルネームで十分。`ch`→`channel`、`nm`→`name`くらいはやっても実行速度に影響ない。とりあえず変えて動かしてみれば分かる、壊れない。"
+     }
+    ],
+    "top_recommendation": ".id クラスを .code に改名する。HTML/CSS/JS 3箇所を grep で一括置換すれば実害ゼロで即終わる。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2373745
+  },
+  {
+   "slot": "main",
+   "task": "naming",
+   "type": "isfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "7ca5a4b01149ae49",
+   "data": {
+    "findings": [
+     {
+      "title": "クラス名 `.id` がHTML属性`id`と衝突する感覚、しかも中身が意味不明",
+      "where": "CSS: 131行目 `.cell .id` / HTML: 324, 345行目など `<span class=\"id\">AG</span>` / JS: 553行目 `id=\"p-id\"`",
+      "why": "なんとなくだけど、`.id`ってクラス名を見るたびに一瞬「え、これHTML属性のidの話？」って手が止まる。しかも中身が\"AG\"\"CL\"みたいな2文字だけだと、半年後の自分は絶対に「これ何の略だっけ」って迷う。肌感としてここが一番危ない。"
+     },
+     {
+      "title": "`.em` がSVGアイコンのラッパーなのに絵文字っぽく読める",
+      "where": "CSS: 117行目 `.cell .em` / HTML: 317行目 `<span class=\"em\">`",
+      "why": "`em`って書いてあると自分の中では真っ先にCSSの単位かemphasisタグを連想しちゃう。中身は絵文字じゃなくてSVGのアイコンだから、これは正直「合わない」ネーミング。"
+     },
+     {
+      "title": "panelのid接頭辞が略語すぎて、フィールドの中身を覚えていられない",
+      "where": "HTML: 553〜569行目 `p-ch` `p-into` `p-tech` `p-go` `p-host` `p-art` `p-artt` / JS: 605〜610行目 `P = {ch, into, tech, desc, go, host, art, artt}`",
+      "why": "`p-into`が「インストール先」、`p-ch`が「チャンネル」だって今回説明されて初めて分かった。半年後の自分がコード開いて、パッと意味を拾えるとは思えない。なんとなくだけど、ここは素朴にフルネームで書いてほしい。"
+     },
+     {
+      "title": "`.nm` `.ja` `.mk` `.cd` のような1〜2文字の中身説明クラスが並びすぎ",
+      "where": "CSS: 120, 125, 130, 137行目（`.cell .nm/.ja/.mk/.cd`）",
+      "why": "一個一個は小さい違和感でも、並んだときに「これは自分には読み切れないな」って感じる。特に`.mk`と`.cd`は今回改めて中身を読むまで役割が想像できなかった。"
+     },
+     {
+      "title": "改名の方向性：短縮を捨てて、素朴に「見たまま」の名前にしたい",
+      "where": "全体（.cell→.work-card、.nm→.title、.ja→.tagline、.id→.category-code、.mk→.markers、.cd→.mobile-summary、p-into→p-install-to、p-go→p-open-link など）",
+      "why": "かっこよさや短さより、半年後に開いたときに「あ、これはこういう役割だったな」って肌でわかることの方が、私にとってはずっと大事。装飾的な省略より素朴な言葉を選びたい。"
+     }
+    ],
+    "top_recommendation": "まず `.id` クラスと `id=\"p-id\"` を `.category-code` / `p-code` のようなフルネームに直し、HTML属性idとの混同をなくすこと。",
+    "confidence": 4
+   },
+   "cost_usd": 0.23215885
+  },
+  {
+   "slot": "main",
+   "task": "naming",
+   "type": "esfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "9ab6f19efabd36c3",
+   "data": {
+    "findings": [
+     {
+      "title": ".id クラスが HTML の id 属性とかぶって紛らわしい",
+      "where": "行131 .cell .id / 行324など span class=\"id\" / JS行606 P.id",
+      "why": "実際触ってて『あ、これCSSクラスの.idね、DOMのidじゃないんだ』って毎回二度見しちゃう。半年後の自分は絶対だまされる。.badge とか .code-tag のほうが一発でわかって楽しく読める。"
+     },
+     {
+      "title": "p-ch / p-into / p-artt の略しすぎで中身が想像できない",
+      "where": "行553,557,568 の id, および JS行606-609 の P オブジェクト",
+      "why": "実際やってる人（＝半年後の自分）が p-into を見て『インストール先』ってすぐ思い出せる自信ある？ ch も channel か character か分かんない。panel-channel / panel-install / panel-article-title くらい書いても全然重くならないし、いいじゃん。"
+     },
+     {
+      "title": ".cd .doc .desc の3兄弟が似すぎてて事故る",
+      "where": "行132(.doc), 137(.cd), 210(.pdesc)",
+      "why": "モバイル説明・記事バッジ・パネル本文説明、全部『説明系』クラスなのに見た目が似た2〜4文字。一緒に楽しく読めるようにするなら .badge-article / .card-desc-mobile / .panel-desc くらいはっきり分けたい。"
+     },
+     {
+      "title": ".sect / .sect-h / .sect-t 系の圧縮接頭辞は雰囲気で読めるけど確信が持てない",
+      "where": "行55,58,71,75,84 の .sect 系一式",
+      "why": "section-header/title/metaって『多分こう』で読めちゃうのが逆に怖い。半年後、なんとなくで読んで意味を誤解するのが一番こわいパターン。section-title / section-meta って書けば迷わない。"
+     },
+     {
+      "title": ".em .nm .ja .mk がカードの中身なのに一文字〜二文字略で意味不明",
+      "where": "行117-131 の .cell 配下クラス群",
+      "why": "emoji/name/japanese-desc/marks の略だと思うけど、初見じゃ絶対わからない。実際使う人（未来の自分）が楽しく直せるように .card-icon / .card-name / .card-tagline / .card-meta って名前つけよう。"
+     }
+    ],
+    "top_recommendation": "まず .id を .badge に変えるとこから始めよう。DOMのidと混同するのが一番事故りやすいから、そこだけでも直せば半年後の自分が救われる。",
+    "confidence": 4
+   },
+   "cost_usd": 0.1896642
+  },
+  {
+   "slot": "main",
+   "task": "naming",
+   "type": "estp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "a17c3cd0e31adfae",
+   "data": {
+    "findings": [
+     {
+      "title": "「art」が3つの違う意味で使い回されてる、これが一番ヤバい",
+      "where": "行133 .cell[data-art] .doc / 220 .panel .art / 312 data-art / 349 data-artt / 553-570 #p-art #p-artt / JS 605-609,641-642 P.art, c.dataset.art",
+      "why": "クラス.art＝『記事リンク要素』、data-art＝『カードのURL値』、artt＝『記事タイトル』が全部『art』始まり。半年後grepしたら記事(article)なのか作品(work)なのか一瞬で判断できない。動かした瞬間絶対ここで手が止まる。"
+     },
+     {
+      "title": ".cell .id / #p-id / JS変数idの三重衝突",
+      "where": "行131 .cell .id / 324 .id内テキスト / 553 #p-id / 606,630 JS P.id",
+      "why": "『id』は本来HTMLのid属性を指す言葉なのに、ここでは『AG』『CL』みたいな2文字の分類コードに使ってる。DevToolsで見た瞬間に本物のid属性と混同する。"
+     },
+     {
+      "title": "p-ch / p-into / p-go / p-host みたいな短い接頭辞が意味不明",
+      "where": "行553-570 の id=\"p-ch\" \"p-into\" \"p-tech\" \"p-go\" \"p-host\"、JS 606-609",
+      "why": "chはchannel？chapter？intoは『インストール先』のことだと初見じゃわからない。今は書いた本人の記憶で読めてるだけで、半年寝かせたら自分でも『これ何だっけ』ってなる。"
+     },
+     {
+      "title": ".em / .mk / .cd / .ja が短すぎて文脈依存",
+      "where": "行108-137 .cell .em/.nm/.ja/.mk/.id/.doc/.cd、240-259 モバイル用 .cd",
+      "why": "emはemoji枠のつもりだろうけどHTMLのemタグと紛らわしい、mkはmark？bookmark？、cdはcard description？全部推測ゲームになってる。コメントがなきゃ誰も当てられない。"
+     },
+     {
+      "title": "data-ch と .go / .host が動詞・省略で機能を語ってない",
+      "where": "行312-316 data-ch/data-into/data-tech/data-desc、211 .panel .go、218 .go .host",
+      "why": "data-chは『公開チャネル』のことなのにchだけだとchapterにも見える。.goはボタンなのにJS変数にすると動詞なのか名詞なのか毎回考える羽目になる。"
+     }
+    ],
+    "top_recommendation": "とりあえず今すぐ .art/.artt/data-art/data-artt を article-link / article-url / article-title に改名しよう、そこが一番事故る",
+    "confidence": 4
+   },
+   "cost_usd": 0.2880362
+  },
+  {
+   "slot": "main",
+   "task": "estimate",
+   "type": "intj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "efebec2835fd2d64",
+   "data": {
+    "findings": [
+     {
+      "title": "矢印キー移動がフィルタ後に破綻する",
+      "where": "673-710行目 nearest()関数 / 604行目 const cells = [...document.querySelectorAll('.cell')]",
+      "why": "cellsは全カード固定配列。タグ絞り込みで一部を非表示にしても配列は変わらず、getBoundingClientRectは0矩形を返すため候補判定が崩れる。フィルタ実装前に可視要素だけを対象にする改修が必須。"
+     },
+     {
+      "title": "カードがテンプレート化されておらずコピペ地獄",
+      "where": "312-528行目 .cellブロック（1件あたりSVG込みで約15〜20行）",
+      "why": "データとマークアップが密結合。18件追加は機械作業だが、SVGアイコンを毎回手描きする必要があり、ここが工数の大半を占める。長期で見れば軽量な生成テンプレート化が正しい投資だが、今回の依頼スコープでは着手しない前提で見積もる。"
+     },
+     {
+      "title": "タグ軸とgroup軸の二重分類が未設計",
+      "where": "309-547行目 各section.group / 98-101行目 .glabel（Agent Skill, Claude Code, ブラウザ拡張...）",
+      "why": "依頼の『Claude Code / Azure / iOS / Web』タグは既存groupと重複・交差する概念。単純併存させるとカウント表示（1,2,2,1,2,1,3）と絞り込み結果の整合が取れなくなる。フィルタは新規data-tags属性で独立軸として設計すべき。"
+     },
+     {
+      "title": "表示アニメーションが30件で1.3秒に伸びる",
+      "where": "115行目 animation-delay:calc(var(--i,0)*38ms + .18s) / 733行目 c.style.setProperty('--i', i)",
+      "why": "インデックス固定の遅延計算のため件数増加で線形に悪化する。フィルタ適用時も可視順で--iを振り直さないと絞り込み後に不自然な間延びが発生する。前提を疑え、これは全件idではなく可視順indexにすべき。"
+     },
+     {
+      "title": "data-into区切り文字とJS側splitの不一致（既存潜在バグ）",
+      "where": "634行目 P.into.textContent = c.dataset.into.split(',').join('\\n') / 314行目他 data-into=\"A|B\" 形式",
+      "why": "属性値は|区切りだがJSは,でsplitしており偶然動いているだけ。30件分のデータ投入時に誰かが,を含む値を入れると即座に表示崩壊する。修正コストは小さいが見落とされやすい。"
+     }
+    ],
+    "top_recommendation": "実装前にcells配列を可視要素ベースへ再設計し、nearest()とアニメーション--iをフィルタ前提で作り直せ。データ追加は後でいい。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2185334
+  },
+  {
+   "slot": "main",
+   "task": "estimate",
+   "type": "intp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "ed017d417e497f39",
+   "data": {
+    "findings": [
+     {
+      "title": "可視セルとキーボード操作(cells/nearest/cur)の不整合という前提矛盾",
+      "where": "行604 cells=[...document.querySelectorAll('.cell')] / 行673-710 nearest() / 行611 cur",
+      "why": "そもそも『絞り込み』が非表示化を意味するなら、cellsとnearest()の探索対象からも除外しないと矢印キーで消えたカードに飛ぶ。この前提を先に定義すべき。改修目安0.5人日。"
+     },
+     {
+      "title": "選択中カードがフィルタで消えた場合のフォールバック未定義",
+      "where": "行624-648 paint() / 行650-660 clickリスナー",
+      "why": "aria-current='true'のセルがdisplay:noneになってもP.*への反映は残る。フィルタ変更時は可視な先頭カードへpaint()し直す分岐が要る。0.3人日。"
+     },
+     {
+      "title": "stagger演出--iが全カード通し番号のため30件で破綻",
+      "where": "行733 --i付与ループ / 行115 animation-delay:calc(var(--i,0)*38ms+.18s)",
+      "why": "30件だと最大遅延が29×38ms+180ms≒1.28秒に伸び、かつフィルタ後の可視順とインデックスがズレる。可視カードのみで--iを振り直す必要。0.3人日。"
+     },
+     {
+      "title": "グループ見出し(.glabel)とタグ軸が別次元で空見出しが残りうる",
+      "where": "行309-547 各.group/.glabel（例:310行『Agent Skill 1』）",
+      "why": "現行分類は制作カテゴリ、依頼のタグは技術軸。全カードが絞り込みで消えたグループでも見出し文言だけ残る例外条件を潰す実装が必要。0.4人日。"
+     },
+     {
+      "title": "コンテンツ量産(18件分)とdata-tags追加が工数の大半、meta descriptionも要更新",
+      "where": "312行以降の各<a class='cell' data-...>ブロック / 7行目meta description / 300行<b>12</b>PUBLISHED",
+      "why": "静的HTML埋め込み設計なのでカード追加自体は機械的だが、SVGアイコン・コピー・data-desc等の作成に1件20〜30分×18件＝6〜9時間かかる。ここが支配的コスト。"
+     }
+    ],
+    "top_recommendation": "合計2.5〜3人日。まずcells/nearest/curを『可視要素基準』に再定義せよ。ここが崩れると他の全対応が無意味になる。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2381582
+  },
+  {
+   "slot": "main",
+   "task": "estimate",
+   "type": "entj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "20f514d77fd773d5",
+   "data": {
+    "findings": [
+     {
+      "title": "ジャンル別グループとタグ横断フィルタの軸が競合",
+      "where": "309-547行目 各.group/.glabel構造",
+      "why": "現状はAgent Skill等ジャンル別section固定。タグ絞り込みを乗せる前に、グループ表示を残すか廃止するかの意思決定が先。ここを決めずに着手すると手戻りが出る。"
+     },
+     {
+      "title": "cells配列とnearest()/paint(0)が非表示状態を想定していない",
+      "where": "604行目 const cells、673-710行目 nearest()、722行目 paint(0)",
+      "why": "全cellを対象に矢印移動・初期選択している。フィルタで非表示にしたカードへ移動・選択されるバグが確実に出る。visibleCells化が必須。"
+     },
+     {
+      "title": "新規18件のコンテンツ制作が工数の律速",
+      "where": "312-545行目（1カードあたりSVG+data属性6種+cd文）",
+      "why": "1カード平均30行超のマークアップとオリジナルSVG・日本語文が要る。ここが見積り誤差の主因であり、テンプレ化しても人手作業は減らない。"
+     },
+     {
+      "title": "グループ件数・全体タリーが静的ハードコード",
+      "where": "300行目<b>12</b>PUBLISHED、310/332/372/408/430/467/494行目.glabel末尾の数字",
+      "why": "増件・フィルタのたびに手動更新が要る設計。動的カウントに変えないと更新漏れがそのまま公開される。"
+     },
+     {
+      "title": "fx()の演出がフィルタ切替のたびに毎回発火する恐れ",
+      "where": "767-789行目 fx()、776行目 MutationObserver、115/733行目 --i stagger",
+      "why": "フィルタは頻繁操作になる想定だが、現状はaria-current変化ごとにtype/roll演出が走る仕様。切替のたびに待たされる体感になる。"
+     }
+    ],
+    "top_recommendation": "結論から言う。着手はcellsのvisibleCells化とdata-tags設計の統一から。工数は原稿制作1.5〜2人日＋実装・QA2.5人日、計4〜5人日（32〜40h）で見積もる。責任者と締切を先に切れ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2376279
+  },
+  {
+   "slot": "main",
+   "task": "estimate",
+   "type": "entp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "a2b11ab6c101e409",
+   "data": {
+    "findings": [
+     {
+      "title": "タグ軸(4分類)と既存グループ軸(7分類)が非直交で衝突する",
+      "where": "309〜547行の`.group`構造（Agent Skill/Claude Code/ブラウザ拡張/iOS/Web/GitHubツール/検証）",
+      "why": "AzureはグループとしてすらないのにタグにはAzureがある。azure-nettraceは「Claude CodeとCopilot両方で動く」と明記済みで複数タグ所属になる。物理ネスト構造のままだと同じカードを複数箇所に置く羽目になる。逆にグループ捨ててタグだけにする手もあるのでは？"
+     },
+     {
+      "title": "キーボードナビが「全cell固定リスト」前提でフィルタと相性最悪",
+      "where": "604行 `cells = [...document.querySelectorAll('.cell')]`、673〜710行 `nearest()`",
+      "why": "フィルタで非表示にしたカードもcellsに残り続けるので、矢印キーで非表示カードにフォーカスが飛ぶ・getBoundingClientRectが0を返す等のバグが起きる。可視セルだけの配列に絞る改修が必須で、これが今回一番地味に時間食う。"
+     },
+     {
+      "title": "paint(0)決め打ちの初期表示がフィルタと噛み合わない",
+      "where": "722行 `paint(0)`、624〜648行 `paint()`",
+      "why": "フィルタ適用後に先頭カードが非表示だったら？ 0件だったら？ という分岐が今のコードには存在しない。「絞り込んだら空パネル」がありえなくない？そこ埋めないと詰む。"
+     },
+     {
+      "title": "30件化の主コストはJS/CSSでなくコンテンツ制作（特にSVGアイコン手描き）",
+      "where": "各`.cell`内の`<svg>`（例：317〜321行）、data-ja/data-desc/data-tech等7属性",
+      "why": "1カード約20〜25行、独自SVGアイコンをviewBox内で手で組んでる。18件追加＝ここが律速。CSS(.grid)はauto-fillなので30件でも無改修で耐える＝ここは軽い。"
+     },
+     {
+      "title": "地味だが見落としやすい付随修正3点",
+      "where": "7行目 meta description、300行 `.sect-m b`(12→30)、733行 `--i` stagger",
+      "why": "12という数字がmeta descriptionとタリー演出の2箇所にハードコードされてる。フィルタ後の可視カードだけで`--i`振り直さないと入場アニメがガタつく。"
+     }
+    ],
+    "top_recommendation": "実装前に「タグとグループ、両立させるか一本化するか」を決める設計会議を先にやる。ここ決めずにコード触ると手戻り確定。",
+    "confidence": 4
+   },
+   "cost_usd": 0.26035055
+  },
+  {
+   "slot": "main",
+   "task": "estimate",
+   "type": "infj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "f7b467d719c5ee7a",
+   "data": {
+    "top_recommendation": "まず 604行目の cells 配列と 673-710行目の nearest() を「表示中カードのみ」対応に直す。ここが崩れると Enter/矢印キー操作全体が壊れる。",
+    "confidence": 4,
+    "findings": [
+     {
+      "title": "矢印キー操作がフィルタ後に壊れる — 静的cells配列と幾何学的探索",
+      "where": "604行目 const cells = [...document.querySelectorAll('.cell')] / 673-710行目 nearest()",
+      "why": "cells はDOM構築時の一度きりのスナップショット。display:noneにしたカードもそのまま候補に残り、getBoundingClientRectが(0,0,0,0)になって近傍探索(along/across計算)が破綻する。フィルタ導入では必須の修正で、これが今回の変更で最も『効いて重くなる』箇所。目安1〜1.5h。"
+     },
+     {
+      "title": "グループ見出しの件数がハードコード文字列",
+      "where": "309-547行目 各section.groupの.glabel（例: 310行目 \"Agent Skill ... 1\"）",
+      "why": "タグでの絞り込みを導入すると、グループ軸（用途別）とタグ軸（技術別）の二重分類になる。フィルタ後にこの数字が実数と合わなくなるので、動的計算に変更するかグループ表示自体を見直す設計判断が必要。0.5〜1h。"
+     },
+     {
+      "title": "30件化の実作業はSVGアイコン手描き＋data属性の手動転記が支配的",
+      "where": "312-547行目 roster全体の.cellブロック（1件あたりSVG含め約15〜20行）",
+      "why": "テンプレート化されておらず1件ずつ手打ち。18件追加は内容整理20〜30分×18＋アイコン制作15〜30分×18で、コンテンツ工数だけで12〜18時間かかり、全体見積もりの大半を占める。"
+     },
+     {
+      "title": "フィルタ用のタグ構造がデータ側に存在しない",
+      "where": "各.cellのdata-ch / data-tech属性（例312-316行目）",
+      "why": "data-chやdata-techは自由記述の説明文でフィルタキーに使えない。新たに data-tags=\"claude-code,web\" 等を全30件に付与する作業が別途必要（既存12件の改修＋新規18件）。1〜2h。"
+     },
+     {
+      "title": "animation-delayがcellsのインデックス依存で30件・フィルタ時にズレる",
+      "where": "115行目 .cellのanimation-delay:calc(var(--i,0)*38ms+.18s) / 733行目 --iのセット処理",
+      "why": "30件フル表示で最大約1.3秒の遅延になり、フィルタで再配置すると--iと実際の表示順が食い違い、体感の演出が崩れる。フィルタ切替時に--iを振り直す処理が追加で必要。0.5〜1h。"
+     }
+    ]
+   },
+   "cost_usd": 0.2198547
+  },
+  {
+   "slot": "main",
+   "task": "estimate",
+   "type": "enfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "da4bd97a2907a5e3",
+   "data": {
+    "findings": [
+     {
+      "title": "工数の主因はコンテンツ制作。18枚ぶんの'人の物語'を書く時間を甘く見ない",
+      "where": "roster内 .cell 1件あたりの構造（例: L312-326, L410-424）",
+      "why": "1カード=SVGアイコン+data-ja/into/tech/desc等7属性+cd文。既存12件を見ると1件20〜30行、文章の作り込みも丁寧。新規18件は各1〜1.5h（構成+ライティング+アイコン）として18〜27h＝約2.5〜3.5人日。ここが総工数の6割を占める、一番『あなたはもっとできる』が試される部分。"
+     },
+     {
+      "title": "タグ『Azure』が既存グループ構造に存在しない。分類設計をまず決めないと手戻りする",
+      "where": "section.group (L309-547) の glabel: Agent Skill / Claude Code / ブラウザ拡張 / iOS アプリ / Web アプリ / GitHub ツール / 検証",
+      "why": "現状はジャンル別section分割のみでタグ属性が無い。要件のタグ（Claude Code/Azure/iOS/Web）は既存グループと1:1でなく、1作品が複数タグを持ちうる（例: azure-nettraceはAgent Skillかつ Azure かつ Claude Code）。data-tags設計を先に固めないと後で30件ぜんぶ書き直しになる。"
+     },
+     {
+      "title": "cells配列とnearest()キーボードナビゲーションがフィルタ非対応。ここは静かに壊れる",
+      "where": "script内 cells=[...document.querySelectorAll('.cell')] (L604), nearest() (L673-710), keydown handler (L712-720)",
+      "why": "nearest()はgetBoundingClientRectで『画面上の位置』を見て動くので、フィルタで非表示にしたカードがdisplay:noneでも配列に残っていると矢印移動が透明カードへ飛ぶ・curがズレる恐れがある。可視カードのみを対象にする再構築が必須で、ここは新規ロジック（半日〜1日）。"
+     },
+     {
+      "title": "30枚だと入場アニメーションの体感速度が崩れる",
+      "where": ".cell { animation-delay:calc(var(--i,0)*38ms + .18s) } (L115), tally counter (L779-788)",
+      "why": "38ms×30件=最後のカードが1.14秒後に出現。12件(0.46秒)前提の心地よい間だったテンポが伸びて『待たされる画面』になる。delay値の再調整か上限キャップが要る、地味だが体験を左右する箇所。"
+     },
+     {
+      "title": "モバイルは.panelごと非表示なので、タグUIの置き場所を新設する必要がある",
+      "where": "@media(max-width:700px) { .panel{display:none} } (L253), .cell + .artlink (L254-258)",
+      "why": "現状モバイルはカードが直接リンクになる設計で、パネル連動のJSに依存しないUI。タグフィルタボタンは.slab内に独立して新設し、CSS・タップ領域・件数表示まで別途デザインする必要がある（PC版の流用不可）。"
+     }
+    ],
+    "top_recommendation": "まずタグ設計（data-tags属性の持ち方と複数タグの扱い）を1〜2時間で固めてから量産に入って。一緒に進めれば手戻りゼロで着地できる見積もりは合計約4〜5人日（コンテンツ2.5〜3.5日＋フィルタ・ナビゲーション改修1〜1.5日）。",
+    "confidence": 4
+   },
+   "cost_usd": 0.21112029999999998
+  },
+  {
+   "slot": "main",
+   "task": "estimate",
+   "type": "istj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "4b5ba99cfca62a0c",
+   "data": {
+    "findings": [
+     {
+      "title": "キーボードナビゲーションが非表示カードを拾う",
+      "where": "nearest() 673-710行、cells配列 604行",
+      "why": "cellsはDOM全件を保持したまま。フィルタでdisplay:noneにしても対象から除外されず、矢印キーで見えないカードに移動する。過去の例でも一覧系UIはこの手の考慮漏れで不具合を出している。"
+     },
+     {
+      "title": "タグ軸と既存グループ軸の対応関係が未確定",
+      "where": "7つの.group（310,332,372,408,430,467,494行）とタグ Claude Code/Azure/iOS/Web",
+      "why": "ブラウザ拡張・GitHubツールはどのタグにも属さない可能性がある。分類ルールを先に決めないと30件分のdata付与をやり直す手戻りが出る。"
+     },
+     {
+      "title": "グループ件数・総数表示がハードコード",
+      "where": "300行〈12〉PUBLISHED、310/332/372/408/430/467/494行の各glabel末尾数字",
+      "why": "フィルタで表示件数が変動する仕様なら、この静的テキストを動的算出に置き換える処理が別途必要。現状はJSで一切触っていない。"
+     },
+     {
+      "title": "モバイルのartlink表示が隣接セレクタ依存",
+      "where": "CSS .cell + .artlink（254行）",
+      "why": "cellをdisplay:noneで消す実装にした場合、フィルタ後の見た目崩れがないか実機で確認が必要。過去の例では隣接セレクタ絡みの表示崩れは想定外の箇所で起きる。"
+     },
+     {
+      "title": "30件化そのものは軽い、品質担保が工数の主因",
+      "where": "HTML内.cellブロック（例:312-326行のパターン）",
+      "why": "実際のところ複製自体は単純作業。時間を食うのはSVGアイコン作成とdata-desc等の原稿執筆で、既存12件と同水準の質を保つ検証コストが大半を占める。"
+     }
+    ],
+    "top_recommendation": "実装前に「タグ⇔既存グループの対応表」と「フィルタのAND/OR・件数表示仕様」を先に文書化して確定させる。",
+    "confidence": 4
+   },
+   "cost_usd": 0.21873929999999997
+  },
+  {
+   "slot": "main",
+   "task": "estimate",
+   "type": "infp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "b33bce834e065d3a",
+   "data": {
+    "findings": [
+     {
+      "title": "説明文の二重・三重管理が30件で破綻しやすい",
+      "where": "313行 data-ja / 323行 .ja span、517行 data-desc / 527行 .cd span",
+      "why": "同じ内容を複数箇所に手入力する構造で、単一の正となる情報源がない。18件増えるほど内容のズレが生まれ、見る人に誠実でなくなると感じる。"
+     },
+     {
+      "title": "フィルタで非表示になったカードが矢印キー操作を壊す",
+      "where": "nearest() 673〜710行、cells生成 604行",
+      "why": "getBoundingClientRectは非表示要素も含めて計算するため、display:noneのカードが(0,0)扱いになり方向判定が狂う。使う人の体験が突然壊れるのが一番重い。"
+     },
+     {
+      "title": "既存の7分類と依頼の4タグの軸がそもそも違う",
+      "where": "グループ構成 309〜547行（Agent Skill/Claude Code/ブラウザ拡張/iOS/Webアプリ/GitHubツール/検証）",
+      "why": "azure-nettraceのように複数タグに跨る作品、Chrome拡張のようにどのタグにも属さない作品がある。機械的に押し込めるとその作品の文脈が削られる。"
+     },
+     {
+      "title": "初期選択カードがフィルタ後に空を指す可能性",
+      "where": "paint(0) 722行",
+      "why": "先頭セルを無条件に選ぶ実装なので、デフォルトフィルタでそのカードが非表示だと最初に開くパネルが空になる。最初の出会いが空白なのは避けたい。"
+     },
+     {
+      "title": "件数表記が3箇所に分散していて更新漏れが起きやすい",
+      "where": "meta description 7行目、sect-m 300行、タリーアニメーション779〜788行",
+      "why": "「12」という数字が独立して3箇所に書かれており、一つだけ直し忘れると小さな嘘がサイトに残る。誠実さの問題として気になる。"
+     }
+    ],
+    "top_recommendation": "まず data-tags のデータモデルと「複数タグ/非該当」の方針を決めてから、フィルタJSとnearest()の整合を設計する。",
+    "confidence": 4
+   },
+   "cost_usd": 0.3006861
+  },
+  {
+   "slot": "main",
+   "task": "estimate",
+   "type": "isfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "deb557699554a588",
+   "data": {
+    "findings": [
+     {
+      "title": "絞り込み機能そのものがまだ何もない",
+      "where": "screen全体（304〜549行）、data-ch属性（312〜545行の各cell）",
+      "why": "現場では『タグで絞り込める』のはUIもデータもロジックもゼロからの新設になります。data-chは表示用の肩書きで、フィルタに使える構造ではないので、まずタグ設計から必要です。"
+     },
+     {
+      "title": "キーボード操作(nearest関数)が絞り込み後を想定していない",
+      "where": "673〜710行 nearest()、604行 const cells",
+      "why": "cellsは最初に取得した全12件（将来30件）の静的配列です。フィルタで非表示にしたカードも矢印キーの対象に残ってしまい、選べないカードに飛ぶ、という現場で困る動きになりそうで気になります。"
+     },
+     {
+      "title": "カード出現アニメーションの遅延が30件で伸びる",
+      "where": "115行 .cell{animation-delay:calc(var(--i,0)*38ms + .18s)}",
+      "why": "12件でも最後のカードは約0.6秒待ちですが、30件になると約1.3秒。せっかく来てくれた方を待たせるのは、これまで通りの心地よさを損なわないか気になります。"
+     },
+     {
+      "title": "グループ見出しの件数がハードコード、絞り込みで矛盾しやすい",
+      "where": "310,332,372,408,430,467,494行 .glabel内の数字（例: 「Claude Code 2」）",
+      "why": "タグで絞ると空になるグループや件数が合わなくなるグループが出そうです。運用のたびに人力で数え直すのは取りこぼしの元なので、動的に出す形にしておきたいところです。"
+     },
+     {
+      "title": "新規18件分の説明文づくりが一番地道に時間を食う",
+      "where": "312〜545行の各cellブロック（data-ja, data-desc, data-tech等）",
+      "why": "1件あたりSVGアイコン・肩書き・説明3種を丁寧に書く構成なので、実装より『誠実に書く』作業のほうが時間がかかる、というのが現場感覚です。"
+     }
+    ],
+    "top_recommendation": "まずタグのデータ設計（例: data-tags）とフィルタの土台を決め、その上でnearest()の対象を『表示中のカードだけ』に直す修正から着手する。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2363728
+  },
+  {
+   "slot": "main",
+   "task": "estimate",
+   "type": "estj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "569f6067f5ee1fba",
+   "data": {
+    "findings": [
+     {
+      "title": "18件分のコンテンツとアイコンの提供責任者・納期が未確定",
+      "where": "312〜545行目 .cell 要素群（説明文・data-desc等）／317〜321行目のSVGアイコン群",
+      "why": "既存12件は全部オリジナルSVGと個別の紹介文で構成されている。新規18件も同水準で作るなら、誰がいつまでに素材を出すかを先に決めないと工数が確定しない。ここが一番のボトルネックだ。"
+     },
+     {
+      "title": "タグ軸（Claude Code/Azure/iOS/Web）と既存グループ構造が直交している",
+      "where": "309〜547行目の .group / .glabel（Agent Skill・Claude Code・ブラウザ拡張・iOSアプリ・Webアプリ・GitHubツール・検証の7区分）",
+      "why": "検証カテゴリの中にClaude Code案件とAzure案件が混在しているように、新タグは既存の見出し分類と一致しない。タグで絞った時に空になった見出し(.glabel)をどう扱うかのルールが決まっていない。"
+     },
+     {
+      "title": "フィルタ導入でキーボードナビゲーションとaria-current管理が壊れるリスク",
+      "where": "nearest() 673〜710行目／cells 配列 604行目／paint() 624〜648行目",
+      "why": "cellsは全カードの固定配列を前提にしている。フィルタで非表示カードを含めたまま矢印キー移動すると隠れた要素に選択が飛ぶ。表示中カードだけの部分配列に作り直す改修が要る。"
+     },
+     {
+      "title": "カード30件到達でアニメーション待ち時間が肥大化",
+      "where": ".cell の animation-delay 115行目／--i 付与 733行目",
+      "why": "calc(var(--i,0)*38ms + .18s) は現状12件でも最大約0.6秒。30件では最後のカードが1.32秒待ちになる。フィルタ後は表示順で--iを振り直さないと空白の間延びが出る。"
+     },
+     {
+      "title": "件数表記・SEO文言の更新箇所が複数散らばっている",
+      "where": "7行目 meta description／300行目 <b>12</b>PUBLISHED／302行目 sect-note",
+      "why": "「12個」の記述が3箇所に分散している。数字の一律修正を漏らすと表示と実態が食い違う。公平な基準で一箇所ずつ確認リストに乗せるべきだ。"
+     }
+    ],
+    "top_recommendation": "着手前に「新規18件の説明文・リンク・SVGアイコン」の提供者と納期を確定させろ。それが決まらないと見積もりは仮の数字にしかならない。",
+    "confidence": 4
+   },
+   "cost_usd": 0.215754
+  },
+  {
+   "slot": "main",
+   "task": "estimate",
+   "type": "enfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "9dd95119b313638a",
+   "data": {
+    "findings": [
+     {
+      "title": "タグ軸(Claude Code/Azure/iOS/Web)と既存7グループ構造が直交している",
+      "where": ".group / .glabel（l.309-547）、data-tags属性は未定義",
+      "why": "azure-nettraceはAgent SkillグループだがAzureタグでもあるように、既存の分類軸と欲しいタグ軸が一致せず新設計が必要。工数の最大要因。"
+     },
+     {
+      "title": "cells配列とnearest()がフィルタの非表示要素を考慮していない",
+      "where": "l.604 const cells=[...]、l.673-710 nearest()",
+      "why": "静的スナップショットのため非表示カードも残り、矢印キー移動が非表示要素のrect(0,0)に引っ張られて壊れる。curのフォールバックも未実装。"
+     },
+     {
+      "title": ".cell + .artlink の隣接セレクタがフィルタ非表示で破綻する",
+      "where": "l.254-258 CSS、l.327など各cell直後のartlink",
+      "why": "display:noneは隣接セレクタの判定に影響しないため、カードのみ非表示にすると解説記事リンクだけ孤立表示されるバグになる。"
+     },
+     {
+      "title": "カード1件あたりのコンテンツ量産コストが最大のボトルネック",
+      "where": "l.312-326など各.cellのdata-*属性群と手書きSVG",
+      "why": "5種のテキストとオリジナルpath付きSVGを1件ずつ用意しており、30件化はコードより執筆・アイコン制作の時間が支配的。"
+     },
+     {
+      "title": "件数表示（タリー/グループ件数）がハードコードで動的更新に未対応",
+      "where": "l.300 <b>12</b>PUBLISHED、l.779-788 tallyアニメーション",
+      "why": "初回ロード時に一度だけカウントアップする実装で、フィルタ後の表示件数を再計算する仕組みが存在しない。"
+     }
+    ],
+    "top_recommendation": "まずタグ軸を再設計し、data-tags属性とフィルタ時にcellsを再構築する仕組みを固めてから量産に着手する。",
+    "confidence": 4
+   },
+   "cost_usd": 0.30319009999999996
+  },
+  {
+   "slot": "main",
+   "task": "estimate",
+   "type": "esfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "3413642b43cd18af",
+   "data": {
+    "findings": [
+     {
+      "title": "キーボード操作がフィルタで迷子になる",
+      "where": "nearest() 673-710行 / cells 604行",
+      "why": "フィルタで隠したカードも cells 配列に残ったままだと矢印キーで見えないカードに飛んでしまう。いつも使ってくれてた人ほど『あれ、動きおかしい』って戸惑うはず。ここは一番先にちゃんと手当てしたい。目安半日。"
+     },
+     {
+      "title": "件数表示・グループの数字がフィルタで嘘をつく",
+      "where": ".glabel の「1」「2」等 (310,332,372,408,430,467,494行) / .sect-m の集計 (300,779-788行)",
+      "why": "絞り込んだ時に見出しの数字とカードの数が合わなくなる。周りから見て『雑に作った』印象を持たれかねないので、フィルタと連動させて更新したい。半日弱。"
+     },
+     {
+      "title": "手打ちdata属性が30件で表記ゆれ・消し忘れの温床に",
+      "where": "各 <a class=\"cell\" data-...> (312-545行、1件あたり属性約10個)",
+      "why": "18件を今の書き方でコピペ追加すると、data-tags 等の付け忘れが出やすい。今まで丁寧に作ってきたサイトの信頼感を守るために、追加分はチェックリストか小さなスクリプトで揃えたい。18件×30分=9時間目安。"
+     },
+     {
+      "title": "タグ絞り込みと既存の『分類グループ』が二重構造になる",
+      "where": ".group/.glabel によるジャンル分け (309-547行) と新設のタグフィルタ",
+      "why": "『Agent Skill』などの並びに加えてタグでも絞れるようにすると、見る人がどっちで探せばいいのか迷う可能性がある。フィルタ時はグループ見出しごと隠す/畳むなど、最初に見せ方を決めておきたい。設計含め半日〜1日。"
+     },
+     {
+      "title": "既存の演出（タイピング／split-flap／stagger）が件数増加後も心地よいか未検証",
+      "where": "type()/roll()/fx() 744-789行、.cell の animation-delay(115行)",
+      "why": "件数が増えても『パッと開いて気持ちいい』という今の人柄が変わらないか確認しておきたい。ここが崩れると、サイト全体の印象がガタッと下がってしまう。QAに半日。"
+     }
+    ],
+    "top_recommendation": "まずキーボードナビ（nearest関数）をフィルタ対応させること。ここが壊れると常連さんが一番先に違和感を持つので最優先で。全体では3〜4人日（データ追加9h＋フィルタUI/JS5-7h＋ナビ修正4h＋QA4h）を目安に。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2179119
+  },
+  {
+   "slot": "main",
+   "task": "estimate",
+   "type": "istp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "d105310c8e135d76",
+   "data": {
+    "findings": [
+     {
+      "title": "タグ軸とグループ構造がそもそも噛み合わない",
+      "where": "309〜547行目 <section class=\"group\"> 構造、data-ch属性",
+      "why": "今は1ジャンル1回配置の静列。Claude Code等のタグは複数グループを横断するので、グループ見出しの件数表示・空グループ処理を作り直す必要がある。設計だけで半日はかかる。"
+     },
+     {
+      "title": "非表示セルを除外しないとキーボード操作が壊れる",
+      "where": "604行目 cells配列、673〜710行目 nearest()",
+      "why": "cellsはDOM順の固定配列で可視/非可視を見ていない。フィルタでdisplay:noneにしても矢印キーが隠れたカードへ飛ぶ。可視判定を足す修正が要る、半日見ろ。"
+     },
+     {
+      "title": "30件分のデータ入力がボリュームゾーン",
+      "where": "309〜547行目 各.cell（12→30）のSVG・data-*属性一式",
+      "why": "SVGアイコンと7項目のdata属性を18件分書く単純作業が実は最大の工数。素材が揃っていれば1件20分、18件で約6時間、丸1日相当。素材が無ければもっと伸びる。"
+     },
+     {
+      "title": "data-into の split(',') は実データの区切り文字と不一致",
+      "where": "634行目 c.dataset.into.split(',')、314行目 data-into=\"A|B\"",
+      "why": "コードはカンマ区切りだが実データは | 区切り。改行にならず表示が崩れる既存バグ。件数が増える前に気づけてよかった、直しは10分で済む。"
+     },
+     {
+      "title": "30件でもDOM/JSの負荷自体は軽微",
+      "where": "115行目 animation-delay:calc(var(--i,0)*38ms + .18s)",
+      "why": "12→30程度ならquerySelectorAllもnearest()も重くならない。唯一この累積遅延だけ最大1.14秒に伸びる。体感に出るなら定数を縮めるだけ、1時間未満で直る。"
+     }
+    ],
+    "top_recommendation": "タグとグループの対応関係を先に紙で決めろ。そこ次第で全体は2人日にも3人日にもなる。動かしてみれば分かる。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2496946
+  },
+  {
+   "slot": "main",
+   "task": "estimate",
+   "type": "isfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "81b7d56eb5169864",
+   "data": {
+    "confidence": 3,
+    "top_recommendation": "まず nearest() と cur が「非表示カードを踏む」壊れ方をしないか、絞り込みを仮実装して自分の手で矢印キーを叩いて確かめてから、他の作業に手を広げたい。",
+    "findings": [
+     {
+      "title": "フィルタで消えたカードに矢印キーが迷い込む",
+      "where": "L604 cells配列 / L673-710 nearest() / L611 cur",
+      "why": "nearestはgetBoundingClientRectで位置判定してるだけで、非表示cellを除外する処理が今はない。触ってみて一番肌感として怖いのはここ。ここが壊れると『選ぶ楽しさ』ごと壊れる。"
+     },
+     {
+      "title": "30件は物量として単純作業ではない",
+      "where": "L307-547 ROSTERセクション（1枚あたり約35〜40行のマークアップ＋固有SVG）",
+      "why": "18件追加＝今の1.5倍の行数を、アイコンも文言も一つずつ自分の言葉で描く必要がある。なんとなくだけど、コピペ数分×18ではなく1件30〜60分は見ておきたい。ざっくり1.5〜2人日。"
+     },
+     {
+      "title": "絞り込み用のタグがどのカードにも存在しない",
+      "where": "各.cell の data-ch など属性群（例 L312-316）",
+      "why": "data-chは表示用の自由文字列で、フィルタのキーには使えない。Claude Code/Azure/iOS/Web用にdata-tagsを30件全部に手作業で付け直す工程が丸ごと足りない。"
+     },
+     {
+      "title": "絞り込み後、演出の間隔が不揃いに見える",
+      "where": "L115 .cell animation-delay(--i) / L733 style.setProperty('--i', i)",
+      "why": "--iはDOM順の連番のまま。フィルタで間引くと残ったカードの立ち上がりが飛び飛びになって、今ある『順に効いてくる』心地よさが崩れる気がする。これは自分には見過ごせない。"
+     },
+     {
+      "title": "件数を示す数字がハードコードのまま置き去りになりやすい",
+      "where": "L7 meta description「12個」 / L300 <b>12</b>PUBLISHED",
+      "why": "tallyアニメーション自体は自動で動くが、meta descriptionは手で直さないと『12個』のまま公開され続ける。小さいことだけど、これは自分の中では地味に許せない部分。"
+     }
+    ]
+   },
+   "cost_usd": 0.23941545
+  },
+  {
+   "slot": "main",
+   "task": "estimate",
+   "type": "estp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "541dfbc3140d15bc",
+   "data": {
+    "findings": [
+     {
+      "title": "アニメ遅延が30件で1.3秒待ちになる",
+      "where": "L115 .cell animation-delay(--i*38ms+.18s)、L780-787 tally",
+      "why": "12件でも456ms待つのに30件だと1140ms+起動180msで1.3秒。最後のカードが出るまで待たされる。実測してすぐ上限つけろ。"
+     },
+     {
+      "title": "矢印移動のcells配列がフィルタ非表示を考慮してない",
+      "where": "L604 cells一覧取得、L673-710 nearest()",
+      "why": "フィルタで隠したカードもcellsに残ると、矢印キーで見えないカードにフォーカスが飛ぶ。動かせばすぐバグる、visible判定を先に仕込め。"
+     },
+     {
+      "title": "カードがベタ書きHTML、30件コピペは事故る",
+      "where": "L306-547 roster内.cell直書き12個分",
+      "why": "1枚60-80行、SVGとdata属性の手複製は閉じタグ漏れやミスの元。データ配列化してJS生成にした方が結局速い。"
+     },
+     {
+      "title": "タグとグループが別軸、設計を先に決めないと二度手間",
+      "where": "L309/331/371/407/429/466/493 各section.group",
+      "why": "既存の用途別グループと依頼の技術別タグ(Claude Code/Azure/iOS/Web)は重複しうる。data-tags新設してグループ表示とフィルタ表示を別レイヤーにする設計を先にやらないとやり直しになる。"
+     },
+     {
+      "title": "件数表記12の更新漏れリスク",
+      "where": "L7 meta description、L300 <b>12</b>PUBLISHED、L780-787 tally",
+      "why": "12が3箇所ハードコードされてる。1個直して満足すると他が残る、最後にgrepしろ。"
+     }
+    ],
+    "top_recommendation": "まずカード1枚にdata-tags属性を仮でつけてフィルタボタン1個動かしてみろ。考えるより先に試せば設計の当たりが一発でわかる。",
+    "confidence": 4
+   },
+   "cost_usd": 0.28657059999999995
+  },
+  {
+   "slot": "main",
+   "task": "estimate",
+   "type": "esfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "fe4929095f54c5b8",
+   "data": {
+    "findings": [
+     {
+      "title": "タグの概念がそもそも存在しない：ジャンルgroupとタグは別物",
+      "where": "index.html 307〜549行（.group / .glabel の7ブロック）",
+      "why": "今あるのは『Agent Skill』『検証』みたいなジャンル分けで、Claude Code/Azure/iOS/Webの横断タグじゃない。Splunk記事とか複数タグに跨るカードもあるから、data-tags設計を先に決めないと後で全部書き直しになる。実際やってる人はここでつまずく。"
+     },
+     {
+      "title": "矢印キーナビ・Enterがフィルタ非表示カードを考慮してない",
+      "where": "650行 cells=[...document.querySelectorAll('.cell')] / 673〜710行 nearest() / 712〜720行 keydown",
+      "why": "cellsは初期化時の固定配列で、getBoundingClientRectで距離計算してる。フィルタでcellをhiddenにしたら座標が(0,0)になって、見えないカードに飛ぶバグが即出る。フィルタ実装とセットで直さないと『選んだつもりが違うのが開く』事故になる、これ地味に一番嫌なやつ。"
+     },
+     {
+      "title": "カード1件が30行超のベタ書き＋手作りSVG、18件追加は単純だけど時間食う",
+      "where": "312〜326行が1カードの実例（1件約15〜30行＋インラインSVGパス）",
+      "why": "コピペ増殖前提の構造。文章（ja/desc/tech等）とアイコンSVGを毎回人力で作ってるので、量産すると絶対どこかでコピペミスる。楽しくやるにはテンプレ化した方がいい。"
+     },
+     {
+      "title": "「12」表記がmeta descriptionとsect-noteに散らばってる",
+      "where": "7行目 meta description『12個の制作物』／300行 sect-mのタリー（自動カウントなので数字だけは楽）／302行付近の説明文",
+      "why": "779〜788行のカウントアップはparseIntで自動対応するから実は軽い。でも7行目のmeta descriptionは手動修正忘れやすい、地味に見落とされがちな箇所。"
+     },
+     {
+      "title": "モバイルでフィルタUIをどこに出すか未定義",
+      "where": "238〜259行 @media(max-width:700px) 、253行 .panel{display:none}",
+      "why": "モバイルはカードが直リンク化する仕様（panelLive()判定）で、フィルタボタンの置き場所とタップ時の挙動が現状の設計に無い。デスクトップだけ作って終わりにすると『スマホの人だけ楽しくない』ことになる。"
+     }
+    ],
+    "top_recommendation": "手を動かす前に『どのカードにどのタグを何個つけるか』の一覧表を先に作る。ここサボると後で全部やり直しになる。工数目安は全体で3〜3.5人日（カード18件追加=約1.5人日、タグ設計+フィルタ実装+ナビ修正=約1〜1.5人日、文言/テスト調整=約0.5人日）。",
+    "confidence": 4
+   },
+   "cost_usd": 0.25344105
+  },
+  {
+   "slot": "main",
+   "task": "incident",
+   "type": "intj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "03fb38a41d677c5b",
+   "data": {
+    "findings": [
+     {
+      "title": "Xでカード非表示の直接原因：OGP/Twitterカード用metaタグが皆無",
+      "where": "head内 4-11行目（meta description=7行のみ、og:title / og:image / og:description / twitter:card 等が一切存在しない）",
+      "why": "Xはmeta descriptionではなくog:*・twitter:*タグでカードを構築する。これが無ければサムネイルもタイトルも100%出ない。これは論理的に確実に再現する不具合であり、切り分けの必要すらない。"
+     },
+     {
+      "title": "スマホ白画面はこのコード単体からは再現性が低い",
+      "where": "全体（CSS 12-283行, JS 601-790行）",
+      "why": "全CSSはインライン、フォントはdisplay:swapで非ブロッキング、JSはpaint()内でcells[i]の存在チェック済み、致命的な例外を投げる箇所が見当たらない。長期で見れば『コードの欠陥』より『キャッシュ・CDN伝播遅延』を先に疑うのが合理的。"
+     },
+     {
+      "title": "切り分け手順：再現条件の特定を先にやれ",
+      "where": "手順（コード外）",
+      "why": "①シークレットモード＋別回線で再アクセス ②GitHub Pagesの反映完了を数分待って再確認 ③iOS Safariならリモートデバッグでconsoleエラーを直接見る。これをやらずに『スマホ全般の不具合』と断定するのは前提を疑っていない。"
+     },
+     {
+      "title": "art行のhidden制御が固定値でバグっている（副次的）",
+      "where": "paint()関数 641-643行",
+      "why": "コメントは『data-artが無い作品は行を隠す』と書いているのに、実装はP.art.hidden=falseを常に代入しており分岐が無い。data-artの無い2件（Claude Anywhere, Spoiler Block for X）でリンク切れの解説記事行が表示される。報告とは無関係だが放置すべきでない論理破綻。"
+     },
+     {
+      "title": "favicon.svgのみでPNGフォールバックが無い",
+      "where": "8行目 link rel=icon",
+      "why": "og:imageも無い状態でfaviconもSVG単体のため、Xのカード生成ロジックが拾える画像がサイト上に事実上存在しない。og:imageの追加とセットで潰すべき副次要因。"
+     }
+    ],
+    "top_recommendation": "まずheadにog:title/og:image/og:description/twitter:card:summary_large_imageを追加してXの件を確定的に潰せ。スマホ白画面は原因不明のまま『バグ』と断定するな——シークレットモード・別回線・リモートデバッグでconsoleエラーの有無を確認してから議論しろ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2405574
+  },
+  {
+   "slot": "main",
+   "task": "incident",
+   "type": "intp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "1e837d08aa4a0e13",
+   "data": {
+    "findings": [
+     {
+      "title": "X無反応は必然。OGP/Twitter Cardが定義上存在しない",
+      "where": "<head> 4〜11行目（meta descriptionのみ、og:*・twitter:*なし）",
+      "why": "XはHTMLをレンダリングせずog:title/og:image/twitter:cardを読むだけの設計。これが無いなら『出ない』のはバグではなく仕様通りの帰結では。JS実行の有無とは無関係な話だ。"
+     },
+     {
+      "title": "『スマホで真っ白』はこのコード単体では再現条件を特定できない",
+      "where": "全体（特に600〜723行のJS、CSSの各@media）",
+      "why": "致命的なJS例外・CSS構文崩壊は見当たらない。真っ白＝CSS未適用の徴候であり、そもそも『真っ白』の定義（DOM空か白背景かスクロール未到達か）を切り分けないと実装側の犯人扱いは早計だ。"
+     },
+     {
+      "title": "Google Fontsのstylesheetがレンダリングブロックしうる",
+      "where": "11行目 <link href=\"https://fonts.googleapis.com/css2?...\" rel=\"stylesheet\">",
+      "why": "crossoriginもmedia切替の遅延読込工夫もなく同期扱い。低速回線や当該ドメイン到達性が悪い環境では初期描画が伸び、体感『真っ白』の一因になり得る。前提が違えばこの仮説も崩れるが。"
+     },
+     {
+      "title": "data-intoの区切り文字とJSのsplit条件が矛盾している",
+      "where": "634行目 P.into.textContent = c.dataset.into.split(',')... / data-into属性値（314,471,515,532行など）はパイプ|区切り",
+      "why": "定義（実データはパイプ区切り）と実装（カンマで分割）が一致していない。複数行表示を意図した箇所が改行されず1行に潰れる、明確な論理矛盾。"
+     },
+     {
+      "title": "og:imageを足しても実体画像が存在しない",
+      "where": "<head>（用意されているのはfavicon.svgのみ、8行目）",
+      "why": "SVGはXのプレビュー画像として扱われないことが多い。OGPタグを追加する対策だけでは『サムネイルが出ない』は解決しきらない可能性がある。"
+     }
+    ],
+    "top_recommendation": "headにog:title/og:description/og:image（PNG実体つき）とtwitter:cardを追加。X表示問題はこれで説明がつく。スマホ白画面は先にキャッシュ／デプロイ反映を疑い、コードのバグ扱いは保留すべきでは。",
+    "confidence": 3
+   },
+   "cost_usd": 0.2733972
+  },
+  {
+   "slot": "main",
+   "task": "incident",
+   "type": "entp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "14ad0b2590871e9d",
+   "data": {
+    "findings": [
+     {
+      "title": "X埋め込み崩壊はバグじゃなく仕様の欠落。OGP/Twitter Cardタグが最初から存在しない",
+      "where": "<head> 4〜11行目（meta description はあるが og:title / og:image / og:url / twitter:card が皆無）",
+      "why": "XはHTML内のOGPタグをクロールしてカードを組み立てる。無ければサムネもタイトルも出ないのは必然。ここは確定で疑う余地なし、最優先で足すべき。"
+     },
+     {
+      "title": "og:imageを足しても画像がそもそも無い。favicon.svgしか存在しない",
+      "where": "8行目 <link rel=\"icon\" ... href=\"favicon.svg\">",
+      "why": "Twitterカードはsvgを画像として扱えないことが多い。og:imageには絶対URLのpng/jpgが要る。OGP追加とセットで新規アセットが必要、逆にここサボると二度手間になる。"
+     },
+     {
+      "title": "「スマホで真っ白」はこのコード単体からは再現する決定的な単一障害点が見つからない――前提を疑え",
+      "where": "全体（特定不能）／疑うべきは配信側",
+      "why": "モバイル分岐(.panel非表示、キーハンドラのpanelLive()早期return)は安全に倒れる設計になっている。コードより先にpushからの経過時間・キャッシュ未反映・シークレットモードでの再現有無を潰すべき。"
+     },
+     {
+      "title": "700px以下でパネルが丸ごと消える仕様(display:none)を『真っ白』と誤読している可能性",
+      "where": "253行目 .panel{display:none}（@media max-width:700px 内）",
+      "why": "detail panelはモバイルで意図的に非表示、代わりにカード下の.artlinkに切り替わる設計。報告者が『画面のどの部分が白いか』を言語化していないなら、これが仕様であることをまず確認すべき。"
+     },
+     {
+      "title": "data-art無しカードで記事欄がundefined化するバグを放置（別件だが実在）",
+      "where": "640〜643行目 paint() 内 P.art.href = c.dataset.art; ／ P.art.hidden は常にfalse固定",
+      "why": "コメントには『記事が無い作品は行を隠す』とあるのに実装は反していない。374/388行目のカードにdata-artが無くhref=\"undefined\"になる。ただしデスクトップのパネル限定でモバイルの真っ白報告とは無関係、混同しないよう切り分けが必要。"
+     }
+    ],
+    "top_recommendation": "まずOGP/Twitter Cardタグとog:image用画像を追加。並行して『真っ白』はシークレットモード＋別端末でpush後の反映待ちを疑い、コードの犯人探しを急がない。",
+    "confidence": 4
+   },
+   "cost_usd": 0.31375810000000004
+  },
+  {
+   "slot": "main",
+   "task": "incident",
+   "type": "entj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "b2a8b0fc7782962f",
+   "data": {
+    "findings": [
+     {
+      "title": "OGPとTwitter Cardのmetaタグが皆無",
+      "where": "index.html 3-11行目 <head> 内",
+      "why": "og:title / og:description / og:image / twitter:card が一つもない。Xはこれを見てカードを組む。ないから出ない。原因は明白、議論の余地なし。"
+     },
+     {
+      "title": "OGP修正の実装単位まで指示：画像はSVG不可・絶対URL必須",
+      "where": "favicon.svg（8行目）しか画像資産がない",
+      "why": "og:imageはPNG/JPGの絶対URL（例1200x630）が要る。favicon.svgを流用しても表示保証されない。誰が用意し、いつ本番反映するかを今決めろ。"
+     },
+     {
+      "title": "モバイル白画面：コードだけでは原因断定不可、まず実機コンソールを見ろ",
+      "where": "line 11 Google Fontsの同期<link rel=stylesheet>／全体構造",
+      "why": "静的HTML1枚でJS例外があっても画面は白くならない。犯人はコードでなく回線・キャッシュ・端末側の可能性が高い。推測で直す前に事実を取れ。"
+     },
+     {
+      "title": "疑うべき筆頭候補：Google Fontsのレンダーブロッキング",
+      "where": "9-11行目 fonts.googleapis.com への同期stylesheet",
+      "why": "モバイル回線が細い、または広告ブロッカーやDNSでgoogleapis.comが遅延・遮断されると初期描画が長時間止まり『白』に見える。PCと差が出る筋として最も筋が通る。"
+     },
+     {
+      "title": "P.art.hidden が常にfalse固定でコメントと矛盾（副次バグ）",
+      "where": "script 640-643行目 paint(i) 内",
+      "why": "『解説記事がない作品は行を隠す』とコメントにあるが実装は無条件でhidden=false。Claude AnywhereとSpoiler Block for X（data-art未定義）でhref='undefined'が出る。今回の報告とは無関係だが放置すれば次の火種になる。"
+     }
+    ],
+    "top_recommendation": "まずheadにog:title/og:description/og:image(絶対URL・PNG)とtwitter:cardを追加してXカードを即修正。モバイル白画面はコード起因と決めつけず、実機リモートインスペクタでコンソール／Networkを確認してから手を動かせ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.34303400000000006
+  },
+  {
+   "slot": "main",
+   "task": "incident",
+   "type": "infj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "f1160c1521a71075",
+   "data": {
+    "findings": [
+     {
+      "title": "X（旧Twitter）でサムネ・タイトルが出ないのはバグではなく未実装",
+      "where": "<head> 7〜11行目付近（meta description の後）",
+      "why": "og:title / og:description / og:image / twitter:card 等の OGP・Twitter Card タグが一切存在しない。X のクローラーはこれらを読むだけなので、出ないのは仕様通りの結果であり『不具合』ではない。まずここに気がかりがある——ここを直さない限り何度共有しても同じ結果になる。"
+     },
+     {
+      "title": "OGP用の画像資産そのものが存在しない",
+      "where": "8行目 <link rel=\"icon\" ... favicon.svg>、og:image に相当するファイルなし",
+      "why": "favicon.svg しか用意されておらず、SVG は og:image として多くのプラットフォーム（X含む）で非対応。1200x630程度の PNG/JPG を別途用意しないと、タグを足しても画像は出ない。"
+     },
+     {
+      "title": "『スマホで真っ白』はこのコードのロジックからは再現性が低い",
+      "where": "@media(max-width:700px) 238〜259行目 / .panel{display:none} 253行目",
+      "why": "モバイルで消えるのは .panel だけで、.slab のカード群・本文は表示され続ける設計。真っ白になる論理的経路が見当たらない。人は『見えない』事実だけを訴えがちだが、その背後にある実際の状況——キャッシュ古い版／別URL／デプロイ未反映——をまず疑うべきだと感じる。"
+     },
+     {
+      "title": "真っ白の切り分け手順（優先度順）",
+      "where": "実機 + Safari/Chrome リモートデバッグ、GitHub Actions のビルドログ",
+      "why": "①シークレットモード・キャッシュ削除後に再現するか ②実際に開いた URL が https://yukurash.github.io/ 完全一致か（大文字小文字・末尾スラッシュ・古いブックマーク）③ Actions の Pages デプロイが成功しているか ④リモートデバッグで console にJSエラーが出ていないか、の順で確認するのが誠実な進め方だと思う。"
+     },
+     {
+      "title": "JSは属性欠落に対して意図的に堅牢だが、モバイルSafari固有機能への依存は未検証",
+      "where": "script 600〜723行目 全体、特に matchMedia('(prefers-reduced-motion:reduce)') 618行目・731行目",
+      "why": "拡張機能2件は data-art/data-artt を持たないが dataset.art は単に undefined になるだけで例外は起きない設計になっている。ただし matchMedia や classList、MutationObserver は古いモバイルブラウザでは未対応な場合があり、そこで例外が出ると script 全体が止まって初期状態の paint(0) すら走らず見た目が崩れる可能性はゼロではない。実機ログでの確認が必要。"
+     }
+    ],
+    "top_recommendation": "まず og:title/og:image/twitter:card を head に追加せよ。真っ白報告は、直す前にスマホのシークレットモードで再現するかを確認し、コード側の欠陥だと決めつけないこと。",
+    "confidence": 4
+   },
+   "cost_usd": 0.23540870000000003
+  },
+  {
+   "slot": "main",
+   "task": "incident",
+   "type": "infp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "c2400d91b2eab947",
+   "data": {
+    "findings": [
+     {
+      "title": "X貼り付けでサムネ・タイトルが出ない原因はOGP未設定",
+      "where": "head内 4〜11行目（meta description はあるが og:title / og:image / og:description / twitter:card が存在しない）",
+      "why": "Xはog:*とtwitter:cardタグを見にいく。これが無いと本文だけの寂しいリンクになる。ここは誰が悪いでもなく、単純に足りないだけだと感じる。"
+     },
+     {
+      "title": "スマホ「真っ白」はこのコード単体からは再現性が読めない",
+      "where": "全体（CSSはstyleタグ内にインライン、外部依存はGoogle Fontsとfavicon.svgのみ）",
+      "why": "致命的なJSエラーやレイアウト崩壊要因が見当たらない。読み込み失敗があってもレイアウトが崩れるだけで真っ白にはならないはずで、断定は危うい。"
+     },
+     {
+      "title": "切り分け最優先はキャッシュとCDN反映待ち",
+      "where": "GitHub Pages（Fastly CDN）／報告者のスマホブラウザキャッシュ",
+      "why": "push直後だと数分〜十数分の反映遅延がある。まずスマホでシークレットタブ＋強制リロード、時間を置いて再確認する手順を踏むのが誠実だと感じる。"
+     },
+     {
+      "title": "実機のコンソールログを見ないまま原因を決めつけない",
+      "where": "Safari(iOS)ならMacのWeb Inspector、AndroidならChrome remote debuggingでconsole/Networkを確認",
+      "why": "報告者の『真っ白』という言葉だけを鵜呑みにせず、実際に何が起きているかを見に行くのが、当事者の困りごとに誠実に向き合う第一歩だと思う。"
+     },
+     {
+      "title": "P.art.hiddenのロジックがコメントと矛盾している",
+      "where": "script内 640〜643行目（コメントは『記事が無いカードは行を隠す』とあるがP.art.hidden=falseで常に表示）",
+      "why": "data-artの無いカード（Claude Anywhere等）で壊れたリンクが出る古いバグ。ただしpanelはモバイルで非表示なので今回の『真っ白』とは別件として切り分けたい。"
+     }
+    ],
+    "top_recommendation": "まずhead内にog:title/og:image/og:description/twitter:cardを追加する。これはコードを見れば確実に直せる部分だから。",
+    "confidence": 4
+   },
+   "cost_usd": 0.3238579
+  },
+  {
+   "slot": "main",
+   "task": "incident",
+   "type": "istj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "9c388198d097a74a",
+   "data": {
+    "findings": [
+     {
+      "title": "X埋め込み不具合はOGP/Twitter Cardタグの完全な欠如が原因",
+      "where": "head内 7〜11行目周辺（og:title, og:image, og:description, twitter:card が一つも存在しない）",
+      "why": "実際のところ、X のクローラーはJSを実行せずmetaタグのみを見る。descriptionメタはあるがog系が皆無なので、サムネもタイトルも出ないのは当然の結果。過去の例でもこのパターンは100%再現する。"
+     },
+     {
+      "title": "真っ白報告はまず実機consoleとネットワークタブを見るのが先",
+      "where": "-",
+      "why": "データはあるのか、が先決。コード自体に致命的なバグは見当たらず、憶測で箇所を潰す前に実機ログ（Safari Web Inspector等）でエラーの有無を確認する手順が抜けている。"
+     },
+     {
+      "title": "animation-fill-mode:bothでopacity:0のまま固着する既知挙動を疑う",
+      "where": ".sect（55行目）、.cell（108〜116行目）の animation:rise ... both",
+      "why": "iOS Safariではタブ切替やバックグラウンド復帰時にCSSアニメーションが完了扱いにならず、fromの opacity:0 のまま止まる不具合が過去に確認されている。真っ白＝背景色ではなく要素が消えている可能性がある。"
+     },
+     {
+      "title": "「push直後にスマホで確認」は反映タイムラグ・キャッシュの再現しない事例の可能性",
+      "where": "-",
+      "why": "GitHub Pagesの反映には数分かかることがあり、PCとスマホで参照タイミングやCDNキャッシュが異なれば片方だけ古い/新しい状態を見ることになる。時間を置いて再確認しないと切り分けが誤る。"
+     },
+     {
+      "title": "data-art無しカードでも解説記事行が消えないコメントと実装の不一致",
+      "where": "script内 640〜643行目（P.art.hidden = false が固定、undefined分岐なし）／該当カード 374, 388行目",
+      "why": "コメントには『記事が無い作品は行ごと隠す』とあるが実装が伴っておらず、href=undefinedのリンクが表示され続ける。約束（コメント）と実行が一致していない。"
+     }
+    ],
+    "top_recommendation": "OGP/Twitter Cardタグを即追加（確実な原因）。真っ白は憶測で直さず、まず実機のconsoleとネットワークタブでエラーの有無を確認せよ。",
+    "confidence": 3
+   },
+   "cost_usd": 0.29581055
+  },
+  {
+   "slot": "main",
+   "task": "incident",
+   "type": "enfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "3477b96b7d7fe5f1",
+   "data": {
+    "findings": [
+     {
+      "title": "X(旧Twitter)カード無反応はOGP/Twitterカードmetaタグが皆無なのが根本原因",
+      "where": "index.html <head> 4〜11行目（<meta name=\"description\">はあるがog:*/twitter:*が一切ない）",
+      "why": "Xのクローラーはog:title/og:description/og:image、またはtwitter:card系metaを見てサムネ・タイトルを生成する。現状これらが存在しないため100%再現する、確実な不具合。favicon.svgもベクタでog:imageには使えない。"
+     },
+     {
+      "title": "『スマホで真っ白』はコードから即断せず、まず実機ログを取るのが先",
+      "where": "-（切り分け手順の問題）",
+      "why": ".panel{display:none}(253行)などモバイル分岐は意図通りで、カード一覧側は表示され続ける設計。JS側にもモバイル限定でthrowする箇所は見当たらないため、まずAndroidはchrome://inspect、iOSはSafari開発者ツールでconsoleエラー・DOM状態を確認すべき。"
+     },
+     {
+      "title": "『真っ白』報告そのものが本コード起因では再現しにくい可能性が高い",
+      "where": "-",
+      "why": "全CSSメディアクエリは崩れずグレースフルに縮退し、JSもpanel非表示時はpanelLive()でガードされている。コード上に『幅が狭いと丸ごと消える』構造的欠陥がなく、環境要因（キャッシュ・拡張機能・実機固有のクラッシュ）を優先して疑うべき。"
+     },
+     {
+      "title": "Google FontsのCSSが同期ブロッキング読み込みで低速回線だと長時間白画面に見える恐れ",
+      "where": "9〜11行目 <link rel=\"preconnect\">/<link href=\"https://fonts.googleapis.com/css2?...\" rel=\"stylesheet\">",
+      "why": "font-display:swapはWebフォント本体には効くが、CSSファイル自体の取得はレンダーブロッキング。PCの高速回線では一瞬でも、モバイル回線が不安定だと『真っ白のまま』に見える体感差が出やすい。media切替の非同期読込やセルフホストへの変更を検討すべき。"
+     },
+     {
+      "title": "push直後の確認はGitHub Pagesのデプロイ反映・キャッシュ差分も疑う",
+      "where": "-（デプロイ運用の確認）",
+      "why": "『pushした直後にスマホで開いたら』という報告はActionsのデプロイ完了前や、CDN/ブラウザキャッシュに旧バージョンが残っている可能性がある。まずActionsタブでデプロイ完了を確認し、モバイルはプライベートブラウズで再検証するのが安全。"
+     }
+    ],
+    "top_recommendation": "og:title/og:description/og:image(+twitter:card=summary_large_image)を<head>に追加し絶対URLの画像を用意する。白画面は先にコード修正でなく実機のリモートデバッグでconsoleエラーとネットワークログを取得して切り分ける。",
+    "confidence": 4
+   },
+   "cost_usd": 0.3505459
+  },
+  {
+   "slot": "main",
+   "task": "incident",
+   "type": "enfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "d9638e09c2f1d9f8",
+   "data": {
+    "findings": [
+     {
+      "title": "Xでサムネ・タイトルが出ないのは仕様通り、OGP/Twitterカードのmetaが皆無",
+      "where": "index.html 7〜11行目（head内、descriptionやpreconnectのあたり）",
+      "why": "og:title, og:image, og:url, twitter:card などが一枚も無い。これはたまたま起きた不具合ではなく最初から準備してなかっただけ。ここはすぐ追加してあげよう。"
+     },
+     {
+      "title": "真っ白はまずキャッシュ反映待ちを疑うべき、コード内に決定的な白画面バグは見当たらない",
+      "where": "全体（特にscript部 600〜789行目）",
+      "why": "JSが例外で止まってもCSSのriseやsweepアニメーションはJSと独立して走るので要素はopacity1に落ち着くはず。reduced-motion環境でも279行目のフォールバックで表示されるので真っ白にはなりにくい。pushが本当に反映されているか、シークレットモードでも同じか確認してほしい。"
+     },
+     {
+      "title": "Google Fontsのrender-blocking読み込みが遅い回線で一瞬の白を作っている可能性",
+      "where": "9〜11行目 linkタグでfonts.googleapis.comのcss2を読み込んでいる箇所",
+      "why": "外部CSSはpreload指定もasync化もされておらずモバイル回線が細いと数秒ここでブロックされる。真っ白の正体はこれの可能性が高い。"
+     },
+     {
+      "title": "解説記事欄の非表示ロジックがコメントと実装で食い違っている",
+      "where": "script内 paint関数 641〜643行目 P.art.hidden=falseが常時実行される箇所",
+      "why": "コメントにはdata-artが無い作品は行ごと隠すとあるのに実装は常にhiddenをfalseにしている。Chrome拡張2件374行目と388行目のカードを選ぶと空欄の解説記事行が出るはず。"
+     },
+     {
+      "title": "真っ白報告は再現性が低い可能性、まず実機の情報を集めてから動くべき",
+      "where": "-",
+      "why": "コードを読んでも決定打が見つからない以上、どの機種OSブラウザか、シークレットモードでも起きるか、DevToolsのリモートデバッグでconsoleにエラーが出てるかを先に確認するのが誠実だと思う。"
+     }
+    ],
+    "top_recommendation": "まずOGP/Twitterカードのmetaタグを追加（最優先・100%再現）。次にスマホ側で実機のconsoleログとキャッシュ状況を確認してから白画面の原因を絞り込もう。",
+    "confidence": 4
+   },
+   "cost_usd": 0.3537713
+  },
+  {
+   "slot": "main",
+   "task": "incident",
+   "type": "isfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "6c378fa575723857",
+   "data": {
+    "findings": [
+     {
+      "title": "X表示無効の直接原因はOGP/Twitter Cardタグの欠如",
+      "where": "head内 4-11行目",
+      "why": "og:title, og:image, og:description, twitter:cardが一切無く、Xのクローラーがサムネ・タイトルを取得できないため、環境差ではなく確実に再現する不具合。"
+     },
+     {
+      "title": "スマホ真っ白はコード上に決定的原因が見当たらない",
+      "where": "-",
+      "why": "JSやCSSの全体を見てもモバイル分岐で致命的に落ちる箇所は無く、まず実機コンソールログの確認が先。"
+     },
+     {
+      "title": "疑うべき箇所1：GitHub Pagesの反映待ちやキャッシュ",
+      "where": "-",
+      "why": "push直後という時系列から、デプロイ反映遅延や端末側キャッシュで古い状態を見ている可能性がある。"
+     },
+     {
+      "title": "疑うべき箇所2：WebView等ブラウザ固有のJSエラー",
+      "where": "600-790行目のscript全体",
+      "why": "typing演出やMutationObserverなど比較的新しいJSを使っており、Xアプリ内ブラウザ等の古いWebViewで構文エラーが起き描画に影響していないか確認したい。"
+     },
+     {
+      "title": "パネル非表示(700px以下)と真っ白は別現象として切り分けるべき",
+      "where": "253行目 .panel{display:none}",
+      "why": "700px以下でパネルが消えるのは意図した仕様であり、真っ白の報告がこれを指しているだけの可能性もあるため確認が要る。"
+     }
+    ],
+    "top_recommendation": "まずOGPタグを追加してX表示を修正しつつ、スマホの真っ白は実機コンソールとキャッシュクリアで再現条件を先に特定する。",
+    "confidence": 3
+   },
+   "cost_usd": 0.32768435000000007
+  },
+  {
+   "slot": "main",
+   "task": "incident",
+   "type": "estj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "242b5e2fb01c0c95",
+   "data": {
+    "findings": [
+     {
+      "title": "X貼付でサムネ・タイトルが出ないのは原因確定：OGP/Twitter Cardタグが皆無",
+      "where": "<head> 3〜11行目（meta description は7行目にあるが og:title / og:description / og:image / twitter:card が存在しない）",
+      "why": "XはOGP・Twitter Cardのmetaタグを読んでカードを生成する。1枚もHTMLに無い以上、これは仕様通りの動作。誰が og:image を用意し、いつ入れるかを今日中に決めろ。"
+     },
+     {
+      "title": "「スマホで真っ白」はコード単体からは再現理由が説明できない。報告として不完全",
+      "where": "報告全体（該当箇所なし）",
+      "why": "本文はJS実行前から静的HTMLとして存在し、CSS/JS単体の失敗では『真っ白』にはならない。機種・OS・ブラウザ・通信状況・consoleエラーの提出を先に求めるべき。切り分けなしで原因を語るのは非効率。"
+     },
+     {
+      "title": "data-art が無いカードでも関連記事リンクが常に表示される実装漏れ",
+      "where": "script内 paint() 640〜643行目（P.art.hidden = false; の一行固定）",
+      "why": "コメントには『無い場合は行ごと隠す』と書いてあるのに分岐が実装されていない。Chrome拡張2件（374行・388行のcell、data-art属性なし）を選ぶと href=\"undefined\" のリンクが出る。ルールを書いたなら実装まで責任を持て。"
+     },
+     {
+      "title": "700〜1080px帯でパネルの挙動仕様が中途半端。スマホ横向きで真っ白ならここを疑え",
+      "where": "CSS: .screen(92-93行), .panel position:static(159行), .panel display:none(253行) ／ JS: panelLive()(615行)",
+      "why": "パネル非表示は700px以下のみ、レイアウト1カラム化は1080px以下。この境界の不整合により、スマホ横向きや大きめの端末では『反応が変わって見える』誤認が起きうる。真っ白の代わりに『何も変わらない』誤報の可能性もある。"
+     },
+     {
+      "title": "デプロイ経路（push先ブランチ・キャッシュ）の確認手順が抜けている",
+      "where": "運用手順（コード外）",
+      "why": "PCでは見えてスマホで見えないという非対称は、コードの欠陥より Pages 反映遅延・端末側キャッシュ・別ブランチへのpushが典型原因。ルールとして『まずハードリロードと実際のデプロイ先URLを確認』を先にやらせろ。"
+     }
+    ],
+    "top_recommendation": "1) OGPタグを今日中に追加して期限を切る。2)「真っ白」はスマホ実機のconsoleログとURL・キャッシュ状態を先に取ってから調査に着手させる。",
+    "confidence": 3
+   },
+   "cost_usd": 0.30426244999999996
+  },
+  {
+   "slot": "main",
+   "task": "incident",
+   "type": "istp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "e8e1fc52e7c1fa95",
+   "data": {
+    "findings": [
+     {
+      "title": "X（旧Twitter）にサムネ・タイトルが出ないのは仕様どおり。バグですらない",
+      "where": "head内 4〜11行目。og:title / og:description / og:image / twitter:card が一つも無い",
+      "why": "X はOGPかtwitter:cardしか見ない。descriptionのmetaだけじゃ拾わない。実装してないから出ない、それだけ。直しようは一つ、タグを足すこと。"
+     },
+     {
+      "title": "『スマホで真っ白』はこのコードだけじゃ説明つかない",
+      "where": "body全体（285行〜）、scriptタグは600行・724行で末尾",
+      "why": "静的HTMLはscriptが動く前に描画される。JSがどこかで死んでも全消しにはならない構造。opacity:0で待たせるようなゲートもコードに無い。感覚で犯人を決めるより先に実機を見ろ。"
+     },
+     {
+      "title": "切り分け手順1：実機のコンソールを直接見る",
+      "where": "- (作業手順。DevTools remote debugging)",
+      "why": "iOSはMacのWeb InspectorでSafariにつなぐ、AndroidはPCでchrome://inspect。推測でCSSいじる前に、エラーが出てるかどうかを事実として確認してから動け。"
+     },
+     {
+      "title": "切り分け手順2：pushした版が本当に配信されているか疑え",
+      "where": "GitHub Pagesのビルド状況（Actions）とスマホ側のキャッシュ",
+      "why": "『pushした直後』は反映遅延の典型パターン。PCで見えてるのは古いキャッシュか別コミットの可能性がある。シークレットモードでスマホから開き直せば切り分けられる。やってみれば分かる。"
+     },
+     {
+      "title": "白画面の再現条件を先に絞れ、報告だけでは判断材料が薄い",
+      "where": "- (再現手順の確認: 機種・OS・ブラウザ・ネットワーク環境)",
+      "why": "『真っ白』が一瞬のFOIT（フォント読み込み待ち）なのか完全な描画崩壊なのか区別がついてない。コード上に真っ白になる論理的な仕掛けは見当たらないから、まず現象を事実として再現させる方が早い。"
+     }
+    ],
+    "top_recommendation": "まず実機でリモートデバッグしてコンソールを見ろ。推測でコード直す前に事実を取れ。Xカードの件は原因確定してるからOGPタグを足すだけでいい。",
+    "confidence": 4
+   },
+   "cost_usd": 0.24004860000000003
+  },
+  {
+   "slot": "main",
+   "task": "incident",
+   "type": "esfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "d3c3362eadf767ed",
+   "data": {
+    "findings": [
+     {
+      "title": "Xカード無反応はほぼ確実に再現する事象。OGPタグが皆無",
+      "where": "index.html 3〜11行目 <head> 内",
+      "why": "og:title / og:image / og:description / twitter:card がどこにも無い。7行目の description は通常の meta で、X はこれを読まない。favicon.svg も og:image には使えず、Xがサムネイル・タイトルを出しようがない状態。これは『たまたま』ではなく確実な原因。"
+     },
+     {
+      "title": "スマホ白画面はまず『本当に真っ白か』の切り分けが先。再現条件を絞るべき",
+      "where": "報告内容そのもの（再現手順の情報不足）",
+      "why": "『PCでは見える』だけでは、どの機種・ブラウザ・回線・シークレットモードか不明。GitHub Pagesのキャッシュ反映ラグやブラウザ側キャッシュで一時的に古い版/失敗表示を見ている可能性があり、まずハードリロードと別ブラウザでの再現確認をしないと原因を誤診断しかねない。周りの人にも同じ現象が出ているか、まず聞いて回るのが筋。"
+     },
+     {
+      "title": "opacity:0始まりのCSSアニメーションが不発火だと要素が消えたままになる設計リスク",
+      "where": "50行目 @keyframes rise、55行目 .sect{animation:rise ... both}、108/115行目 .cell の animation",
+      "why": "fill-mode:both は開始前も from{opacity:0} を保持する。iOSの低電力モードなど何らかの理由でCSSアニメーションが発火しないと、セクションやカードが opacity:0 のまま固まり、体感『真っ白』になる。これは実機のWeb Inspectorでopacity値を見れば即断定できる、最も疑うべき技術的原因。"
+     },
+     {
+      "title": "実機Safariのコンソールエラー未確認。JS例外で描画が止まっている可能性も残る",
+      "where": "600〜790行目 <script> 2本",
+      "why": "コード上は致命的な構文エラーは見当たらないが、実機のみで起きる非対応API（matchMedia/MutationObserverの挙動差、-webkit-line-clampの解釈違い等）が例外を出していないかは、PCの目視だけでは分からない。まずSafariの『Webインスペクタ』接続でconsoleを見るのが最短。"
+     },
+     {
+      "title": "『PCでは見えている』は別ブレークポイントの話であり、モバイル分岐の検証にはならない",
+      "where": "66/79/93/104/159/205/235/238/263/700行など複数の @media 分岐",
+      "why": "1080px・700px・640pxと複数の閾値でレイアウトが切り替わる作りのため、PCのウィンドウ幅で見えていても実機の狭い幅（.panel が display:none になる700px以下等）は別ロジックを通る。『PCで見える』を根拠に一部の分岐を除外するのは早計。"
+     }
+    ],
+    "top_recommendation": "まずOGPタグ（og:title/og:image/og:description/twitter:card）を追加してXの件を確実に直しつつ、スマホ白画面は実機のSafariインスペクタでopacity値とconsoleエラーを見て原因を確定させること。みんなが困ってる部分から順に手を打っていきましょう。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2440309
+  },
+  {
+   "slot": "main",
+   "task": "incident",
+   "type": "estp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "953436eb1937048b",
+   "data": {
+    "findings": [
+     {
+      "title": "X共有でカード非表示は確定バグ：OGP/Twitterタグが1個もない",
+      "where": "index.html 3〜11行目 <head>内",
+      "why": "og:title・og:image・twitter:cardが皆無。Xのクローラーは<head>のメタしか見ないから、これはJSの話じゃなく確実に100%再現する。まずここから直せ。"
+     },
+     {
+      "title": "『スマホで真っ白』はコード単体では原因が見えない、実機を見るのが先",
+      "where": "報告内容そのもの（再現手順・環境情報の不足）",
+      "why": "CSSはインラインでJS未実行でも描画される作りだから、コード上に真っ白になる直接原因が見当たらない。機種・ブラウザ・回線を聞かずに直しに行くのは無駄撃ちになる。"
+     },
+     {
+      "title": "Google Fontsの同期<link>がレンダーをブロックしてる",
+      "where": "index.html 11行目 <link rel=\"stylesheet\" href=\"fonts.googleapis.com/css2...\">",
+      "why": "外部CSSを同期読込してるから、回線が細い・fonts.gstatic.comに繋がりにくいモバイル環境だと初回描画が固まって『真っ白』に見える可能性がある。白画面報告の一番の容疑者。"
+     },
+     {
+      "title": "og:image用の画像アセットがそもそも存在しない",
+      "where": "リポジトリ全体（<head>にog:image記述なし、favicon.svgのみ）",
+      "why": "favicon.svgはOGP画像として弱い。Xはある程度の解像度の静的画像を要求するから、タグ追加だけじゃなく1200×630級のPNGを新規に用意しないと結局サムネは出ない。"
+     },
+     {
+      "title": "『PCでは見える』の比較条件がズレてる可能性、X内蔵ブラウザ疑え",
+      "where": "報告テキスト（切り分け不足）",
+      "why": "Xに貼った直後の確認はXアプリ内WebViewで開いてることが多く、通常のSafari/Chromeと挙動が違う。同じ意味で『開いた』のか確認しないと再現条件が特定できない。"
+     }
+    ],
+    "top_recommendation": "やってみよう、まずog:title・og:image・twitter:cardを<head>に足して画像用意。X共有の件は原因確定してるからそこから潰す。スマホ白画面は先に実機のコンソール見てから動く。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2557593
+  },
+  {
+   "slot": "main",
+   "task": "refactor",
+   "type": "intj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "f9ec4aaac1388aef",
+   "data": {
+    "findings": [
+     {
+      "title": "data-artなしカードでart行が非表示にならないバグ",
+      "where": "640-643行目 paint()",
+      "why": "コメントは『data-artがなければ行を隠す』とあるが実装はP.art.hidden=falseを固定。374/388行目のカードで壊れたリンクが表示される。"
+     },
+     {
+      "title": "data-into区切り文字とsplit(',')の不一致バグ",
+      "where": "634行目 c.dataset.into.split(',').join('\\n')",
+      "why": "属性値は|区切り（314,515,532行目）なのにカンマで分割しており、複数行表示が機能していない。"
+     },
+     {
+      "title": "JSON外出し(c)は不採用：演出とDOMが密結合している",
+      "where": "733行目 --i設定 / 673-710行 nearest()",
+      "why": "キーボードナビゲーションはDOM座標実測に依存し、JS生成カードに切り替えるとレイアウト確定タイミング依存の不安定要素が増える。得るものに対しコストが見合わない。"
+     },
+     {
+      "title": "CSS/JS分離(b)も不採用：規模が分離の閾値に達していない",
+      "where": "12-283行目CSS / 600-790行目JS",
+      "why": "各270行・190行は単体で読める規模。更新頻度の低い個人サイトではキャッシュ分離の実利もほぼゼロ。1ファイルで完結する価値の方が大きい。"
+     },
+     {
+      "title": "a維持の判断が覆る条件を事前固定",
+      "where": "-",
+      "why": "作品30件超、複数人編集、他プロジェクトでのビルド資産流用、SSR要件発生のいずれかが起きるまではaを維持すべき。"
+     }
+    ],
+    "top_recommendation": "構造変更(b/c)より先に、640-643行目のart非表示ロジックと634行目のsplit(',')ミスマッチという実バグ2件を直せ。その上でaを維持する。",
+    "confidence": 4
+   },
+   "cost_usd": 0.24090940000000002
+  },
+  {
+   "slot": "main",
+   "task": "incident",
+   "type": "isfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "cc8ec74838444fe3",
+   "data": {
+    "findings": [
+     {
+      "title": "XのサムネイルとタイトルはOGPタグがなく出ない",
+      "where": "head内4-11行付近",
+      "why": "Xはog:image/og:title/twitter:cardを見る。descriptionだけでは拾われないため確実な原因。"
+     },
+     {
+      "title": "スマホ真っ白はコード上に明確な原因が見当たらない",
+      "where": "-",
+      "why": "初期HTMLは静的に書かれておりJSが落ちても本文自体は残る構造。実装バグではなく外的要因を疑うべき。"
+     },
+     {
+      "title": "まずキャッシュとconsoleエラーの確認を優先すべき",
+      "where": "-",
+      "why": "push直後の再現なのでCDNやスマホ側の古いキャッシュが残っている可能性が高い。プライベートブラウズで再現確認する。"
+     },
+     {
+      "title": "低電力モードでCSSアニメーションが止まる可能性",
+      "where": "50行keyframes rise、55行.sect animation、115行.cell animation-delay",
+      "why": "fill-mode bothでfromがopacity0のアニメが低電力モードで発火せず止まる既知の挙動がある。"
+     },
+     {
+      "title": "overflow-x hiddenとposition stickyの組み合わせが気になる",
+      "where": "40行body overflow-x hidden、156行.panel position sticky",
+      "why": "700px以下ではpanelは非表示だが中間幅の端末でSafari特有のsticky崩れが起きる可能性がある。"
+     }
+    ],
+    "top_recommendation": "実機のSafari Web Inspectorでconsoleとキャッシュ状態を先に確認し、並行してOGPタグを追加する。",
+    "confidence": 3
+   },
+   "cost_usd": 0.3580449
+  },
+  {
+   "slot": "main",
+   "task": "refactor",
+   "type": "entj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "e664efd7ef2eaa12",
+   "data": {
+    "findings": [
+     {
+      "title": "結論：a. 1ファイル維持で決定。b/cはROIが低い",
+      "where": "全体構成／roster全体 309-547行",
+      "why": "作品12件・更新は年数回・単一ページ・ビルドツール無しという規模では、分割は追加リクエストと管理ファイル増を生むだけで速度も保守性も改善しない。数字で見合わない打ち手はやらない。"
+     },
+     {
+      "title": "c案（JSON外出し）はno-JS/クローラー耐性を破壊する",
+      "where": "312-326行（.cell の href/data-*構造）、253行 .panel{display:none}",
+      "why": "現状は<a>+data属性で情報が静的HTMLに存在し、モバイルはJSなしでもリンクとして機能する。JSON生成に変えるとfetch失敗・JS未実行時にコンテンツが消える。効率化のつもりが可用性を落とすなら本末転倒。"
+     },
+     {
+      "title": "b案（CSS/JS分離）は今やっても効果が測れない",
+      "where": "12-283行 <style>、600-790行 <script>",
+      "why": "ビルド工程がない以上、分離は<link>/<script src>のリクエストを増やすだけで表示速度は改善しない。可読性向上はエディタのfold機能で代替可。複数ページ展開がない限り再利用価値もゼロ。"
+     },
+     {
+      "title": "判断が覆る条件を数値で固定：作品20件超 or 複数人運用でc、複数ページ展開でb",
+      "where": "roster内 group数7（309,331,371,407,429,466,493行）",
+      "why": "「場合による」で終わらせないための撤退ライン。件数が増えデータ管理コストがHTML編集コストを上回った瞬間、または他ページで同一データを再利用する必要が出た瞬間に構造を変える。それまでは着手しない。"
+     },
+     {
+      "title": "分割より先にJS内の重複ロジックを整理すべき",
+      "where": "624-648行 paint()、767-774行 fx()（MutationObserverでの二段トリガー）",
+      "why": "paint()とfx()が別々にDOM操作しており、1ファイル内でも責任分界が曖昧。ファイル分割という体裁より先に、この二重処理を一本化する方が保守性への実利が大きい。"
+     }
+    ],
+    "top_recommendation": "a. 現状の1ファイルを維持。作品数20件超か複数ページ展開が発生するまでb/cには着手しない。まず624-648行と767-774行の重複ロジックを一本化しろ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2118289
+  },
+  {
+   "slot": "main",
+   "task": "refactor",
+   "type": "intp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "efaac1604fbe8bba",
+   "data": {
+    "findings": [
+     {
+      "title": "結論：a（1ファイル維持）を採る。ただし条件付き",
+      "where": "index.html 全体（792行）",
+      "why": "12件・792行という規模はまだ『分割コストが分割益を上回らない』境界の内側にある。定義が曖昧なまま『場合による』で止めるのは怠慢だと自分でも思うので、閾値を明示して結論を固定する：作品数が20件を超える、または全体が1500行を超えたら b/c を再検討する。"
+     },
+     {
+      "title": "c（JSON外出し）は却下——data-*属性つきaタグがno-JSフォールバックとして機能している",
+      "where": "312-544行目 <a class=\"cell\" data-art data-ja ...>、JS側 paint() (624-648行)",
+      "why": "現状の cell は JS 無効時でも href だけで各作品ページに到達できる、progressive enhancement な構造になっている。JSON化してJSでDOM生成する設計に変えると、この前提が崩れないか？ 崩れるなら SEO とアクセシビリティの両方を失うことになる。この設計の巧妙さを維持コストと引き換えにする根拠が見当たらない。"
+     },
+     {
+      "title": "b（CSS/JS分離）も現時点では見送り——分離を正当化する前提が示されていない",
+      "where": "12-283行（CSS約270行）、600-790行（JS約190行）",
+      "why": "『複数人での共同編集が始まる』『他ページへの再利用が発生する』のいずれかの前提があれば分離は妥当だが、今のところそのどちらも成立していないように見える。単一ファイルでコピペ移植できる利便性を捨てる論理的必然性がない。"
+     },
+     {
+      "title": "この設問自体が3択を独立変数として扱っているが、実際は結合した意思決定では",
+      "where": "依頼文の選択肢 a/b/c",
+      "why": "a を選んでも b や c を部分的に採用する余地は排除されない。例えば nearest() や type()/roll() だけを別ファイルに切り出し、cell の data-* 構造とJSONは温存する、という中間解もありうる。『どれか一つを選べ』という前提そのものが厳密には成立するのか？"
+     },
+     {
+      "title": "b/c への転換トリガーとして最も具体的な指標——キーボードナビゲーションの複雑度",
+      "where": "nearest() 673-710行、fx()/type()/roll() 744-765行",
+      "why": "この2関数だけでJS全体(約190行)の半分近くを占め、テストなしで幾何判定とタイミング制御を同居させている。ここが今後さらに複雑化する（例：グループ横断の優先順位変更など）なら、その時点でJS分離の閾値を超えたと判断する。今はまだ単一ファイル内で読み切れる分量。"
+     }
+    ],
+    "top_recommendation": "a（1ファイル維持）を選択。ただし作品20件超 or 全体1500行超で b/c を再評価するという条件を今のうちに明文化しておけ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.247377
+  },
+  {
+   "slot": "main",
+   "task": "incident",
+   "type": "esfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "4d2f02ae5a8a0069",
+   "data": {
+    "findings": [
+     {
+      "title": "Xでカード出ないのは仕様通り。OGP/Twitter Cardタグが丸ごと無い",
+      "where": "<head> 4〜11行目（meta descriptionはあるがog:title/og:image/og:description/twitter:cardが皆無）",
+      "why": "Xはページ内テキストじゃなくメタタグしか見てない。無ければサムネもタイトルも出ないのが当たり前で、これはバグじゃなくて『まだ作ってない』案件。実際やってる人はまずここ疑うでしょ。"
+     },
+     {
+      "title": "真っ白の一番怪しい犯人：セクション全部がopacity0スタートのアニメーション任せ",
+      "where": "50行目 keyframes rise / 55行目 .sect アニメーション設定",
+      "why": "コンテンツの初期状態がopacity0で、アニメーションが発火して初めて見える設計。iOSの低電力モードやバッテリーセーバーでアニメーションが止まる端末だと、そこで固まって真っ白に見える。PCだけ再現しないのはモロにこれっぽい。一番楽しくない話だけど一番怪しい。"
+     },
+     {
+      "title": "切り分けはまず実機のコンソールを覗くのが一番早い",
+      "where": "-（デプロイ済みサイトを実機とリモートデバッグで確認する手順）",
+      "why": "推測でCSSやJSを触る前に、報告者のiPhoneならMacとSafari開発、AndroidならChrome DevToolsのremote debuggingでconsoleとNetworkタブを見るのが一番手っ取り早い。エラーの有無、404の有無、フォント読み込み詰まりが一発でわかる。ここをすっ飛ばして直しても実際に困ってる人のケースを再現できてなかったら意味ない。"
+     },
+     {
+      "title": "data-intoの区切り文字がコードと噛み合ってない",
+      "where": "634行目 P.into.textContent の split処理 / 314・336・471・515・532行目のdata-into属性",
+      "why": "data属性はパイプ区切りなのにJSはカンマでsplitしてる。カンマが無いから1要素のまま出て改行されない。今のところ実害小さいけど、インストール先が2つある制作物を見た人が気づくやつ。地味に恥ずかしいから直そう。"
+     },
+     {
+      "title": "JSエラーで真っ白説は多分ハズレ、と先に言っておく",
+      "where": "600〜723行目 script全体",
+      "why": "ここのJSは既に描画済みのDOMを後から装飾してるだけ。エラーで止まってもHTMLとCSSはそのまま出るはずで、body丸ごと真っ白にはならない構造。この線で調査に時間使うのはノリ悪い遠回りになりそう、実際そこじゃないと思う。"
+     }
+    ],
+    "top_recommendation": "まず報告者の実機でリモートデバッグしてconsoleとNetworkを見る。憶測で直すより先に何が起きてるか一緒に見よう、話はそれから。",
+    "confidence": 4
+   },
+   "cost_usd": 0.38073565
+  },
+  {
+   "slot": "main",
+   "task": "refactor",
+   "type": "infp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "f555efe978934b65",
+   "data": {
+    "findings": [
+     {
+      "title": "このファイルは『分割すべき技術負債』ではなく『一人の作り手の手記』だと感じる",
+      "where": "ファイル全体（1〜791行、特に613〜789行のスクリプト内コメント）",
+      "why": "コード内コメントが「the panel is the desktop-only half of the screen」のように、まるで誰かに語りかけるように書かれている。これは効率のための構造ではなく、作者が自分の判断を誠実に書き残した記録だと感じる。だから私は a. 1ファイルのまま維持する を選ぶ。"
+     },
+     {
+      "title": "data-desc / data-ja に宿る言葉は『データ』ではなく『語り』",
+      "where": "各 .cell の data-ja / data-desc 属性（312〜545行）",
+      "why": "『Azure の「なぜ繋がらないのか」を1枚にする』のような一文は、作者がその作品にどんな気持ちで向き合ったかがにじむ。JSON に外出しすると、この文が“項目”に変わってしまう気がして、それは私の価値観と合わない。"
+     },
+     {
+      "title": "c（JSON化）を選ばない条件と、選び直す条件を明確にしておきたい",
+      "where": "12個の .cell ブロック全体（307〜547行）",
+      "why": "今のところ12件は自分の目でスクロールして把握できる量。もし作品が20件を超え、更新のたびに本文を探すのがつらくなったら、その時初めて『整理のための分割』に意味が生まれると感じる。数だけで機械的に線を引きたくない。"
+     },
+     {
+      "title": "b（CSS/JS分離）も、いま急いで決める必要はないと感じる",
+      "where": "<style>（12〜283行）と2つの<script>（600〜790行）",
+      "why": "分離すれば見通しは良くなるかもしれないが、『このファイルを開けば全部わかる』という今の安心感を手放してまで急ぐ理由が見当たらない。誰かと一緒に作業する予定ができたときに、また考えたい。"
+     },
+     {
+      "title": "本当に問い直したいのは『誰のためのリファクタか』",
+      "where": "依頼文の選択肢 a/b/c 全体",
+      "why": "この依頼は暗に『効率化すべきでは』という前提を持っている気がするが、これは作者ひとりが自分のために書いたページ。効率よりも、作者が次にこのファイルを開いたとき迷わず自分の言葉を見つけられることの方が大事だと感じる。"
+     }
+    ],
+    "top_recommendation": "a. 1ファイルのまま維持する。ただし「作品が20件を超える」「他人と共同編集する」のどちらかが起きたら、その時 c（JSON外出し）を検討し直す。",
+    "confidence": 3
+   },
+   "cost_usd": 0.1942571
+  },
+  {
+   "slot": "main",
+   "task": "refactor",
+   "type": "enfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "c902dcf9c583b98f",
+   "data": {
+    "findings": [
+     {
+      "title": "12件のデータ直書きが『続ける気持ち』を削っていく",
+      "where": "312〜545行目（各<a class=\"cell\">のdata-ja/into/tech/desc属性）",
+      "why": "1件30行前後のブロックをコピペして増やす未来を想像すると、13件目を作るときにちょっと面倒になって更新が止まる姿が見える。まずここを軽くしたい。"
+     },
+     {
+      "title": "JSON化するなら『ローカルでも見返せる』をセットで",
+      "where": "index.html全体（file://直開き想定）／将来のfetch処理",
+      "why": "file://で開くとfetchがCORSで落ちる。せっかくJSON化しても手元で気軽に確認できないと、育てる楽しさより手間が勝ってしまう。簡易サーバーかビルド手順も一緒に用意してあげたい。"
+     },
+     {
+      "title": "CSS分離（b）は今はまだ急がなくていい",
+      "where": "12〜283行目 <style>",
+      "why": "1ファイルでコピー一つで動く、というこのサイトの気持ちよさは大事な個性。データの重さに比べればCSSは今も読める分量。優先度はcより下でいい。"
+     },
+     {
+      "title": "nearest()の丁寧な設計、言葉にして残してあげて",
+      "where": "673〜710行目 nearest()関数",
+      "why": "ここまで考え抜いたキー操作のロジックなのに、意図の説明がコード頼み。半年後の自分が『なぜこうしたか』を思い出せるように、一言だけ気持ちを書き残してほしい。"
+     },
+     {
+      "title": "アクセシビリティへの配慮、データ分離後も引き継いで",
+      "where": "624〜648行目 paint()関数、aria-current制御",
+      "why": "フォーカス管理やaria-liveなど、見る人への思いやりがすでに形になっている。カード生成をJS化する時、この優しさだけは絶対に落とさない設計にしてほしい。"
+     }
+    ],
+    "top_recommendation": "cを採用：12件のデータをJSONへ外出しし、カード生成をJSに任せる。ただしローカルで確認できる導線を必ず一緒に整えること。",
+    "confidence": 4
+   },
+   "cost_usd": 0.25095495
+  },
+  {
+   "slot": "main",
+   "task": "refactor",
+   "type": "entp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "a3c9bf76eff23a5b",
+   "data": {
+    "findings": [
+     {
+      "title": "結論はa。1ファイル維持を選ぶ、ただし無条件ではない",
+      "where": "index.html全体、612-790行目のJS、307-547行目のカードデータ",
+      "why": "GitHub Pagesでの公開、SEO、ローカルで直接開いて確認できる手軽さという今の快適さを壊すほどの保守コストがまだ発生していない。分割して何が楽になるのか、行儀の良さ以外の理由があるか疑うべき。"
+     },
+     {
+      "title": "cを今やると二重管理が増えるだけ。前提が怪しい",
+      "where": "312-326行目、data-ja属性とdata-desc属性、および323行目の class ja、325行目の class cd",
+      "why": "既に同じ概念に複数のテキストバリエーション（カード用短文、パネル用中文、モバイル用長文）を持っている。JSON化はこの構造を設計し直さないとデータを移しただけで終わる。"
+     },
+     {
+      "title": "JSON外出しはネットワーク取得が要り、手元での確認方法が壊れる",
+      "where": "cを実施した場合に新設するJSファイル、現状は600-790行目にベタ書き",
+      "why": "ブラウザで直接ファイルを開く確認方法がブロックされる。検索エンジンへの見え方を保ちたいなら実行時の取得でなく事前生成が必要で、それはJSON化というより別のビルド導入という意思決定になる。"
+     },
+     {
+      "title": "bは慣習への同調でしかない。実利を疑え",
+      "where": "12-283行目のstyle要素、600-790行目のscript要素",
+      "why": "283行のCSSも190行のJSも意図の分かるコメントで既に構造化されている。分離して得るのはキャッシュ効率くらいで、更新頻度が年数回のサイトにそれはほぼ意味がない。"
+     },
+     {
+      "title": "判断が覆る条件は数値と構造の両方で決めろ",
+      "where": "slab内のgroup数6、cell数12、307-547行目",
+      "why": "作品が20から30件を超えて追加作業が苦痛になった、または詳細ページが独立するなど複数ページ構成へ拡張された、このどちらかが起きたら次にb、その次にcの順で着手すべき。"
+     }
+    ],
+    "top_recommendation": "今は1ファイル維持のaを選ぶ。作品20件超か複数ページ化のどちらかが起きたら即座に再検討する、と今のうちに閾値を決めておく。",
+    "confidence": 4
+   },
+   "cost_usd": 0.3354932
+  },
+  {
+   "slot": "main",
+   "task": "refactor",
+   "type": "infj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "bb16517ca07300d6",
+   "data": {
+    "findings": [
+     {
+      "title": "インストール先の区切り文字が不一致で表示崩れ（実バグ）",
+      "where": "634行 `c.dataset.into.split(',').join('\\n')` / データ側は314・515・532行で `data-into=\"...|...\"`",
+      "why": "属性は「|」区切りなのに JS は「,」で split している。初期選択カード azure-nettrace を含む3枚で複数インストール先が改行されず、生のパイプ文字がそのまま画面に出る。これは『見た目の凝った演出』の下で実は誠実に情報が伝わっていない状態で、訪問者への信頼を静かに損なう。"
+     },
+     {
+      "title": "結論：a『1ファイルのまま維持』を採る",
+      "where": "304-549行（カード群）, 601-723行（JS全体）",
+      "why": "12件・単独更新者・GitHub Pages という現状規模では、分割の恩恵（可読性・キャッシュ）より、ファイルを見れば全体の意図が一望できるという価値の方が大きい。あるべき姿は今すぐの整理整頓ではなく、意味のある変化が起きた時に応じて形を変えることだと考える。"
+     },
+     {
+      "title": "b『CSS/JS分離』は時期尚早",
+      "where": "12-283行 `<style>`, 600-790行 `<script>`",
+      "why": "単一ページのGitHub Pagesではキャッシュ効果はほぼ発生せず、791行もまだ『読めなくなる』域ではない。分離の理由が『流儀として綺麗だから』だけなら、それは自分の理想の押し付けであり、訪問者には何の恩恵もない。"
+     },
+     {
+      "title": "c『JSON外出し』はSEO/noscript耐性を犠牲にする",
+      "where": "304-549行（各cellの静的HTML・SVG手描き）",
+      "why": "現状は検索エンジンやJS無効環境でも12件の制作物がそのまま読める。JSON駆動でカードを生成すると、SVGアイコンのテンプレート化という新たな複雑さを抱えつつ、この『誰にでも届く』誠実さを失うリスクの方が、12件程度のデータ重複コストより重い。"
+     },
+     {
+      "title": "paintとMutationObserverの暗黙的な二重結合",
+      "where": "624-648行 `paint()` と 776行 `new MutationObserver(fx)`",
+      "why": "aria-current変化を監視してfx()が発火する設計は、paint()の呼び出しと副作用（アニメーション起動）の関係がコード上明示されず、将来この2つのscriptブロックのどちらかだけを触る人（未来の自分）が意図を見失う気がかりな点。JSON化やモジュール分割に踏み切る際は、まずこの結合を1関数に統合すべき。"
+     }
+    ],
+    "top_recommendation": "まず634行のsplit(',')を'|'に修正して表示バグを直し、その上でa(1ファイル維持)を採用。作品20件超またはCSS400行超でb→cの順に着手する、という条件を今README等に明文化せよ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2652757
+  },
+  {
+   "slot": "main",
+   "task": "refactor",
+   "type": "istj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "418a28fcfc637363",
+   "data": {
+    "findings": [
+     {
+      "title": "既に文言の二重管理でズレが発生している(c採用の根拠)",
+      "where": "L313 data-ja と L323 span.ja、L316 data-desc と各cd属性",
+      "why": "同一作品の説明が一覧用・パネル用・モバイル用で微妙に文言違いで手打ちされている。実際のところ、12件を人力コピペで保守すれば今後さらにズレる。過去の例では属性重複は必ず同期漏れを生む。"
+     },
+     {
+      "title": "c(JSON外出し)を選ぶ。ただしテキスト属性のみに限定する",
+      "where": "L312-L545 の各 .cell 内 data-* 属性と span(nm/ja/id/doc/cd)群",
+      "why": "作品追加のたびに30行前後のマークアップをコピペする現行方式より、配列に1オブジェクト追加する方が確実。約束を守れる保守体制には型が要る。"
+     },
+     {
+      "title": "SVGアイコンは配列に含めず現行の実装場所に残す判断が必要",
+      "where": "各 .cell 内 span.em > svg",
+      "why": "手描きの一意な意味を持つpath/circleをJSON文字列に押し込むと可読性が落ちる。データはid参照にとどめ、アイコンは別テーブルかHTML側管理とすべき。"
+     },
+     {
+      "title": "JSON外出しはfetchが必須になり、file://での単体閲覧ができなくなる",
+      "where": "スクリプト全体 L600-L790、想定追加箇所 fetch('works.json')",
+      "why": "現状はダウンロードして直接開いても動く。GitHub Pages配信のみを前提にするならこの犠牲は許容できるが、ルールが変わる以上は明記して合意すべき。"
+     },
+     {
+      "title": "b(CSS/JS分離)は現状見送り。行数はまだ実害の域に達していない",
+      "where": "L12-L283(CSS約270行)、L600-L790(JS約190行)",
+      "why": "過去の経験則では、単一ページ・単一用途のサイトで270行程度のCSSは分割の恩恵より追加リクエストの手間が上回る。データ構造の問題(c)ほど緊急性がない。"
+     }
+    ],
+    "top_recommendation": "cを採用する。data-*とcdなど重複テキストのみworks.jsonへ外出しし、SVGアイコンとCSS/JSは現状維持とする。",
+    "confidence": 4
+   },
+   "cost_usd": 0.25121794999999997
+  },
+  {
+   "slot": "main",
+   "task": "refactor",
+   "type": "enfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "7cfa02e317d47767",
+   "data": {
+    "findings": [
+     {
+      "title": "data-into の区切り文字とJSのsplitが不一致（実バグ）",
+      "where": "634行 `c.dataset.into.split(',')` ／ 314・515・532行などの `data-into=\"A|B\"`",
+      "why": "属性は'|'区切りなのにJSは','でsplitしてる。これ絶対繋がってない！複数拠点を持つカード選ぶと改行されず1行のままパイプ文字が出るはず。まず動かして確認して。"
+     },
+     {
+      "title": "パネル初期HTMLとcells[0]データの二重管理",
+      "where": "553-572行（パネル初期値） vs 312-326行（AGカードのdata-*）",
+      "why": "同じ情報を2箇所に手書きしてる。片方だけ更新したら一瞬ズレた詳細が見える世界線になる。paint(0)を初回にも必ず通せば源は1つで済むのに、もったいない。"
+     },
+     {
+      "title": "判断：cは時期尚早、aを維持しつつデータだけ一本化",
+      "where": "index.html全体／data-*属性群(312-545行)",
+      "why": "12件・1人運用ならまだ読める規模でめっちゃ愛が伝わる作り。でもJSON化＋動的生成はSEOで拾われる文言を失うリスクもあるから、覆る条件は次項で明言する。"
+     },
+     {
+      "title": "選択UIなのにARIAはlistbox/optionパターンじゃない",
+      "where": ".cell構造(304-330付近)／aria-current運用(139-151行)",
+      "why": "矢印キーで単一選択させる作りなのに role=\"listbox\"/\"option\"+aria-selected を使ってない。今の人には見える体験でも、スクリーンリーダーの人には繋がりにくいかも。"
+     },
+     {
+      "title": "12個のSVGアイコンが全部インライン直書き",
+      "where": "各.cell内のsvg（317-321行から12箇所繰り返し）",
+      "why": "装飾要素と本文data-*が混在してファイルが分厚くなってる。1ファイルのままでも<symbol>+<use>にまとめれば見通しはもっと自由になる、こんな可能性ある。"
+     }
+    ],
+    "top_recommendation": "まず634行split(',')→split('|')の実バグを直す。構成はa（1ファイル維持）を選択、カード20件超か複数人運用になったらcへ反転。",
+    "confidence": 4
+   },
+   "cost_usd": 0.25995110000000005
+  },
+  {
+   "slot": "main",
+   "task": "refactor",
+   "type": "isfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "72b85bf8115d9092",
+   "data": {
+    "findings": [
+     {
+      "title": "結論：a を選ぶ。ただし『何もしない』ではなく現状ファイル内での整理をする",
+      "where": "index.html 全体",
+      "why": "12件程度・更新は本人ひとり・GitHub Pagesに1枚置くだけで動くという今までのやり方に助けられている面が大きく、ここを崩すメリットより失うものの方が大きいと感じました"
+     },
+     {
+      "title": "JSON外出し(c)は見送りたい。ローカルで開けなくなるのが一番心配",
+      "where": "行724-790あたり script、および data属性群を外部化した場合のfetch処理",
+      "why": "現場では、記事を書きながら手元で file:// でそのまま開いて確認する場面が多いはずです。JSON を fetch する形にすると、その場ですぐ見られなくなり、確認のたびに一手間増えてしまいます"
+     },
+     {
+      "title": "本当に困るのは『13件目を足すとき』のコピペ作業",
+      "where": "行312-548 各 .cell（data-ja/data-ch/data-into/data-tech/data-host/data-desc/data-art/data-artt と5つのspan、SVG）",
+      "why": "新しい作品を1つ増やすたびに、この長い塊を丸ごとコピーして書き換える必要があります。属性を1つ書き忘れたり閉じタグがずれたりしても気づきにくく、ここが一番事故の起きやすい場所だと感じます。JSON化するよりまず、ここだけファイルは分けずにJS側の配列＋テンプレートに置き換えて、コピペの手間そのものを減らす方が現場に優しいはずです"
+     },
+     {
+      "title": "SVGが残る限り、途中半端な分離はかえって分かりにくくなる",
+      "where": "各 .cell 内 <span class=\"em\"><svg>...</svg></span>",
+      "why": "テキスト情報だけJSONに出しても、アイコンのSVGはHTML側に残ります。『この作品の情報はどこに書いてあるんだっけ』と探す場所が2か所に増えるのは、次に触る自分にとって負担になります"
+     },
+     {
+      "title": "CSS/JS分離(b)は、今の分量なら急がなくてよい",
+      "where": "行12-283 <style>、行600-790 <script>",
+      "why": "270行と190行で、1ファイルの中でもまだ見渡せる規模だと感じます。分割の恩恵より、『このファイル1枚をコピーすれば同じものが動く』という今までの安心感を失う方が惜しいです。作品が20〜30件に増える、あるいはビルド工程を入れる契機ができたときに、あらためて見直せば十分だと思います"
+     }
+    ],
+    "top_recommendation": "ファイル分割はせず、まず .cell のマークアップだけをJS側の配列＋テンプレートに置き換えて、13件目以降のコピペ事故を防ぐ",
+    "confidence": 4
+   },
+   "cost_usd": 0.2362002
+  },
+  {
+   "slot": "main",
+   "task": "refactor",
+   "type": "estj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "497a0e5700f9eb2c",
+   "data": {
+    "findings": [
+     {
+      "title": "作品データをJSON配列に構造化し生成方式へ移行せよ",
+      "where": "312〜545行（各<a class=\"cell\">のdata-*属性群）、650〜669行（cells生成・paint()参照箇所）",
+      "why": "12件を40行前後のHTMLブロックとしてコピペ運用しており、属性の対応漏れや閉じタグ忘れは目視でしか検知できない。責任の所在が個人の注意力任せで、明文化された基準がない。"
+     },
+     {
+      "title": "CSS/JSの外部ファイル分離（b案）は時期尚早、今回は実施しない",
+      "where": "12〜283行 <style>、600〜790行 <script>",
+      "why": "790行規模はまだ1ファイルで完結できる。複数ページ展開やチーム開発でCSS/JSを再利用する具体的な予定がない限り、分離のメンテコストが効率を上回らない。ルールを変えるなら理由が要る。"
+     },
+     {
+      "title": "外部fetchによるJSON完全外出しは不採用、同一ファイル内に留めよ",
+      "where": "603〜648行 paint()、DOM構造全体",
+      "why": "fetchでの外部JSON読込はfile://環境でCORSエラーとなり検証できなくなる。<script type=\"application/json\">として同一ファイルに埋め込めば、効率と検証容易性の両方を満たせる。"
+     },
+     {
+      "title": "作品追加時の運用ルール・責任者がどこにも明文化されていない",
+      "where": "306行付近 <!-- ROSTER --> コメント",
+      "why": "誰が・いつ・どの基準で12件目以降の作品を追加するのかが不明。手順書がなければ品質は個人の記憶と気分に依存し、いずれ破綻する。"
+     },
+     {
+      "title": "この判断が覆る条件：作品20件超え、または複数ページ展開の決定時",
+      "where": "-",
+      "why": "作品数が20件を超え保守コストが線形以上に増える、または他ページでCSS/JSを共有する計画が確定した時点で、b案とc案の完全実施を再評価する。数値基準がなければ議論は堂々巡りになる。"
+     }
+    ],
+    "top_recommendation": "作品データを同一ファイル内の<script type=\"application/json\">に移しテンプレート生成に切替えよ。CSS/JSの別ファイル化は今回見送り。",
+    "confidence": 4
+   },
+   "cost_usd": 0.23174500000000003
+  },
+  {
+   "slot": "main",
+   "task": "refactor",
+   "type": "esfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "6d88def02676a3cf",
+   "data": {
+    "findings": [
+     {
+      "title": "ファイル構成は当面『1ファイル維持』が現実的な落としどころ",
+      "where": "index.html 全体（305-549行目 ROSTER 部分）",
+      "why": "更新するのは本人ひとりで、公開も GitHub Pages で完結してる。分割すると『触ると壊れそう』という気持ちの負担が増える。今は誰も困ってない構成をあえて壊す必要はない。"
+     },
+     {
+      "title": "data-into の区切り文字が実装と噛み合っていない疑いがある",
+      "where": "314行目付近 data-into=\"...|...\" と 634行目 P.into.textContent = c.dataset.into.split(',').join('\\n')",
+      "why": "data属性は「|」区切りなのに JS は「,」で split している。改行されず1行のまま出てる可能性があり、これは見に来た人に対して地味に不親切。まず本人に確認してほしい。"
+     },
+     {
+      "title": "12件ぶんの data-* がベタ書きで、増えるほど本人がしんどくなる",
+      "where": "312-545行目 各 .cell の data-ja/data-ch/data-into/data-tech/data-desc",
+      "why": "今は12件だからまだ耐えられるけど、周りの人が見ても『これ手作業で増やしてるの？』と心配になる量。今すぐ切り出す話ではないけど、増える前に備えておいた方が本人のため。"
+     },
+     {
+      "title": "キーボード操作の案内がモバイルだけ消えて片手落ちに見える",
+      "where": "235行目 @media(max-width:1080px){.keys{display:none}} / 253行目 .panel{display:none}",
+      "why": "パネル自体が消えるのは仕方ないとしても、PCで丁寧に用意してる矢印キー説明がモバイルの人には最初から見えない。全員に同じ気配りが行き届いてない印象を与える。"
+     },
+     {
+      "title": "カード（a要素）内の情報量が多く、支援技術を使う人への配慮が薄い",
+      "where": "108-151行目 .cell 構造 / 624-648行目 paint()",
+      "why": "見た目の演出は丁寧だけど、読み上げ環境の人にとってこの選択画面がどう聞こえるか一度確かめてほしい。誰も置いていかない、というのが一番大事なところだから。"
+     }
+    ],
+    "top_recommendation": "まず 634行目の split(',') を実データの区切り記号「|」に合わせて直す。ファイル分割は今はまだしなくていい。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2133479
+  },
+  {
+   "slot": "main",
+   "task": "refactor",
+   "type": "isfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "841881949eb1e81b",
+   "data": {
+    "findings": [
+     {
+      "title": "結論：a. 1ファイルのまま維持する",
+      "where": "ファイル全体の構成判断",
+      "why": "なんとなくだけど、312〜548行のdata-*属性やコメント（613,640,704行など）に作者の手の跡が残ってて、それが心地いい。JSONに切り出した瞬間、これは「データ」になって、一枚の紙に息づいてた感じが消える気がする。覆る条件：13件目以降を足すとき、同じパターンのコピペが3回以上続いて自分がしんどいと感じたら、そこで初めてcを検討する。数が増えることより「増やす作業が苦痛かどうか」の肌感で決める。"
+     },
+     {
+      "title": "モバイルでpanelが丸ごと消える体験の落差",
+      "where": "253行 .panel{display:none}／640行前後 P.art.hidden制御",
+      "why": "PCだと選ぶ→パネルが演出付きで反応してくれるのに、モバイルだと選択の感触が消えてただのリンク一覧になる。同じ画面のはずなのに、触った瞬間の気持ちよさがまるで別物になっているのが、肌感としてちょっと寂しい。"
+     },
+     {
+      "title": "ダブルクリックで開く仕様は発見されにくい",
+      "where": "663〜668行 dblclickイベント／302行の注意書き",
+      "why": "注意書きを読まないと気づけない操作。押し付けがましくはないけど、静かに埋もれて誰にも使われない機能になりそうな気がする。"
+     },
+     {
+      "title": "JSON化するならSVGアイコンだけは外に出したくない",
+      "where": "317〜321行など各cellの<svg>",
+      "why": "手描き感のあるSVGを文字列としてJSONに詰め込むと、量産品っぽくなって、一つ一つ丁寧に置かれた作品という手触りが薄れる。もしcを選ぶ日が来ても、SVGだけは分離しない、という一線は譲れない。"
+     },
+     {
+      "title": "色設計のコメントには素直に好感を持った",
+      "where": "23〜26行 --fill周りのコメント",
+      "why": "「黒は紙に空いた穴として読む」という説明、飾り気はないけど筋が通ってて自分には合う。ここは手を入れる提案はしない、そのままでいい。"
+     }
+    ],
+    "top_recommendation": "今は分割せず1ファイルのまま。まずモバイルでpanelが消える体験の落差を、肌感が揃うように手当てするのが先。",
+    "confidence": 3
+   },
+   "cost_usd": 0.2496329
+  },
+  {
+   "slot": "main",
+   "task": "refactor",
+   "type": "istp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "1f55527fbe888e77",
+   "data": {
+    "findings": [
+     {
+      "title": "data-into の区切り文字が実装と合っていない",
+      "where": "314行目 data-into=\"...|~/.claude/skills/...\" / 634行目 c.dataset.into.split(',').join('\\n')",
+      "why": "データはパイプ区切りなのにJSはカンマで分割してる。azure-nettrace を選ぶと『GitHub Copilot のカスタムエージェント|~/.claude/skills/（Claude Code）』が改行されず1行のまま出るはず。やってみれば分かる。515・532行目も同じ属性使ってるから同様に壊れてる。"
+     },
+     {
+      "title": "矢印キー選択で focus が動いていない",
+      "where": "712-720行目 keydown リスナー内 paint(next)",
+      "why": "aria-current は変わるのに c.focus() を呼んでいない。クリック時は c.focus() してるのに矢印キーだけ抜けてる。見た目の選択とキーボードフォーカスがズレる。実際にTab押せば分かる。"
+     },
+     {
+      "title": "type()/roll() の setInterval が前回分をクリアしてない",
+      "where": "744-753行目 function type(el)",
+      "why": "typing 変数を毎回上書きするだけで前の setInterval を clear してない。矢印キー連打やTab連打で複数の type が同時に nm.textContent を書き換えたら文字化けする。roll() は clearInterval(rolling) してるのに type() だけ抜けてる非対称さも怪しい。"
+     },
+     {
+      "title": "初回表示で演出が発火しない",
+      "where": "722行目 paint(0) / 776行目 new MutationObserver(...)",
+      "why": "MutationObserver を仕込む前に1本目のscriptで paint(0) が走る。初回ロード時だけ ldbar のロードバーもタイピング演出も出ない。実害は軽いが意図と実装がズレてる。"
+     },
+     {
+      "title": "ファイル構成は a.1ファイル維持で決定",
+      "where": "index.html 全体 / 310-546行目 data属性ベタ書き",
+      "why": "12件・単一ページの規模でJSON化するとfetchの初期空白とSEO低下のコストが保守性のメリットを上回る。CSS/JS分離もリクエスト増えるだけで600行程度は読める範囲。動いてるものを理由なく壊す必要はない。"
+     }
+    ],
+    "top_recommendation": "まず data-into の区切り文字バグ（314行目の | と634行目の split(',') の不一致）を直せ。構成の話はそれから。",
+    "confidence": 4
+   },
+   "cost_usd": 0.29159605
+  },
+  {
+   "slot": "main",
+   "task": "refactor",
+   "type": "estp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "9aa5af4166f63760",
+   "data": {
+    "findings": [
+     {
+      "title": "data-into の区切り文字が実装とズレて表示バグになっている",
+      "where": "line314/336/515/532 (data-into=\"A|B\"), line634 (split(','))",
+      "why": "パイプ区切りで書いたデータをカンマ分割しているため複数インストール先を持つカードで改行が効かず1行表示になる。実際に触れば再現する実害。"
+     },
+     {
+      "title": "作品データが data-* 属性と内部span(.nm/.ja/.cd)に二重記述されている",
+      "where": "各 .cell 内、例 line312-326",
+      "why": "同じ情報を2箇所に手書きしているため作品追加・更新時に片方だけ直して不整合を起こすリスクが高い。JSON化の動機になる唯一の実質的問題。"
+     },
+     {
+      "title": "結論：1ファイル維持(a)を選ぶ。分割・JSON化は時期尚早",
+      "where": "ファイル全体",
+      "why": "12件・運用者1人・低頻度更新という現状では切り出す作業にリターンがない。動いているものを崩す理由がない。"
+     },
+     {
+      "title": "CSS/JS切り出し(b)は複数ページ運用が始まるまで不要",
+      "where": "style全体(12-283行), script全体(600-790行)",
+      "why": "ファイルサイズも小さく他ページと共有する予定もない今、分離しても見た目・挙動は一切改善しない。"
+     },
+     {
+      "title": "1080px以下でキーボード操作の説明(.keys)が消える",
+      "where": "line235 @media(max-width:1080px){.keys{display:none}}",
+      "why": "矢印キー操作自体はデスクトップ前提の設計とはいえ、タブレット幅のユーザーに使い方の手がかりが一切残らない。"
+     }
+    ],
+    "top_recommendation": "line634のsplit(',')をsplit('|')に直すのを今日やる。それ以外は12件・更新低頻度が続く限り一切触らない。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2803562
+  },
+  {
+   "slot": "main",
+   "task": "tech_choice",
+   "type": "intj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "442a19d09f4fcee3",
+   "data": {
+    "findings": [
+     {
+      "title": "結論：移行しない。SSGはこの規模では過剰投資",
+      "where": "index.html 全体（724行）",
+      "why": "更新頻度が月1〜2回・執筆者1人・GitHub Pagesという条件下では、ビルドパイプラインと依存管理という長期コストが、年間20回未満の更新コストを上回る。長期最適化の名目で不要な複雑性を持ち込むのは非効率だ。"
+     },
+     {
+      "title": "本当の問題はカード1件追加のコストの高さ",
+      "where": ".cell要素群 312-548行、data-ja/data-ch/data-into/data-tech/data-desc等の属性",
+      "why": "1件追加に30行超のコピペとSVG手書き＋10種以上の属性手打ちが要る。これはSSGの不在ではなく、データがHTMLにベタ書きされ単一ソース化されていないことが原因。テンプレート抽出で解決可能であり、ツール変更は前提条件ではない。"
+     },
+     {
+      "title": "同一情報の多重記述によるヒューマンエラーリスク",
+      "where": "各.cell内 .nm/.ja/.cd と対応するdata-ja/data-desc属性（例：322-325行、420-423行）",
+      "why": "名称・説明文が最大4箇所に手で複製されている。1箇所の修正漏れをHTML上で検知する仕組みがなく、静的解析もない。JSON配列＋render関数への置換で単一ソース化すべきだ。"
+     },
+     {
+      "title": "将来移行する場合の選定：Eleventy一択",
+      "where": "-（意思決定事項）",
+      "why": "GitHub Pages向けのビルドが最軽量で単一人運用の学習コストに見合う。現状のバニラJS（キーボードナビ・アニメーション演出、603-789行）をpassthroughでそのまま流用できる。Astroはコンポーネント指向でこの規模にはオーバーキル、Hugoはテンプレート言語の断絶コストが高い。"
+     },
+     {
+      "title": "再検討のトリガー条件を事前に固定しておく",
+      "where": "-（判断基準）",
+      "why": "作品数が現状12件から倍増、更新頻度が週1以上、執筆者が複数人化、ブログ等の複数ページ構成へ拡張——このいずれかが発生した時点でSSGのROIが逆転する。条件なき先延ばしは判断放棄と同義だ。"
+     }
+    ],
+    "top_recommendation": "移行は不要。まず312-548行のカードデータをJS側のJSON配列に外出しし、DOM生成を1つのrender関数に統合してテンプレートと分離せよ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.22150340000000002
+  },
+  {
+   "slot": "main",
+   "task": "tech_choice",
+   "type": "intp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "7a0c9ef001972826",
+   "data": {
+    "findings": [
+     {
+      "title": "『移行する/しない』の二択という前提が厳密ではない",
+      "where": "依頼文全体の枠組み",
+      "why": "SSGの便益はテンプレート再利用とビルド時データ処理に分解できる。この2つが独立に成立しうるなら、ビルドツールなしでデータ側だけ解決する第三の道が定義上排除されていないはずでは。"
+     },
+     {
+      "title": "本質的な問題はSSGの有無ではなくデータの多重定義",
+      "where": "各 .cell の data-ja / data-desc（例: 313行, 375行）と panel 側 P.ja / P.desc（633,636行）、および .cd span（325行など）",
+      "why": "同じ情報が cell の data 属性・可視 span（.nm/.ja/.cd）・panel 更新用テキストに分散して手書きされている。1件足すたびに複数箇所を同期させる必要があり、更新頻度が低いほど『次回書くときに書き漏らす』リスクが高い。これはSSGでなくJSON配列+レンダリング関数化だけでも解消できる論点で、SSG導入の必要条件にはならない。"
+     },
+     {
+      "title": "結論：移行しない。ただしデータ一元化のリファクタは別途行う",
+      "where": "index.html 全体構成",
+      "why": "更新頻度（月1-2回）・単著・1ページ完結という前提のもとでは、SSGが持ち込むビルドパイプライン・依存管理・デプロイワークフローの管理コストが、得られる便益（テンプレート再利用）を上回る。前提が変われば結論も変わる、という条件を次に示す。"
+     },
+     {
+      "title": "移行を再検討すべき具体的トリガー",
+      "where": "-",
+      "why": "①作品の詳細を個別URLで共有したくなる（1画面の select 型が破綻する）②更新頻度が月1-2回から週次以上に増える③共同編集者が増える④OGP/SEOでページごとのメタデータが必要になる⑤データ重複起因の記載漏れが実際に発生し始める、のいずれかが起きたら再検討する。これらが起きない限り、SSG化は解決すべき問題のない解決策になりかねない。"
+     },
+     {
+      "title": "もし移行するなら Eleventy を選ぶ（Astro は過剰な可能性）",
+      "where": "-",
+      "why": "既存資産が生 HTML/CSS/vanilla JS で、フレームワーク的コンポーネント分割（Astroのアイランド等）を要求する複雑さは今のUIには不要では。Eleventy はテンプレートエンジン+データファイルのみを足す最小侵襲な移行で、既存の演出JSをほぼ無改修で流用できる点が条件（本人1人・低頻度更新）と整合する。ただしこれは移行する場合の話であり、上記の通り現時点では推奨しない。"
+     }
+    ],
+    "top_recommendation": "移行しない。まず cell の data 属性・可視span・panel 用テキストの三重管理をJS側のデータ配列に一元化するリファクタを先に行え。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2077332
+  },
+  {
+   "slot": "main",
+   "task": "refactor",
+   "type": "esfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "8140a12cc7ae775d",
+   "data": {
+    "findings": [
+     {
+      "title": "「インストール先」の改行が JS で消える区切り文字ミス",
+      "where": "634行目 P.into.textContent = c.dataset.into.split(',').join('\\n')／data-into 属性は314・515・532行目で '|' 区切り",
+      "why": "557-558行の初期表示は正しく2行なのに、722行目の paint(0) で上書きされた瞬間パイプ記号が1行でそのまま出る。実際にページ開いた人が最初に見る場所がズレてるのは一番痛い。"
+     },
+     {
+      "title": "矢印キーで選んだカードと Enter で開くリンクがズレる",
+      "where": "712-720行の keydown リスナー（paint(next) のみで cells[next].focus() が無い）／比較として659行の click ハンドラは c.focus() を呼んでいる",
+      "why": "571行で自分から「← ↑ ↓ → で選ぶ／Enter で開く」って書いてるのに、ハイライトは動いてもブラウザのフォーカスは前のカードのまま。実際にキーボードで遊んでる人が一番『あれ？』ってなる瞬間。"
+     },
+     {
+      "title": "モバイル用 .cd とデスクトップ用 data-desc の二重管理",
+      "where": "各 .cell 内、例325行 .cd と316行 data-desc（他11件も同様）",
+      "why": "同じ説明文をほぼ同内容で2箇所に手打ちしてる。今後更新するとき片方だけ直して放置されがち。スマホで見る人とPCで見る人の体験がじわじわズレていくリスクがある。"
+     },
+     {
+      "title": "判断：ファイルは今は1本のままでいい（a を選ぶ）",
+      "where": "index.html 全体（<style>12-283行／<script>600-790行）",
+      "why": "12件ならまだ全部目で追える量。JSON化してfetchで読み込むようにすると、初回表示でカードが一瞬空になるチラつきが出るかもしれない。今来てる人の『開いた瞬間に全部見える』体験を壊してまでやることじゃない。"
+     },
+     {
+      "title": "CSS/JS の外部ファイル切り出しは今回は見送り",
+      "where": "12-283行 <style>／600-790行 <script>（合計でも800行弱）",
+      "why": "1人で更新してるうちは1ファイルの方が『GitHub Pagesにpushするだけ』で身軽。分離しても訪問者の体験は1ミリも変わらない、完全に開発者都合の作業だから優先度は低い。"
+     }
+    ],
+    "top_recommendation": "まず区切り文字バグ（634行）とキーボードフォーカスのズレ（712-720行）を直す。ファイル構成の話はその後でいい。",
+    "confidence": 4
+   },
+   "cost_usd": 0.30453600000000003
+  },
+  {
+   "slot": "main",
+   "task": "tech_choice",
+   "type": "entp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "0f6dc1151b091638",
+   "data": {
+    "findings": [
+     {
+      "title": "カード1件=同じ情報を8箇所に手打ちする複製地獄",
+      "where": "312-326 (.cellのdata-ja/data-desc とその中の .ja/.cd テキストが重複)",
+      "why": "作品を1件足すたびに data-ja と .ja、data-desc と .cd に似た文言を別々に書く必要があり、更新のたびに片方だけ直し忘れる事故が起きうる。ここが素のHTML継続の一番の摩耗点。"
+     },
+     {
+      "title": "paint/typing/roll/nearest はSSG化しても消えない複雑さ",
+      "where": "600-790 <script> 二本（paint関数, MutationObserver, nearest関数）",
+      "why": "SSGが解決するのはHTML生成の手間であって、この凝ったvanilla JSロジックの保守負荷はAstroにしようがHugoにしようがそのまま残る。移行の恩恵を過大評価しがち。"
+     },
+     {
+      "title": "月1-2回・本人1人にビルドパイプラインは重装備",
+      "where": "- （運用フロー全体、GitHub Pages公開）",
+      "why": "SSG導入はnode依存・ビルドコマンド・Actionsという『いつもの手順』を新規に増やす。更新頻度に対してメンテ対象を増やすほうが壊れやすい。"
+     },
+     {
+      "title": "『しない場合の再考条件』が未定義のまま惰性運用になる",
+      "where": "- （意思決定プロセスそのもの）",
+      "why": "条件を先に言語化しないと、規模が変わっても切り替えタイミングを逃す。逆に言えば今回答えを出さないと一生素のHTMLのまま行く。"
+     },
+     {
+      "title": "移行するならAstro一択、Hugoは今の実装と相性が悪い",
+      "where": "- （移行先候補の比較）",
+      "why": "Astroはゼロランタイム静的出力＋コンポーネント分割ができ、今のvanilla JS/CSSをほぼそのまま移植可能。HugoのGoテンプレートはJS密度の高いこのUIと噛み合わない。"
+     }
+    ],
+    "top_recommendation": "今は移行しない。ただし作品データを1つのJS配列/JSONに切り出し、カードと詳細パネルを両方そこから生成するように書き換えろ——これだけでSSGを入れずに複製地獄は消える。",
+    "confidence": 3
+   },
+   "cost_usd": 0.2123662
+  },
+  {
+   "slot": "main",
+   "task": "tech_choice",
+   "type": "infp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "d28e92cde6422ab2",
+   "data": {
+    "findings": [
+     {
+      "title": "この一枚は作者の手の跡そのもの。壊してまで移行する理由があるか",
+      "where": "603-789行目 <script>群、776行目 MutationObserver、739-765行目 type()/roll()",
+      "why": "コメントの一つひとつ（例：'the pointer never moves the selection'）に作者の判断の物語が残っている。ここを『効率化対象』として扱う前に、この手触りごと残せる方法かを自分にまず問いたい。"
+     },
+     {
+      "title": "カード追加のたびに8箇所近く手で複製する作業、本人は本当に苦じゃないか",
+      "where": "312-326行目 .cellのdata-*属性群、327行目 .artlink、437-462行目の重複パターン",
+      "why": "月1〜2回とはいえ、data-art/data-artt/data-ja/data-into/data-tech/data-desc/SVG/artlinkを毎回手で複製すると想像すると、正直しんどそうに感じる。効率より先に『その人の負担』として気になる。"
+     },
+     {
+      "title": "移行しない場合の見直し基準は『更新が義務に変わった瞬間』",
+      "where": "- （運用ポリシー全体、更新頻度=月1-2回・本人一人という前提）",
+      "why": "今は『紹介したい』気持ちで書いていると感じる。これが『またあの8箇所を直さなきゃ』という重荷に変わったら、それはツールが本人の創作意欲を削っているサインだと思う。"
+     },
+     {
+      "title": "もし載せ替えるなら Eleventy。哲学を押し付けない選択を",
+      "where": "index.html全体の構成（単一ファイルにCSS/JSをインライン化する書き方）",
+      "why": "Astroのコンポーネント志向はこの人の『一枚に全部詰め込む』流儀と噛み合わない気がする。Eleventyなら今のHTML/CSS/JSをほぼそのまま持ち込め、その人らしさを尊重できると感じる。"
+     },
+     {
+      "title": "ビルド導入は『pushすればすぐ直る』今の身軽さを奪わないか",
+      "where": "公開フロー全体（GitHub Pages、現状ビルドレスな運用）",
+      "why": "node環境やビルドコマンドが挟まると、ふと思いついた時にさっと直す、という今の自由さが失われる気がして、それは効率以前に本人の創作の気軽さに関わる問題だと感じる。"
+     }
+    ],
+    "top_recommendation": "今は移行しない。ただしカード追加の重複作業（data-*属性8箇所）が本人にとって苦痛になったら、そこだけEleventyでテンプレート化する。",
+    "confidence": 3
+   },
+   "cost_usd": 0.2052811
+  },
+  {
+   "slot": "main",
+   "task": "tech_choice",
+   "type": "entj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "5f8208e4aaa4452b",
+   "data": {
+    "findings": [
+     {
+      "title": "結論：SSG移行は不要。素のHTML継続が正しい判断",
+      "where": "index.html 全体（724行）",
+      "why": "月1〜2回・執筆者1人という更新頻度に対し、Astro/Eleventy導入はビルド設定・依存管理・デプロイ設定という固定コストが見合わない。ROIで負ける投資はやらない。"
+     },
+     {
+      "title": "カード追加時の手動同期がヒューマンエラー源",
+      "where": "312-546行の data-* 属性群、605-648行 paint関数",
+      "why": "1作品追加ごとにdata-ja・data-desc・data-tech等7-8個の属性とcd要素を全て手打ちで同期する必要があり、抜け漏れが起きても表示崩れとして即座には気づけない。移行せずともJSONデータとテンプレート生成の軽量スクリプト化で解消すべき。"
+     },
+     {
+      "title": "単一ファイル肥大化の閾値を今から決めておけ",
+      "where": "index.html 全体（現724行、カード12件）",
+      "why": "作品が20-30件に増えれば可読性やGitの差分レビューが破綻する。カード20件を超えたらデータをJSONに外出しするという数値基準を今のうちに決めておかないと判断が後手に回る。"
+     },
+     {
+      "title": "個々の作品に固有URLがなくSEOと共有性がゼロ",
+      "where": "552-572行 aside panel要素（詳細はJSでDOM書き換えのみ）",
+      "why": "全作品が1枚のindex.html内でJS表示切替されるだけで、個別ページや個別URLが存在しない。作品単位で検索流入や共有を狙うなら機会損失だが、今回の目的なら許容範囲。"
+     },
+     {
+      "title": "撤退つまり移行の判断トリガーを明文化しておく",
+      "where": "-",
+      "why": "更新頻度が週次以上になる、執筆者が増える、カードが30件超える、作品ごとのOGPや個別URLが必要になる、のいずれかが起きたらAstroへの移行を再検討する。"
+     }
+    ],
+    "top_recommendation": "移行はしない。継続の代わりにカードデータをJSON配列に外出しして追加作業を1オブジェクト追記に減らせ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.28221005
+  },
+  {
+   "slot": "main",
+   "task": "tech_choice",
+   "type": "infj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "29c2b8e6d2e1cd68",
+   "data": {
+    "findings": [
+     {
+      "title": "パネル初期値とカード先頭データの二重管理が同期ずれを生む",
+      "where": "552-572行目（<aside class=\"panel\">の初期HTML） vs 312-326行目（azure-nettrace セル）",
+      "why": "同じ内容を2箇所に手書きしている。JS初期化は paint(0) で上書きするとはいえ、noscript環境や表示直後の一瞬は静的HTMLがそのまま見える。ここが人知れず食い違っていく未来が見える。"
+     },
+     {
+      "title": "12枚のカード＝data属性8個ずつの反復構造は、増える前提には耐えない",
+      "where": "312-545行目、各 <a class=\"cell\" data-art data-ja data-ch data-into data-tech data-desc ...>",
+      "why": "今の12件・月1-2回なら手作業でも誠実にこなせる規模。だが『あるべき姿』から見ると、これは本質的にテンプレート＋データの分離を求めている構造。件数が増えた時に初めて痛みが出る。"
+     },
+     {
+      "title": "結論：今は移行しない。素のHTMLのままでいい",
+      "where": "サイト全体の技術選定",
+      "why": "本人ひとり・月1-2回・GitHub Pagesという条件では、SSG導入によるビルド環境・CI・Node管理という『今ここの現実』のコストが、得られる恩恵を上回る。今この人を楽にする選択は現状維持。"
+     },
+     {
+      "title": "考え直すべき兆し：件数の増加、二重管理の食い違い、共同編集の必要",
+      "where": "-（将来の判断基準）",
+      "why": "制作物が20件を超えてグループが増える／パネル初期値とセルの食い違いが実際に起きる／執筆者が2人以上になりコンフリクトが生まれる——このどれかが起きたら、静かな違和感は放置してはいけないサインになる。"
+     },
+     {
+      "title": "移行するなら Eleventy（11ty）が最も自然",
+      "where": "移行判断が下った場合の選定",
+      "why": "現状は vanilla JS と data属性駆動という素朴な設計思想。Astroはコンポーネント志向で移行の摩擦が大きく、Hugoは Go template の学習コストが本人ひとりには重い。Eleventyなら今のHTML構造をJSONデータ＋Nunjucksテンプレートへほぼそのまま写せる。"
+     }
+    ],
+    "top_recommendation": "今は移行せず現状維持。ただしパネル初期値（552-572行）とカード先頭データ（312-326行）の二重管理だけは、コメントで明示的に「同期させること」と書き残しておくべき。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2093297
+  },
+  {
+   "slot": "main",
+   "task": "tech_choice",
+   "type": "isfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "1c24edea3a1ac515",
+   "data": {
+    "findings": [
+     {
+      "title": "移行しない：更新頻度と体制に対してSSGは過剰",
+      "where": "全体（index.html 1枚構成、行600〜790のscript）",
+      "why": "月1〜2回・本人1人での更新なら、ビルドパイプラインやNode依存を持ち込む方が管理の負担が増える。今これで回っているものを、わざわざ崩す理由が見当たらない。"
+     },
+     {
+      "title": "カード追加時のdata属性コピペが誤入力の温床",
+      "where": "312〜545行、各.cellのdata-ja/ch/into/tech/host/desc/art/artt",
+      "why": "1件あたり8種の属性を手打ちで複製しており、閉じ忘れや値のずれが起きやすい。現場で実際に手を動かすのが本人一人なので、ここのミスは気づかれにくい。"
+     },
+     {
+      "title": "グループ件数・合計件数の手動カウントがズレる危険",
+      "where": "300行 .sect-m b（12PUBLISHED）／310,332,372,408,430,467,494行 各.glabel末尾の数字",
+      "why": "作品を1件足すたびに、該当グループの数字と合計の12を両方手で数え直す必要がある。数え忘れると来訪者に見える形で矛盾が残ってしまう。"
+     },
+     {
+      "title": "移行するならAstroよりEleventy寄り",
+      "where": "-（将来の判断材料として）",
+      "why": "コンポーネント指向のAstroはこの1枚モノには重すぎる。テンプレート＋データ分離だけで足りるならEleventyの方が本人一人の運用に合う。ただし今は時期尚早。"
+     },
+     {
+      "title": "考え直す条件を先に決めておきたい",
+      "where": "-（運用ルールとして明文化）",
+      "why": "更新が週1以上になった、他の人が編集に関わる、カードが20件を超えてdata属性の管理が辛くなった――このどれかが起きたら、その時点でもう一度検討すればいい。"
+     }
+    ],
+    "top_recommendation": "今は素のHTMLのまま継続。ただしカード追加時のdata属性と件数カウントの手順を、本人用に一枚メモとして残しておく。",
+    "confidence": 4
+   },
+   "cost_usd": 0.1975592
+  },
+  {
+   "slot": "main",
+   "task": "tech_choice",
+   "type": "enfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "e79301f8d91ed25d",
+   "data": {
+    "findings": [
+     {
+      "title": "結論：今は移行しない。素のHTMLのまま育てるのが一番自由で楽しい",
+      "where": "index.html 全体（720行）",
+      "why": "月1〜2回・本人1人の更新頻度だと、Astro等のビルド工程を挟む手間の方が『作品を1個足す楽しさ』を削る。今の構造は十分読めるし、これはこれで一つの完成した世界観だと思う、めっちゃいい。"
+     },
+     {
+      "title": "ただし12枚のdata属性ベタ書きは事故の種。374行目だけ仲間はずれ",
+      "where": "312〜545行目 各 .cell の data-art / data-artt / data-ja / data-ch / data-into / data-tech / data-desc, 特に374行目 Claude Anywhere カード",
+      "why": "Claude Anywhereだけ data-art/data-artt がなく解説記事リンクなし。意図か漏れか本文だけでは判別不能。8個の属性を手書きコピペしてる時点で、これいつか誰かの気持ちを裏切るtypoが出そう。"
+     },
+     {
+      "title": "見直しトリガーを3つ決めておく：これが来たら本気で考え直す",
+      "where": "307〜549行目 .slab 内のカード総数（現在12）",
+      "why": "①カードが20件を超えて一目でグルーピングが辛くなった時 ②data属性のミスで実際に壊れた時 ③検索/タグ絞り込みが欲しくなった時。これが来たら『もっと自由に組み替えられる世界』に移る合図だと思う。"
+     },
+     {
+      "title": "移行するならAstro一択。理由はContent Collectionsとの相性",
+      "where": "移行時の参照：312〜545行目のカードdata属性群をfrontmatterに変換するイメージ",
+      "why": "AstroはMarkdown+frontmatterで1作品=1ファイルに切り出せて、GitHub Pages向けstatic buildも簡単。凝ったCSSアニメーション（50〜283行目）はコンポーネント単位でそのまま持っていける、繋がりがいい。"
+     },
+     {
+      "title": "移行しない代わりに、今すぐできる軽い一歩：カードデータをJS配列に集約",
+      "where": "600〜722行目 script内、または新規<script>ブロック",
+      "why": "12枚のHTMLベタ書きを1つの配列オブジェクト＋テンプレートリテラルで描画するだけで、typoのリスクが激減してAstro移行の助走にもなる。飽きっぽくても続けられる規模に削れる、これがまず一番効くと思う。"
+     }
+    ],
+    "top_recommendation": "今は移行せず、12枚のカードdata属性をJS配列に集約するリファクタから始める。作品20件超えかミス発生でAstroへ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2085851
+  },
+  {
+   "slot": "main",
+   "task": "tech_choice",
+   "type": "enfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "b7a2cf94c9ced2f6",
+   "data": {
+    "findings": [
+     {
+      "title": "今は移行より現状維持が本人のためになる",
+      "where": "index.html 全体（1ファイル構成）",
+      "why": "月1〜2回・本人1人の更新頻度では、ビルド環境の学習と保守のコストが更新の手間を上回る。今のシンプルさを守る方が本人の負担が少ない。"
+     },
+     {
+      "title": "カード追加は14個のdata属性コピペでミスが起きやすい",
+      "where": "312〜545行目 <a class=\"cell\" data-art= ... data-desc=...> の各カード",
+      "why": "1カードに約14個のdata-*属性とSVGを手で複製する構造。属性の書き漏れや対応ずれが、更新のたびに本人を消耗させる一番の負担源になりそう。"
+     },
+     {
+      "title": "『考え直すタイミング』を先に3つ決めておく",
+      "where": "604〜669行目 JS（cells生成・イベント処理）／grid構造全体",
+      "why": "作品数が20件を超える／更新頻度が週1回以上になる／編集を手伝う人が増える、のいずれかが起きたら再検討。基準を先に決めれば、その時に迷わず動ける。"
+     },
+     {
+      "title": "移行するならEleventyが今の資産を一番活かせる",
+      "where": "-（移行時の選定基準）",
+      "why": "今のCSS/JSはvanillaでコンポーネント化されていない。AstroやHugoよりテンプレート言語がシンプルなEleventyの方が今の書き方に近く、GitHub Pagesとの相性もいい。"
+     },
+     {
+      "title": "まずはカードデータのJSON化だけ先にやってみよう",
+      "where": "726〜789行目 script／308〜547行目 カードHTML",
+      "why": "SSGを入れる前に、カード情報を配列かJSONへ外出ししてJS側でレンダリングすれば、コピペミスのリスクだけ先に減らせる。将来移行する時の橋渡しにもなる。"
+     }
+    ],
+    "top_recommendation": "SSG移行は保留し、まずカードデータをJSON化してJSでレンダリングする軽量リファクタから始めよう。本人の負担を確実に減らせる一歩だから。",
+    "confidence": 4
+   },
+   "cost_usd": 0.22763529999999998
+  },
+  {
+   "slot": "main",
+   "task": "tech_choice",
+   "type": "istj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "455d48080fb9e2d9",
+   "data": {
+    "findings": [
+     {
+      "title": "移行は不要。更新頻度・体制がSSG導入コストに見合わない",
+      "where": "依頼条件（月1〜2回更新・執筆者1人・GitHub Pages）",
+      "why": "実際のところ、SSGの利点はテンプレート分離とビルド自動化だが、月1〜2回・本人1人ではその恩恵よりnpm依存管理・ビルド設定・Nodeバージョン対応という新しい保守責任の方が重い。データがないのに変化に飛びつく理由はない。"
+     },
+     {
+      "title": "新規カード追加の手順は既に前例で確立している",
+      "where": "312-326行目 .cellブロック、556-571行目 aside.panel",
+      "why": "過去12回、既存.cellをコピーしてdata-*属性とSVGを書き換える方法で破綻なく追加できている。実証済みの手順があるなら、それを変える根拠を先に要求すべきだ。"
+     },
+     {
+      "title": "780行超のCSS/JS一体構造は将来のリスク要因だが現時点では未顕在化",
+      "where": "12-283行目<style>、600-790行目<script>",
+      "why": "キーボード操作や演出アニメーションまで作り込まれ複雑だが、実際に更新作業で支障が出たという事実はまだない。データのない懸念で先回りして構造を変えるのは早計。"
+     },
+     {
+      "title": "移行を再検討する条件をあらかじめ約束事として文書化すべき",
+      "where": "-（README等に運用ルールとして明記推奨）",
+      "why": "更新頻度が週1以上になる、執筆者が複数人になる、カードが30件超で見通しが悪化する、ページ単位のSEO/OGPが必要になる、のいずれかが起きたら移行検討に入る、とルールがある運用が規律にかなう。"
+     },
+     {
+      "title": "もし移行するならEleventyを選ぶ",
+      "where": "-（移行時の選定基準）",
+      "why": "本人1人・GitHub Pages公開・既存HTML資産の流用しやすさを考えると、AstroはこのSSHの規模にオーバースペック、HugoはGoテンプレートという別言語の学習コストがある。EleventyはNode.jsのみで完結し学習コストが低い。"
+     }
+    ],
+    "top_recommendation": "現状の素のHTMLを維持する。ただし「週1更新・複数執筆者・カード30件超」を移行検討の発動条件として文書化しておく。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2638661
+  },
+  {
+   "slot": "main",
+   "task": "tech_choice",
+   "type": "estj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "f4343ae31f718f30",
+   "data": {
+    "findings": [
+     {
+      "title": "結論：SSG移行は却下。現状の素HTML運用を継続する",
+      "where": "index.html 全体（1ファイル構成）",
+      "why": "更新頻度が月1〜2回、担当は本人1人、公開先はGitHub Pages。この条件でビルドパイプラインの依存管理・保守コストを背負う効率上のメリットがない。実績のある今の手順を変える理由がない。"
+     },
+     {
+      "title": "再検討の基準を数値で明文化しておけ",
+      "where": "運用ルール（ドキュメント未整備）",
+      "why": "ESTJ的に『何が起きたら変えるか』を先に決めておくのが筋。基準：カード数が20〜30件超、行数1500行超、更新頻度が週1以上、編集者が2人以上に増えた時点で再判断。"
+     },
+     {
+      "title": "新規カード追加手順が未文書化。属人化のリスク",
+      "where": "312〜326行目（.cell 1件分のマークアップとdata属性8種）",
+      "why": "作品追加はHTMLブロックの複製作業。手順書がないと本人が誤って属性を漏らす・idを取り違えるミスが起きる。責任者が本人1人でも、手順の明文化は必須。"
+     },
+     {
+      "title": "グループ件数表示が手動カウントで同期漏れの危険あり",
+      "where": "310行目・332行目・372行目など .glabel 内の数字（例:「Agent Skill 1」）",
+      "why": "カード追加時にこの数字を手で書き換える運用になっている。ルール化されていないと、実カード数と表示件数がずれたまま公開される。"
+     },
+     {
+      "title": "移行するなら選定はEleventy一択でよい",
+      "where": "（仮に移行する場合の技術選定）",
+      "why": "Astro/Hugoはコンポーネント指向・独自テンプレート言語の学習コストが高く、月1更新の1人運用には過剰投資。Eleventyは素のHTML/Markdownに近く、GitHub Pages連携もシンプルで移行時の説明責任を果たしやすい。"
+     }
+    ],
+    "top_recommendation": "移行はしない。その代わり『再検討の閾値（件数・更新頻度・編集者数）』と『カード追加手順書』を今すぐ明文化しろ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.24523425
+  },
+  {
+   "slot": "main",
+   "task": "tech_choice",
+   "type": "esfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "2e2482ef419fdb36",
+   "data": {
+    "findings": [
+     {
+      "title": "インストール先の改行が消えるバグ（区切り文字の不一致）",
+      "where": "634行目 P.into.textContent = c.dataset.into.split(',')...／data-into属性（314, 336, 471, 515, 532行など）",
+      "why": "属性値はパイプ区切りなのにJSはカンマで分割しており、複数の設置先が1行にくっついて出る。見に来てくれた人が困る、これは真っ先に直してあげたい。"
+     },
+     {
+      "title": "静的サイトジェネレータへの移行は今回は見送りが妥当",
+      "where": "サイト全体構成／更新運用",
+      "why": "月1〜2回・本人1人・GitHub Pagesという状況では、ビルド導入は本人の手間を増やすだけ。今のやり方に馴染んでいるなら、無理に変えなくていい。"
+     },
+     {
+      "title": "カードの繰り返し構造は将来の自分のために整えておきたい",
+      "where": "309〜547行目 .group×7（.cell 12個分のコピペ構造）",
+      "why": "1件追加するたびに em/nm/ja/cd/data-*を全部揃えて書く必要があり、抜け漏れが起きやすい。テンプレ用のコメントやひな形コメントだけでも用意すると、後で困らない。"
+     },
+     {
+      "title": "もし移行するなら Eleventy を選ぶのが周りに馴染みやすい",
+      "where": "-（移行判断時の選択肢）",
+      "why": "素のHTML/CSSの書き方に近い形で導入でき、GitHub Pagesでの運用の勘所も崩さずに済む。Astroはコンポーネント指向で今の1人運用にはやや大掛かり。"
+     },
+     {
+      "title": "考え直すタイミングの目安を決めておく",
+      "where": "-（将来の見直し基準）",
+      "why": "作品数が20件を超える、更新を手伝う人が増える、data属性起因のミスが繰り返される――このどれかが起きたら、みんなのためにも構造を見直すべき時。"
+     }
+    ],
+    "top_recommendation": "まず634行目の split(',') を split('|') に直すこと。移行はせず、今のHTMLを大事に使い続けてよい。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2112069
+  },
+  {
+   "slot": "main",
+   "task": "tech_choice",
+   "type": "istp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "5324536808b1203b",
+   "data": {
+    "findings": [
+     {
+      "title": "1件追加のコストが高すぎる原因はSSGの有無じゃない",
+      "where": "index.html 312-546行目 各.cell要素",
+      "why": "data-ja/data-ch/data-tech等とspan.nm/span.ja/span.cdが同じ内容を二重に書いている。作品追加のたび20〜30行コピペして両方直す必要があり、直し漏れがバグる。これはSSGに変えても残る問題。JSでオブジェクト配列からcellとpanelを生成すれば1箇所修正で済む。"
+     },
+     {
+      "title": "月1〜2回・本人1人にSSGは過剰装備",
+      "where": "依頼全体（更新頻度と体制の条件）",
+      "why": "ビルドパイプライン・テンプレート言語・依存パッケージの管理コストが、年12〜24回程度の更新作業量に見合わない。壊れたビルドを直す手間が本来の作業より増える。"
+     },
+     {
+      "title": "SSGが効くのは静的生成の部分だけで、このUIの複雑さは別物",
+      "where": "index.html 600-790行目（paint/nearest/MutationObserverによるfx演出）",
+      "why": "セレクト画面のキーボード操作・パネル演出のロジックはHTML生成とは無関係にJSで書かれ続ける。Astro等に載せても消えない。移行の動機として弱い。"
+     },
+     {
+      "title": "実際に試すなら先にJSテンプレート化、それで十分なら現状維持",
+      "where": "index.html 604-611行目 cells/P定義まわり",
+      "why": "カード情報を配列にまとめてcell/panelをrenderする関数を書くだけで、二重管理は解消できる。SSG抜きで実物を動かして確かめられる最小の一手。"
+     },
+     {
+      "title": "移行しない場合に考え直す条件",
+      "where": "-",
+      "why": "更新頻度が週1以上に増える／執筆者が2人以上になりレビュー・差分管理が要る／作品カードでなくMarkdown記事本文を大量に持つようになる／カード数が数十〜百件規模に増える、のいずれかが起きたら再検討で十分。"
+     }
+    ],
+    "top_recommendation": "移行しない。まずdata属性とspanの二重管理をJSの配列テンプレート化で解消しろ。SSGの話はそれで足りなくなってからでいい。",
+    "confidence": 4
+   },
+   "cost_usd": 0.22440670000000001
+  },
+  {
+   "slot": "main",
+   "task": "tech_choice",
+   "type": "isfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "877d87610740f032",
+   "data": {
+    "findings": [
+     {
+      "title": "結論：今のままでいい、というのが肌感",
+      "where": "index.html 全体（1ファイル構成）",
+      "why": "月1〜2回、本人1人での更新なら、この1枚に込められた手触りをビルド工程で薄めたくない。なんとなくだけど、これは今の形が正解に見える。"
+     },
+     {
+      "title": "600〜789行の演出は「今この瞬間」のために書かれている",
+      "where": "script内 type()/roll()/fx()、789行まで",
+      "why": "タイプライターやsplit-flapの演出は、素のHTMLだからこそ触ってすぐ直せる距離感がある。SSGを挟むとこの近さが変わる気がして、そこは譲れない。"
+     },
+     {
+      "title": "カード追加はコピペで足りている、が正直な実感",
+      "where": "311〜547行 .grid内の.cellブロック",
+      "why": "data属性ごとコピーして書き換えるだけで作品が増やせている。1人・低頻度ならこの素朴さの方がテンプレートより自分に合う。"
+     },
+     {
+      "title": "もし移行するならAstro、Hugoは肌に合わなそう",
+      "where": "-（意思決定の分岐点）",
+      "why": "Astroは.astroの中に今の生HTML/CSS/scriptをほぼそのまま持ち込める。Hugoは規約とテンプレ言語が間に入り、今の手触りが遠くなる印象。"
+     },
+     {
+      "title": "考え直すのは「コピペが苦痛になった時」だけでいい",
+      "where": "311〜547行の.groupセクション反復構造",
+      "why": "カードが30〜40件を超えて書き換えミスが増えたり、自分以外の人が書くようになったら、その時初めて仕組み化を考えたい。数字で先回りはしたくない。"
+     }
+    ],
+    "top_recommendation": "今は移行しない。素のHTMLのまま続けて、カード追加が「コピペが辛い」と感じ始めたらAstroを検討する。",
+    "confidence": 3
+   },
+   "cost_usd": 0.19744989999999998
+  },
+  {
+   "slot": "main",
+   "task": "tech_choice",
+   "type": "estp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "67075eeabdd991a0",
+   "data": {
+    "findings": [
+     {
+      "title": "結論：今は移行しない。素のHTMLで回せ",
+      "where": "index.html 全体（1ファイル724行）",
+      "why": "月1〜2回・本人1人という更新頻度なら、ビルドパイプラインを足す手間の方が今の運用より重い。困ってないのに手を広げるのは無駄。"
+     },
+     {
+      "title": "カード追加は実質コピペ数分の作業",
+      "where": "312-326行（.cellブロック1件分のパターン）",
+      "why": "既存カードを1つ複製してdata属性を書き換えるだけで新規追加が終わる構造。SSGのテンプレート化がなくても十分速い。"
+     },
+     {
+      "title": "データが3箇所に重複してるのは事故の芽だが今は許容範囲",
+      "where": "data-ja/data-desc等の属性（312-528行）とpaint()関数（624-648行）、cd span（325行等）",
+      "why": "同じ情報をdata属性・cd要素・パネル出力用に別々に持ってて食い違うリスクはある。ただ12件・月1〜2回ならコピペ確認で足りる、SSG化するほどの重さじゃない。"
+     },
+     {
+      "title": "考え直すタイミングは3つ：件数・頻度・執筆者",
+      "where": "309-547行（.group/.gridセクション、カードが増える場所）",
+      "why": "カードが30件超えて一覧が重くなる／更新が週次以上になる／自分以外が編集するようになる、のどれかが来たら実際やってみて確かめる話になる。"
+     },
+     {
+      "title": "やるならAstro一択、迷う話じゃない",
+      "where": "-",
+      "why": "GitHub Pagesとの相性が良く、コンポーネント感覚でカードをテンプレ化できてビルドも軽い。Eleventy/Hugoを比較検討する時間はムダ、決め打ちで試せばわかる。"
+     }
+    ],
+    "top_recommendation": "今は素のHTMLのまま続行。カード追加はコピペで十分回る。件数か頻度か執筆者が増えたら、その時Astroに乗せ替えてみればいい。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2280306
+  },
+  {
+   "slot": "main",
+   "task": "tech_choice",
+   "type": "esfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "54d9b3d0aeb8e043",
+   "data": {
+    "findings": [
+     {
+      "title": "結論: 素のHTMLのまま続けるのが正解",
+      "where": "index.html 全体",
+      "why": "更新頻度は月1-2回、本人1人、公開先はGitHub Pages。SSGの利点（テンプレ再利用、複数人分担、ビルド最適化）が活きる状況ではない。"
+     },
+     {
+      "title": "新規カード追加は90行程度のブロックをコピペする作業になっている",
+      "where": "306-547行 slab内の各cellブロック",
+      "why": "本人が月1で更新する際に手間になりやすい。ただしこれはSSG化しなくてもスニペット化で解決できる話であり、移行の理由にはならない。"
+     },
+     {
+      "title": "data属性とJSのPオブジェクトが密結合しており、項目追加時に3箇所を触る必要がある",
+      "where": "paint関数624-648行、cellのdata-ja等312-546行",
+      "why": "フィールドを1つ増やすとHTML属性、JS参照、CSSを揃える必要がある。ただしSSG化しても同様の結合は残るため移行理由にはならない。"
+     },
+     {
+      "title": "考え直すべきタイミング",
+      "where": "-",
+      "why": "更新頻度が週1以上に増える、カード数が30件を超える、執筆者が複数になる、記事とサイトの一元管理が必要になる、のいずれかが起きたら再検討すればよい。"
+     },
+     {
+      "title": "GitHub Pagesは素のHTMLならpushで即反映される",
+      "where": "公開フロー、直push運用",
+      "why": "変更してすぐ結果が見えるフィードバックの速さが今のサイトの利点。SSG化するとビルド工程が挟まりフィードバックが遅くなる。"
+     }
+    ],
+    "top_recommendation": "移行しない。今のまま素のHTMLで続け、カード追加用のスニペットだけ用意する。",
+    "confidence": 4
+   },
+   "cost_usd": 0.31010550000000003
   }
  ],
  "errors": []

@@ -1,0 +1,45 @@
+{
+ "key": "fb3b4c2f22031e38",
+ "tag": "pair/portfolio_failures/fwd/intj-istj/reb/istj",
+ "model": "sonnet",
+ "data": {
+  "target": "失敗の因果分析を提示できる方が専門性の信頼度が高い",
+  "rebuttal": "実際のところ、その分析とやらは本人の自己申告に過ぎない。動く成果物は誰でも触って検証できる事実だが、なぜ破綻したかという説明は後から本人が都合よく組み立てた物語になり得る。過去の例では、言い訳が上手いだけの人間ほど失敗の理由を雄弁に語る。検証不能な分析を信頼度の根拠にするのは危うい。約束を果たせなかった事実は、後付けの理屈で覆せるものではない。"
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 3,
+   "cache_creation_input_tokens": 1439,
+   "cache_read_input_tokens": 3531,
+   "output_tokens": 929,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 727,
+    "ephemeral_5m_input_tokens": 712
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 272,
+     "cache_read_input_tokens": 2129,
+     "cache_creation_input_tokens": 712,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 712,
+      "ephemeral_1h_input_tokens": 0
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.0232183,
+  "duration_ms": 17420,
+  "session_id": "1538dce7-a40f-4e09-9b80-bb3c26b231ad"
+ }
+}

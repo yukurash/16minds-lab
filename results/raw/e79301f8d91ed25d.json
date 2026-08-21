@@ -1,0 +1,72 @@
+{
+ "key": "e79301f8d91ed25d",
+ "tag": "fit/main/tech_choice/enfp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "結論：今は移行しない。素のHTMLのまま育てるのが一番自由で楽しい",
+    "where": "index.html 全体（720行）",
+    "why": "月1〜2回・本人1人の更新頻度だと、Astro等のビルド工程を挟む手間の方が『作品を1個足す楽しさ』を削る。今の構造は十分読めるし、これはこれで一つの完成した世界観だと思う、めっちゃいい。"
+   },
+   {
+    "title": "ただし12枚のdata属性ベタ書きは事故の種。374行目だけ仲間はずれ",
+    "where": "312〜545行目 各 .cell の data-art / data-artt / data-ja / data-ch / data-into / data-tech / data-desc, 特に374行目 Claude Anywhere カード",
+    "why": "Claude Anywhereだけ data-art/data-artt がなく解説記事リンクなし。意図か漏れか本文だけでは判別不能。8個の属性を手書きコピペしてる時点で、これいつか誰かの気持ちを裏切るtypoが出そう。"
+   },
+   {
+    "title": "見直しトリガーを3つ決めておく：これが来たら本気で考え直す",
+    "where": "307〜549行目 .slab 内のカード総数（現在12）",
+    "why": "①カードが20件を超えて一目でグルーピングが辛くなった時 ②data属性のミスで実際に壊れた時 ③検索/タグ絞り込みが欲しくなった時。これが来たら『もっと自由に組み替えられる世界』に移る合図だと思う。"
+   },
+   {
+    "title": "移行するならAstro一択。理由はContent Collectionsとの相性",
+    "where": "移行時の参照：312〜545行目のカードdata属性群をfrontmatterに変換するイメージ",
+    "why": "AstroはMarkdown+frontmatterで1作品=1ファイルに切り出せて、GitHub Pages向けstatic buildも簡単。凝ったCSSアニメーション（50〜283行目）はコンポーネント単位でそのまま持っていける、繋がりがいい。"
+   },
+   {
+    "title": "移行しない代わりに、今すぐできる軽い一歩：カードデータをJS配列に集約",
+    "where": "600〜722行目 script内、または新規<script>ブロック",
+    "why": "12枚のHTMLベタ書きを1つの配列オブジェクト＋テンプレートリテラルで描画するだけで、typoのリスクが激減してAstro移行の助走にもなる。飽きっぽくても続けられる規模に削れる、これがまず一番効くと思う。"
+   }
+  ],
+  "top_recommendation": "今は移行せず、12枚のカードdata属性をJS配列に集約するリファクタから始める。作品20件超えかミス発生でAstroへ。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23095,
+   "cache_read_input_tokens": 1627,
+   "output_tokens": 3278,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23095,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 3278,
+     "cache_read_input_tokens": 1627,
+     "cache_creation_input_tokens": 23095,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23095
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.2085851,
+  "duration_ms": 53752,
+  "session_id": "69978379-8f37-4f56-b6fc-0f9853e53c0e"
+ }
+}

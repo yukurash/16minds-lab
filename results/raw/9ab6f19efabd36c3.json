@@ -1,0 +1,72 @@
+{
+ "key": "9ab6f19efabd36c3",
+ "tag": "fit/main/naming/esfp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": ".id クラスが HTML の id 属性とかぶって紛らわしい",
+    "where": "行131 .cell .id / 行324など span class=\"id\" / JS行606 P.id",
+    "why": "実際触ってて『あ、これCSSクラスの.idね、DOMのidじゃないんだ』って毎回二度見しちゃう。半年後の自分は絶対だまされる。.badge とか .code-tag のほうが一発でわかって楽しく読める。"
+   },
+   {
+    "title": "p-ch / p-into / p-artt の略しすぎで中身が想像できない",
+    "where": "行553,557,568 の id, および JS行606-609 の P オブジェクト",
+    "why": "実際やってる人（＝半年後の自分）が p-into を見て『インストール先』ってすぐ思い出せる自信ある？ ch も channel か character か分かんない。panel-channel / panel-install / panel-article-title くらい書いても全然重くならないし、いいじゃん。"
+   },
+   {
+    "title": ".cd .doc .desc の3兄弟が似すぎてて事故る",
+    "where": "行132(.doc), 137(.cd), 210(.pdesc)",
+    "why": "モバイル説明・記事バッジ・パネル本文説明、全部『説明系』クラスなのに見た目が似た2〜4文字。一緒に楽しく読めるようにするなら .badge-article / .card-desc-mobile / .panel-desc くらいはっきり分けたい。"
+   },
+   {
+    "title": ".sect / .sect-h / .sect-t 系の圧縮接頭辞は雰囲気で読めるけど確信が持てない",
+    "where": "行55,58,71,75,84 の .sect 系一式",
+    "why": "section-header/title/metaって『多分こう』で読めちゃうのが逆に怖い。半年後、なんとなくで読んで意味を誤解するのが一番こわいパターン。section-title / section-meta って書けば迷わない。"
+   },
+   {
+    "title": ".em .nm .ja .mk がカードの中身なのに一文字〜二文字略で意味不明",
+    "where": "行117-131 の .cell 配下クラス群",
+    "why": "emoji/name/japanese-desc/marks の略だと思うけど、初見じゃ絶対わからない。実際使う人（未来の自分）が楽しく直せるように .card-icon / .card-name / .card-tagline / .card-meta って名前つけよう。"
+   }
+  ],
+  "top_recommendation": "まず .id を .badge に変えるとこから始めよう。DOMのidと混同するのが一番事故りやすいから、そこだけでも直せば半年後の自分が救われる。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23141,
+   "cache_read_input_tokens": 1644,
+   "output_tokens": 1995,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23141,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 1995,
+     "cache_read_input_tokens": 1644,
+     "cache_creation_input_tokens": 23141,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23141
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.1896642,
+  "duration_ms": 33289,
+  "session_id": "8e9e3256-4142-4b00-9b5f-1918641d25f8"
+ }
+}

@@ -1,0 +1,72 @@
+{
+ "key": "f7b467d719c5ee7a",
+ "tag": "fit/main/estimate/infj/rep0",
+ "model": "sonnet",
+ "data": {
+  "top_recommendation": "まず 604行目の cells 配列と 673-710行目の nearest() を「表示中カードのみ」対応に直す。ここが崩れると Enter/矢印キー操作全体が壊れる。",
+  "confidence": 4,
+  "findings": [
+   {
+    "title": "矢印キー操作がフィルタ後に壊れる — 静的cells配列と幾何学的探索",
+    "where": "604行目 const cells = [...document.querySelectorAll('.cell')] / 673-710行目 nearest()",
+    "why": "cells はDOM構築時の一度きりのスナップショット。display:noneにしたカードもそのまま候補に残り、getBoundingClientRectが(0,0,0,0)になって近傍探索(along/across計算)が破綻する。フィルタ導入では必須の修正で、これが今回の変更で最も『効いて重くなる』箇所。目安1〜1.5h。"
+   },
+   {
+    "title": "グループ見出しの件数がハードコード文字列",
+    "where": "309-547行目 各section.groupの.glabel（例: 310行目 \"Agent Skill ... 1\"）",
+    "why": "タグでの絞り込みを導入すると、グループ軸（用途別）とタグ軸（技術別）の二重分類になる。フィルタ後にこの数字が実数と合わなくなるので、動的計算に変更するかグループ表示自体を見直す設計判断が必要。0.5〜1h。"
+   },
+   {
+    "title": "30件化の実作業はSVGアイコン手描き＋data属性の手動転記が支配的",
+    "where": "312-547行目 roster全体の.cellブロック（1件あたりSVG含め約15〜20行）",
+    "why": "テンプレート化されておらず1件ずつ手打ち。18件追加は内容整理20〜30分×18＋アイコン制作15〜30分×18で、コンテンツ工数だけで12〜18時間かかり、全体見積もりの大半を占める。"
+   },
+   {
+    "title": "フィルタ用のタグ構造がデータ側に存在しない",
+    "where": "各.cellのdata-ch / data-tech属性（例312-316行目）",
+    "why": "data-chやdata-techは自由記述の説明文でフィルタキーに使えない。新たに data-tags=\"claude-code,web\" 等を全30件に付与する作業が別途必要（既存12件の改修＋新規18件）。1〜2h。"
+   },
+   {
+    "title": "animation-delayがcellsのインデックス依存で30件・フィルタ時にズレる",
+    "where": "115行目 .cellのanimation-delay:calc(var(--i,0)*38ms+.18s) / 733行目 --iのセット処理",
+    "why": "30件フル表示で最大約1.3秒の遅延になり、フィルタで再配置すると--iと実際の表示順が食い違い、体感の演出が崩れる。フィルタ切替時に--iを振り直す処理が追加で必要。0.5〜1h。"
+   }
+  ]
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23093,
+   "cache_read_input_tokens": 1609,
+   "output_tokens": 4028,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23093,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 4028,
+     "cache_read_input_tokens": 1609,
+     "cache_creation_input_tokens": 23093,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23093
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.2198547,
+  "duration_ms": 58694,
+  "session_id": "90ef93b8-bed6-4afe-9382-cc516841ccb7"
+ }
+}

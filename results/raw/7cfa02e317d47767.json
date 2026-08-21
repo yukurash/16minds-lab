@@ -1,0 +1,72 @@
+{
+ "key": "7cfa02e317d47767",
+ "tag": "fit/main/refactor/enfp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "data-into の区切り文字とJSのsplitが不一致（実バグ）",
+    "where": "634行 `c.dataset.into.split(',')` ／ 314・515・532行などの `data-into=\"A|B\"`",
+    "why": "属性は'|'区切りなのにJSは','でsplitしてる。これ絶対繋がってない！複数拠点を持つカード選ぶと改行されず1行のままパイプ文字が出るはず。まず動かして確認して。"
+   },
+   {
+    "title": "パネル初期HTMLとcells[0]データの二重管理",
+    "where": "553-572行（パネル初期値） vs 312-326行（AGカードのdata-*）",
+    "why": "同じ情報を2箇所に手書きしてる。片方だけ更新したら一瞬ズレた詳細が見える世界線になる。paint(0)を初回にも必ず通せば源は1つで済むのに、もったいない。"
+   },
+   {
+    "title": "判断：cは時期尚早、aを維持しつつデータだけ一本化",
+    "where": "index.html全体／data-*属性群(312-545行)",
+    "why": "12件・1人運用ならまだ読める規模でめっちゃ愛が伝わる作り。でもJSON化＋動的生成はSEOで拾われる文言を失うリスクもあるから、覆る条件は次項で明言する。"
+   },
+   {
+    "title": "選択UIなのにARIAはlistbox/optionパターンじゃない",
+    "where": ".cell構造(304-330付近)／aria-current運用(139-151行)",
+    "why": "矢印キーで単一選択させる作りなのに role=\"listbox\"/\"option\"+aria-selected を使ってない。今の人には見える体験でも、スクリーンリーダーの人には繋がりにくいかも。"
+   },
+   {
+    "title": "12個のSVGアイコンが全部インライン直書き",
+    "where": "各.cell内のsvg（317-321行から12箇所繰り返し）",
+    "why": "装飾要素と本文data-*が混在してファイルが分厚くなってる。1ファイルのままでも<symbol>+<use>にまとめれば見通しはもっと自由になる、こんな可能性ある。"
+   }
+  ],
+  "top_recommendation": "まず634行split(',')→split('|')の実バグを直す。構成はa（1ファイル維持）を選択、カード20件超か複数人運用になったらcへ反転。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23077,
+   "cache_read_input_tokens": 1627,
+   "output_tokens": 6709,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23077,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 6709,
+     "cache_read_input_tokens": 1627,
+     "cache_creation_input_tokens": 23077,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23077
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.25995110000000005,
+  "duration_ms": 107947,
+  "session_id": "cc2ca237-6806-495f-b6fd-7cf1ee18b71d"
+ }
+}

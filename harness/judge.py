@@ -24,6 +24,7 @@ import random
 import re
 import string
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections import defaultdict
 from pathlib import Path
 
@@ -80,9 +81,10 @@ PAIR_JUDGE_SCHEMA = {
         "contact_a": {"type": "integer", "minimum": 0, "maximum": 3, "description": "A の反論が B の実際の主張に触れていた度合い"},
         "contact_b": {"type": "integer", "minimum": 0, "maximum": 3},
         "parallel": {"type": "boolean", "description": "最後まで評価軸が一度も交差せず平行線だったか"},
+        "productivity": {"type": "integer", "minimum": 0, "maximum": 5, "description": "この2人を組ませた価値。0=組ませる意味がなかった、5=片方だけでは絶対に出なかった結論に届いた"},
         "note": {"type": "string"},
     },
-    "required": ["new_points", "new_point_list", "contact_a", "contact_b", "parallel", "note"],
+    "required": ["new_points", "new_point_list", "contact_a", "contact_b", "parallel", "productivity", "note"],
     "additionalProperties": False,
 }
 
@@ -199,9 +201,8 @@ def judge_fit(slot: str, model: str) -> None:
 def judge_pair(topic: str, model: str) -> None:
     rows = json.loads((RESULTS / "pair.json").read_text(encoding="utf-8"))["rows"]
     rows = [r for r in rows if r["topic"] == topic]
-    out = []
 
-    for r in rows:
+    def score_one(r: dict) -> dict:
         a, b = r["a"], r["b"]
         prompt = f"""2人の匿名討論者 A と B のディベート記録だ。お題は次のもの。
 
@@ -233,6 +234,14 @@ B（{r['final'][b]['revision']}）: {r['final'][b]['statement']}
 - contact_a / contact_b: その人の反論が、相手が実際に言ったことに触れていたか。
   0 = 相手の主張と無関係に自説を続けた、3 = 相手の中心的な主張に正面から当たった
 - parallel: 最後まで互いの評価軸が一度も交差せず、噛み合わないまま終わったか
+- productivity 0-5: この2人を組ませたこと自体の価値。
+    0 = 組ませる意味がなかった（片方の独り言で足りた）
+    1 = 相手がいたことで多少ほぐれた程度
+    2 = 論点は増えたが、どちらか一方でも出せた内容だった
+    3 = 2人だからこそ出た論点がある
+    4 = 対立が具体的な条件分岐や判断基準に変換された
+    5 = 片方だけでは絶対に届かなかった結論に到達した
+    new_points の件数だけを見るな。件数が同じでも中身の重さで差をつけろ。
 """
         rec = cc.call(
             system=JUDGE_SYSTEM,
@@ -243,18 +252,24 @@ B（{r['final'][b]['revision']}）: {r['final'][b]['statement']}
             key=cc.cache_key("judge", "pair", model, topic, r["side"], a, b),
         )
         d = rec["data"]
-        out.append(
-            {
-                "topic": topic, "side": r["side"], "a": a, "b": b,
-                "new_points": d["new_points"], "new_point_list": d["new_point_list"],
-                "contact_a": d["contact_a"], "contact_b": d["contact_b"],
-                "parallel": d["parallel"],
-                "revision_a": r["final"][a]["revision"],
-                "revision_b": r["final"][b]["revision"],
-                "note": d["note"],
-            }
-        )
-        print(f"  judged {a} vs {b}: new={d['new_points']} parallel={d['parallel']}")
+        return {
+            "topic": topic, "side": r["side"], "a": a, "b": b,
+            "new_points": d["new_points"], "new_point_list": d["new_point_list"],
+            "contact_a": d["contact_a"], "contact_b": d["contact_b"],
+            "parallel": d["parallel"], "productivity": d["productivity"],
+            "revision_a": r["final"][a]["revision"],
+            "revision_b": r["final"][b]["revision"],
+            "note": d["note"],
+        }
+
+    out = []
+    with ThreadPoolExecutor(max_workers=4) as ex:
+        futs = {ex.submit(score_one, r): r for r in rows}
+        for f in as_completed(futs):
+            r = futs[f]
+            d = f.result()
+            out.append(d)
+            print(f"  judged {r['a']} vs {r['b']}: new={d['new_points']} parallel={d['parallel']}")
 
     p = RESULTS / f"pair_scores_{topic}.json"
     p.write_text(json.dumps({"scores": out}, ensure_ascii=False, indent=1), encoding="utf-8")

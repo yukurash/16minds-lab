@@ -1,0 +1,72 @@
+{
+ "key": "8749de973d41f71a",
+ "tag": "fit/main/design_review/esfj/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "作品が増えるたび、本人が手作業を背負う構造になっている",
+    "where": "312〜545行目 各 .cell の data-* 属性・HTML直書き",
+    "why": "12個でもこれだけ長いのに、この先15個20個と増えたらコピペミスや更新漏れが出てきそう。周りから見ても『一人で全部抱えて大丈夫かな』と心配になる作りです。"
+   },
+   {
+    "title": "スマホの人には一番の見せ場が届いていない",
+    "where": "253行目 .panel{display:none} / 238〜259行目のモバイル分岐",
+    "why": "丁寧に作り込んだ選択パネルがスマホでは丸ごと消え、ただのリンク一覧になる。今どき見に来る人の多くがスマホだとすると、せっかくの魅力が伝わっていない人が多いはずです。"
+   },
+   {
+    "title": "キーボードには優しいのに、読み上げの人には冷たい",
+    "where": "650〜669行目のイベント処理、.cell[aria-current] の使い方",
+    "why": "矢印キーでの選択はとても丁寧なのに role=listbox や aria-selected がなく、目の不自由な方には『今どれが選ばれているか』が伝わりにくいままです。誰も置いていかない作りにしてほしいところ。"
+   },
+   {
+    "title": "コードが本人だけに通じる手紙になっている",
+    "where": "613行目・671行目などの独白的コメント、全体799行",
+    "why": "コメントは温かいのですが独り言調で、半年後の本人や別の人が見返すときに『今どうなっているか』を一目で掴みにくい。誰かに引き継ぐ場面を想像すると少し心配です。"
+   },
+   {
+    "title": "一体感と引き換えに、直しにくさが積み上がっている",
+    "where": "12〜283行目 <style>、600〜790行目 <script>",
+    "why": "1ファイルにまとまっているぶん公開は楽ですが、どこか一部を直すたびに『他が崩れないか』を全体で確認する手間が、作品数が増えるほど重くなっていきます。"
+   }
+  ],
+  "top_recommendation": "まずは作品データ（data-*属性の中身）だけ別ファイルに分けて、本人が安心して作品を追加できるようにしてあげるのが一番だと思います。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23040,
+   "cache_read_input_tokens": 1633,
+   "output_tokens": 4146,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23040,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 4146,
+     "cache_read_input_tokens": 1633,
+     "cache_creation_input_tokens": 23040,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23040
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.2211759,
+  "duration_ms": 65181,
+  "session_id": "f0acd1eb-8e5b-42cc-b2fb-bf3072b9728d"
+ }
+}

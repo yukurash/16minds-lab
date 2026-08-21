@@ -1,0 +1,72 @@
+{
+ "key": "14ad0b2590871e9d",
+ "tag": "fit/main/incident/entp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "X埋め込み崩壊はバグじゃなく仕様の欠落。OGP/Twitter Cardタグが最初から存在しない",
+    "where": "<head> 4〜11行目（meta description はあるが og:title / og:image / og:url / twitter:card が皆無）",
+    "why": "XはHTML内のOGPタグをクロールしてカードを組み立てる。無ければサムネもタイトルも出ないのは必然。ここは確定で疑う余地なし、最優先で足すべき。"
+   },
+   {
+    "title": "og:imageを足しても画像がそもそも無い。favicon.svgしか存在しない",
+    "where": "8行目 <link rel=\"icon\" ... href=\"favicon.svg\">",
+    "why": "Twitterカードはsvgを画像として扱えないことが多い。og:imageには絶対URLのpng/jpgが要る。OGP追加とセットで新規アセットが必要、逆にここサボると二度手間になる。"
+   },
+   {
+    "title": "「スマホで真っ白」はこのコード単体からは再現する決定的な単一障害点が見つからない――前提を疑え",
+    "where": "全体（特定不能）／疑うべきは配信側",
+    "why": "モバイル分岐(.panel非表示、キーハンドラのpanelLive()早期return)は安全に倒れる設計になっている。コードより先にpushからの経過時間・キャッシュ未反映・シークレットモードでの再現有無を潰すべき。"
+   },
+   {
+    "title": "700px以下でパネルが丸ごと消える仕様(display:none)を『真っ白』と誤読している可能性",
+    "where": "253行目 .panel{display:none}（@media max-width:700px 内）",
+    "why": "detail panelはモバイルで意図的に非表示、代わりにカード下の.artlinkに切り替わる設計。報告者が『画面のどの部分が白いか』を言語化していないなら、これが仕様であることをまず確認すべき。"
+   },
+   {
+    "title": "data-art無しカードで記事欄がundefined化するバグを放置（別件だが実在）",
+    "where": "640〜643行目 paint() 内 P.art.href = c.dataset.art; ／ P.art.hidden は常にfalse固定",
+    "why": "コメントには『記事が無い作品は行を隠す』とあるのに実装は反していない。374/388行目のカードにdata-artが無くhref=\"undefined\"になる。ただしデスクトップのパネル限定でモバイルの真っ白報告とは無関係、混同しないよう切り分けが必要。"
+   }
+  ],
+  "top_recommendation": "まずOGP/Twitter Cardタグとog:image用画像を追加。並行して『真っ白』はシークレットモード＋別端末でpush後の反映待ちを疑い、コードの犯人探しを急がない。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 3,
+   "cache_creation_input_tokens": 30162,
+   "cache_read_input_tokens": 26312,
+   "output_tokens": 8030,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23084,
+    "ephemeral_5m_input_tokens": 7078
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 1020,
+     "cache_read_input_tokens": 24698,
+     "cache_creation_input_tokens": 7078,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 7078,
+      "ephemeral_1h_input_tokens": 0
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.31375810000000004,
+  "duration_ms": 110741,
+  "session_id": "4195113a-4928-466a-9ed6-e0b4b2b17ed1"
+ }
+}

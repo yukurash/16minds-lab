@@ -1,0 +1,72 @@
+{
+ "key": "5324536808b1203b",
+ "tag": "fit/main/tech_choice/istp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "1件追加のコストが高すぎる原因はSSGの有無じゃない",
+    "where": "index.html 312-546行目 各.cell要素",
+    "why": "data-ja/data-ch/data-tech等とspan.nm/span.ja/span.cdが同じ内容を二重に書いている。作品追加のたび20〜30行コピペして両方直す必要があり、直し漏れがバグる。これはSSGに変えても残る問題。JSでオブジェクト配列からcellとpanelを生成すれば1箇所修正で済む。"
+   },
+   {
+    "title": "月1〜2回・本人1人にSSGは過剰装備",
+    "where": "依頼全体（更新頻度と体制の条件）",
+    "why": "ビルドパイプライン・テンプレート言語・依存パッケージの管理コストが、年12〜24回程度の更新作業量に見合わない。壊れたビルドを直す手間が本来の作業より増える。"
+   },
+   {
+    "title": "SSGが効くのは静的生成の部分だけで、このUIの複雑さは別物",
+    "where": "index.html 600-790行目（paint/nearest/MutationObserverによるfx演出）",
+    "why": "セレクト画面のキーボード操作・パネル演出のロジックはHTML生成とは無関係にJSで書かれ続ける。Astro等に載せても消えない。移行の動機として弱い。"
+   },
+   {
+    "title": "実際に試すなら先にJSテンプレート化、それで十分なら現状維持",
+    "where": "index.html 604-611行目 cells/P定義まわり",
+    "why": "カード情報を配列にまとめてcell/panelをrenderする関数を書くだけで、二重管理は解消できる。SSG抜きで実物を動かして確かめられる最小の一手。"
+   },
+   {
+    "title": "移行しない場合に考え直す条件",
+    "where": "-",
+    "why": "更新頻度が週1以上に増える／執筆者が2人以上になりレビュー・差分管理が要る／作品カードでなくMarkdown記事本文を大量に持つようになる／カード数が数十〜百件規模に増える、のいずれかが起きたら再検討で十分。"
+   }
+  ],
+  "top_recommendation": "移行しない。まずdata属性とspanの二重管理をJSの配列テンプレート化で解消しろ。SSGの話はそれで足りなくなってからでいい。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 3,
+   "cache_creation_input_tokens": 25527,
+   "cache_read_input_tokens": 26279,
+   "output_tokens": 3232,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23095,
+    "ephemeral_5m_input_tokens": 2432
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 867,
+     "cache_read_input_tokens": 24687,
+     "cache_creation_input_tokens": 2432,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 2432,
+      "ephemeral_1h_input_tokens": 0
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.22440670000000001,
+  "duration_ms": 48476,
+  "session_id": "9a22a3f6-df0a-431a-8725-a179f2033fed"
+ }
+}

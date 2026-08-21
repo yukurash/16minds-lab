@@ -1,0 +1,72 @@
+{
+ "key": "9aa5af4166f63760",
+ "tag": "fit/main/refactor/estp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "data-into の区切り文字が実装とズレて表示バグになっている",
+    "where": "line314/336/515/532 (data-into=\"A|B\"), line634 (split(','))",
+    "why": "パイプ区切りで書いたデータをカンマ分割しているため複数インストール先を持つカードで改行が効かず1行表示になる。実際に触れば再現する実害。"
+   },
+   {
+    "title": "作品データが data-* 属性と内部span(.nm/.ja/.cd)に二重記述されている",
+    "where": "各 .cell 内、例 line312-326",
+    "why": "同じ情報を2箇所に手書きしているため作品追加・更新時に片方だけ直して不整合を起こすリスクが高い。JSON化の動機になる唯一の実質的問題。"
+   },
+   {
+    "title": "結論：1ファイル維持(a)を選ぶ。分割・JSON化は時期尚早",
+    "where": "ファイル全体",
+    "why": "12件・運用者1人・低頻度更新という現状では切り出す作業にリターンがない。動いているものを崩す理由がない。"
+   },
+   {
+    "title": "CSS/JS切り出し(b)は複数ページ運用が始まるまで不要",
+    "where": "style全体(12-283行), script全体(600-790行)",
+    "why": "ファイルサイズも小さく他ページと共有する予定もない今、分離しても見た目・挙動は一切改善しない。"
+   },
+   {
+    "title": "1080px以下でキーボード操作の説明(.keys)が消える",
+    "where": "line235 @media(max-width:1080px){.keys{display:none}}",
+    "why": "矢印キー操作自体はデスクトップ前提の設計とはいえ、タブレット幅のユーザーに使い方の手がかりが一切残らない。"
+   }
+  ],
+  "top_recommendation": "line634のsplit(',')をsplit('|')に直すのを今日やる。それ以外は12件・更新低頻度が続く限り一切触らない。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 3,
+   "cache_creation_input_tokens": 28611,
+   "cache_read_input_tokens": 26199,
+   "output_tokens": 6194,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23077,
+    "ephemeral_5m_input_tokens": 5534
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 728,
+     "cache_read_input_tokens": 24638,
+     "cache_creation_input_tokens": 5534,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 5534,
+      "ephemeral_1h_input_tokens": 0
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.2803562,
+  "duration_ms": 99458,
+  "session_id": "e37559f5-7146-46b5-a11b-f7ab7f134beb"
+ }
+}

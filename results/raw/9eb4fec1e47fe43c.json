@@ -1,0 +1,72 @@
+{
+ "key": "9eb4fec1e47fe43c",
+ "tag": "fit/main/naming/intp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "class=\"id\" と HTML の id 属性が同じ語を別概念で使っている",
+    "where": "行131 `.cell .id`（2文字コード表示）/ 行553 `<span id=\"p-id\">`",
+    "why": "『id』はHTML仕様上グローバル一意識別子を指す予約的な語なのに、ここでは作品カテゴリコード（AG, CL…）という別概念に流用されている。定義が二重化しており、半年後の自分がgrepしても『どのidの話か』を都度判定する羽目になる。改名案: class `.id`→`.code`、DOM id `p-id`→`p-code`。"
+   },
+   {
+    "title": "class=\"em\" がCSS単位emと衝突し意味も推測不能",
+    "where": "行117-119 `.cell .em`（SVGアイコンのラッパー）",
+    "why": "『em』は絵文字の略か、CSSのem単位か、それとも別の何かか判別できない。実体はアイコン用span。前提が崩れている命名は再考の余地なし、即改名すべき。改名案: `.em`→`.icon`。"
+   },
+   {
+    "title": "name / title / label / description が一貫規則なく nm・tt・lb・ja・cd・artt に分裂",
+    "where": "行120-131 `.nm .ja .mk .doc .cd`、行226-227 `.art .lb .tt`",
+    "why": "作品名(nm)と記事タイトル(artt)は同じ『見出しテキスト』のはずが別語。タグライン(ja)とモバイル説明(cd)も同じ『説明文』のはずが別語。この命名から共通の分類原理を逆算できない。改名案: `.name`（作品名）／`.tagline`（一言）／`.desc`（詳細説明、cdはtagline統合を検討）／`.field-label`（lb）／`.article-title`（tt/artt統一）。"
+   },
+   {
+    "title": "p- 接頭辞の対象が panel/profile/project のどれか未定義",
+    "where": "行553-570 `p-id p-nm p-ch p-ja p-into p-tech p-desc p-go p-host p-art p-artt`",
+    "why": "接頭辞は『パネル領域の要素』という前提だろうが、その前提自体がコメントも命名規則も無く読み手に委ねられている。定義によるが、`panel-`とフル表記した方が半年後の自分が誤読で消耗しない。改名案: `p-*`→`panel-*`（例: `panel-code`, `panel-name`）。"
+   },
+   {
+    "title": "fx / cut / kick / slab など業界ジャーゴンが役割を隠蔽",
+    "where": "行181 `.panel.fx`、行172 `h2.cut`、行67 `.kick`、行96 `.slab`",
+    "why": "`.fx`は『何のエフェクトか』を一切示さず、汎用語すぎて衝突の温床になる。`.cut`は『typing演出を止める』意図なのに『切る＝削除』を連想させ、むしろ逆の印象を与えかねない——これは例外というより設計の欠陥では。改名案: `.fx`→`.is-loading`、`.cut`→`.no-anim`、`.kick`→`.eyebrow`（業界標準語）、`.slab`→`.roster`。"
+   }
+  ],
+  "top_recommendation": "最優先は class=\\\"id\\\" と id 属性 p-id の衝突解消（.id→.code, p-id→p-code）。この一箇所が他の命名判断の前提を歪めている。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23141,
+   "cache_read_input_tokens": 1654,
+   "output_tokens": 4351,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23141,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 4351,
+     "cache_read_input_tokens": 1654,
+     "cache_creation_input_tokens": 23141,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23141
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.22501220000000002,
+  "duration_ms": 60803,
+  "session_id": "94c66a82-5c17-4731-9736-7eacaabc4685"
+ }
+}

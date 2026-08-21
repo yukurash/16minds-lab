@@ -1,0 +1,72 @@
+{
+ "key": "4b5ba99cfca62a0c",
+ "tag": "fit/main/estimate/istj/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "キーボードナビゲーションが非表示カードを拾う",
+    "where": "nearest() 673-710行、cells配列 604行",
+    "why": "cellsはDOM全件を保持したまま。フィルタでdisplay:noneにしても対象から除外されず、矢印キーで見えないカードに移動する。過去の例でも一覧系UIはこの手の考慮漏れで不具合を出している。"
+   },
+   {
+    "title": "タグ軸と既存グループ軸の対応関係が未確定",
+    "where": "7つの.group（310,332,372,408,430,467,494行）とタグ Claude Code/Azure/iOS/Web",
+    "why": "ブラウザ拡張・GitHubツールはどのタグにも属さない可能性がある。分類ルールを先に決めないと30件分のdata付与をやり直す手戻りが出る。"
+   },
+   {
+    "title": "グループ件数・総数表示がハードコード",
+    "where": "300行〈12〉PUBLISHED、310/332/372/408/430/467/494行の各glabel末尾数字",
+    "why": "フィルタで表示件数が変動する仕様なら、この静的テキストを動的算出に置き換える処理が別途必要。現状はJSで一切触っていない。"
+   },
+   {
+    "title": "モバイルのartlink表示が隣接セレクタ依存",
+    "where": "CSS .cell + .artlink（254行）",
+    "why": "cellをdisplay:noneで消す実装にした場合、フィルタ後の見た目崩れがないか実機で確認が必要。過去の例では隣接セレクタ絡みの表示崩れは想定外の箇所で起きる。"
+   },
+   {
+    "title": "30件化そのものは軽い、品質担保が工数の主因",
+    "where": "HTML内.cellブロック（例:312-326行のパターン）",
+    "why": "実際のところ複製自体は単純作業。時間を食うのはSVGアイコン作成とdata-desc等の原稿執筆で、既存12件と同水準の質を保つ検証コストが大半を占める。"
+   }
+  ],
+  "top_recommendation": "実装前に「タグ⇔既存グループの対応表」と「フィルタのAND/OR・件数表示仕様」を先に文書化して確定させる。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23093,
+   "cache_read_input_tokens": 1591,
+   "output_tokens": 3954,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23093,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 3954,
+     "cache_read_input_tokens": 1591,
+     "cache_creation_input_tokens": 23093,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23093
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.21873929999999997,
+  "duration_ms": 64500,
+  "session_id": "ec0175d2-c84d-4828-a631-59d51b8b5c49"
+ }
+}

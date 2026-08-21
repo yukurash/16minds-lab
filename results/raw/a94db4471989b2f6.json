@@ -1,0 +1,45 @@
+{
+ "key": "a94db4471989b2f6",
+ "tag": "pair/portfolio_failures/fwd/intj-enfp/reb/intj",
+ "model": "sonnet",
+ "data": {
+  "target": "「情熱の軌跡が見る人の心と繋がる」という、情緒的な物語性こそが本質だという主張",
+  "rebuttal": "論理的に破綻している。「ワクワクして諦めた」という感情の起伏は共感は生むが、判断材料にはならない。採用担当や協業相手が知りたいのは「この人物は自分の失敗から何を学習し次にどう修正したか」という再現性のある思考回路だ。感情の軌跡は一過性の消費コンテンツにすぎず、専門性の評価には接続しない。結局のところ、心に響くことと信頼に足ることは別軸だ。長期で見れば、構造分析なき感傷は「良い話ではあったが仕事は任せられない人」という評価に帰結する。"
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 709,
+   "cache_read_input_tokens": 1599,
+   "output_tokens": 454,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 709,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 454,
+     "cache_read_input_tokens": 1599,
+     "cache_creation_input_tokens": 709,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 709
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.0127067,
+  "duration_ms": 8978,
+  "session_id": "83f4e621-d04e-4ca7-ba1b-10ef34767575"
+ }
+}
