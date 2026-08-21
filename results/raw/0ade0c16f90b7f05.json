@@ -1,0 +1,72 @@
+{
+ "key": "0ade0c16f90b7f05",
+ "tag": "fit/main/design_review/istp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "data-into の区切り文字とJSのsplitが噛み合っていない",
+    "where": "634行目 `c.dataset.into.split(',').join('\\n')` に対し、314/515/532行目の data-into は `|` 区切り",
+    "why": "実際に動かせば一発でわかる。インストール先が改行されず1行のままパネルに出ているはず。動かしてみれば分かる話を、動かさずに直してある。"
+   },
+   {
+    "title": "12枚のカードデータが全部HTML属性にベタ書き",
+    "where": "312〜545行目、各 `.cell` の data-ja/data-ch/data-into/data-tech/data-desc/data-art/data-artt",
+    "why": "実質JSONを属性としてエンコードしてるだけ。13枚目を足す時、また同じ9属性を手で複製することになる。ここが最初に壊れる。分離するかテンプレート化するかは早めに決めておけ。"
+   },
+   {
+    "title": "1ファイル構成自体は妥当。だがCSSがグローバル1枚は今後の敵",
+    "where": "12〜283行目 `<style>` 全体、クラス名 `.cell` `.nm` `.ja` `.mk` など",
+    "why": "得るもの＝デプロイの単純さと依存ゼロ、これは正しい判断。失うもの＝短い汎用クラス名がページを増やした瞬間に衝突する。今は1画面だから壊れてないだけ。"
+   },
+   {
+    "title": "キーボード操作のnearest()がDOM実測値頼みで検証手段がない",
+    "where": "673〜710行目 `function nearest(dir)`",
+    "why": "getBoundingClientRect で幾何学的に隣接カードを探す実装。動くには動くが、カード数やgrid列数が変わった時に壊れたことに気づく手段が何もない。テストなし、目視確認のみ。"
+   },
+   {
+    "title": "演出コードが機能行数の3割近くを占める",
+    "where": "724〜789行目（typing/roll/fx/MutationObserver一式）",
+    "why": "サイトの本質は12個の制作物を見せることで、タイプライターや文字ロールはそれに要らない。過剰設計。削っても情報は1ミリも減らない。"
+   }
+  ],
+  "top_recommendation": "とりあえずサイト開いてカードを何枚か選んで、インストール先の欄が実際に改行されてるか自分の目で見れば。多分1行のままだ。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23040,
+   "cache_read_input_tokens": 1592,
+   "output_tokens": 2998,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23040,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 2998,
+     "cache_read_input_tokens": 1592,
+     "cache_creation_input_tokens": 23040,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23040
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.20401360000000002,
+  "duration_ms": 45782,
+  "session_id": "b267241d-f8ac-4e74-a2f9-1ac92be26db4"
+ }
+}

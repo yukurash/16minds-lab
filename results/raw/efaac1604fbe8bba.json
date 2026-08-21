@@ -1,0 +1,72 @@
+{
+ "key": "efaac1604fbe8bba",
+ "tag": "fit/main/refactor/intp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "結論：a（1ファイル維持）を採る。ただし条件付き",
+    "where": "index.html 全体（792行）",
+    "why": "12件・792行という規模はまだ『分割コストが分割益を上回らない』境界の内側にある。定義が曖昧なまま『場合による』で止めるのは怠慢だと自分でも思うので、閾値を明示して結論を固定する：作品数が20件を超える、または全体が1500行を超えたら b/c を再検討する。"
+   },
+   {
+    "title": "c（JSON外出し）は却下——data-*属性つきaタグがno-JSフォールバックとして機能している",
+    "where": "312-544行目 <a class=\"cell\" data-art data-ja ...>、JS側 paint() (624-648行)",
+    "why": "現状の cell は JS 無効時でも href だけで各作品ページに到達できる、progressive enhancement な構造になっている。JSON化してJSでDOM生成する設計に変えると、この前提が崩れないか？ 崩れるなら SEO とアクセシビリティの両方を失うことになる。この設計の巧妙さを維持コストと引き換えにする根拠が見当たらない。"
+   },
+   {
+    "title": "b（CSS/JS分離）も現時点では見送り——分離を正当化する前提が示されていない",
+    "where": "12-283行（CSS約270行）、600-790行（JS約190行）",
+    "why": "『複数人での共同編集が始まる』『他ページへの再利用が発生する』のいずれかの前提があれば分離は妥当だが、今のところそのどちらも成立していないように見える。単一ファイルでコピペ移植できる利便性を捨てる論理的必然性がない。"
+   },
+   {
+    "title": "この設問自体が3択を独立変数として扱っているが、実際は結合した意思決定では",
+    "where": "依頼文の選択肢 a/b/c",
+    "why": "a を選んでも b や c を部分的に採用する余地は排除されない。例えば nearest() や type()/roll() だけを別ファイルに切り出し、cell の data-* 構造とJSONは温存する、という中間解もありうる。『どれか一つを選べ』という前提そのものが厳密には成立するのか？"
+   },
+   {
+    "title": "b/c への転換トリガーとして最も具体的な指標——キーボードナビゲーションの複雑度",
+    "where": "nearest() 673-710行、fx()/type()/roll() 744-765行",
+    "why": "この2関数だけでJS全体(約190行)の半分近くを占め、テストなしで幾何判定とタイミング制御を同居させている。ここが今後さらに複雑化する（例：グループ横断の優先順位変更など）なら、その時点でJS分離の閾値を超えたと判断する。今はまだ単一ファイル内で読み切れる分量。"
+   }
+  ],
+  "top_recommendation": "a（1ファイル維持）を選択。ただし作品20件超 or 全体1500行超で b/c を再評価するという条件を今のうちに明文化しておけ。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 3,
+   "cache_creation_input_tokens": 26511,
+   "cache_read_input_tokens": 26385,
+   "output_tokens": 4517,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23077,
+    "ephemeral_5m_input_tokens": 3434
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 1150,
+     "cache_read_input_tokens": 24731,
+     "cache_creation_input_tokens": 3434,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 3434,
+      "ephemeral_1h_input_tokens": 0
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.247377,
+  "duration_ms": 72139,
+  "session_id": "b73086a6-3e9f-4638-8f37-6e9efcadfd05"
+ }
+}

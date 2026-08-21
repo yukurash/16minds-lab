@@ -1,0 +1,72 @@
+{
+ "key": "541dfbc3140d15bc",
+ "tag": "fit/main/estimate/estp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "アニメ遅延が30件で1.3秒待ちになる",
+    "where": "L115 .cell animation-delay(--i*38ms+.18s)、L780-787 tally",
+    "why": "12件でも456ms待つのに30件だと1140ms+起動180msで1.3秒。最後のカードが出るまで待たされる。実測してすぐ上限つけろ。"
+   },
+   {
+    "title": "矢印移動のcells配列がフィルタ非表示を考慮してない",
+    "where": "L604 cells一覧取得、L673-710 nearest()",
+    "why": "フィルタで隠したカードもcellsに残ると、矢印キーで見えないカードにフォーカスが飛ぶ。動かせばすぐバグる、visible判定を先に仕込め。"
+   },
+   {
+    "title": "カードがベタ書きHTML、30件コピペは事故る",
+    "where": "L306-547 roster内.cell直書き12個分",
+    "why": "1枚60-80行、SVGとdata属性の手複製は閉じタグ漏れやミスの元。データ配列化してJS生成にした方が結局速い。"
+   },
+   {
+    "title": "タグとグループが別軸、設計を先に決めないと二度手間",
+    "where": "L309/331/371/407/429/466/493 各section.group",
+    "why": "既存の用途別グループと依頼の技術別タグ(Claude Code/Azure/iOS/Web)は重複しうる。data-tags新設してグループ表示とフィルタ表示を別レイヤーにする設計を先にやらないとやり直しになる。"
+   },
+   {
+    "title": "件数表記12の更新漏れリスク",
+    "where": "L7 meta description、L300 <b>12</b>PUBLISHED、L780-787 tally",
+    "why": "12が3箇所ハードコードされてる。1個直して満足すると他が残る、最後にgrepしろ。"
+   }
+  ],
+  "top_recommendation": "まずカード1枚にdata-tags属性を仮でつけてフィルタボタン1個動かしてみろ。考えるより先に試せば設計の当たりが一発でわかる。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 7,
+   "cache_creation_input_tokens": 27931,
+   "cache_read_input_tokens": 82877,
+   "output_tokens": 5639,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23093,
+    "ephemeral_5m_input_tokens": 4838
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 1007,
+     "cache_read_input_tokens": 28775,
+     "cache_creation_input_tokens": 717,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 717,
+      "ephemeral_1h_input_tokens": 0
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.28657059999999995,
+  "duration_ms": 81363,
+  "session_id": "c06ba403-36c2-4da0-9a9d-1183214a4486"
+ }
+}

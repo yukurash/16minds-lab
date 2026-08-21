@@ -1,0 +1,72 @@
+{
+ "key": "81b7d56eb5169864",
+ "tag": "fit/main/estimate/isfp/rep0",
+ "model": "sonnet",
+ "data": {
+  "confidence": 3,
+  "top_recommendation": "まず nearest() と cur が「非表示カードを踏む」壊れ方をしないか、絞り込みを仮実装して自分の手で矢印キーを叩いて確かめてから、他の作業に手を広げたい。",
+  "findings": [
+   {
+    "title": "フィルタで消えたカードに矢印キーが迷い込む",
+    "where": "L604 cells配列 / L673-710 nearest() / L611 cur",
+    "why": "nearestはgetBoundingClientRectで位置判定してるだけで、非表示cellを除外する処理が今はない。触ってみて一番肌感として怖いのはここ。ここが壊れると『選ぶ楽しさ』ごと壊れる。"
+   },
+   {
+    "title": "30件は物量として単純作業ではない",
+    "where": "L307-547 ROSTERセクション（1枚あたり約35〜40行のマークアップ＋固有SVG）",
+    "why": "18件追加＝今の1.5倍の行数を、アイコンも文言も一つずつ自分の言葉で描く必要がある。なんとなくだけど、コピペ数分×18ではなく1件30〜60分は見ておきたい。ざっくり1.5〜2人日。"
+   },
+   {
+    "title": "絞り込み用のタグがどのカードにも存在しない",
+    "where": "各.cell の data-ch など属性群（例 L312-316）",
+    "why": "data-chは表示用の自由文字列で、フィルタのキーには使えない。Claude Code/Azure/iOS/Web用にdata-tagsを30件全部に手作業で付け直す工程が丸ごと足りない。"
+   },
+   {
+    "title": "絞り込み後、演出の間隔が不揃いに見える",
+    "where": "L115 .cell animation-delay(--i) / L733 style.setProperty('--i', i)",
+    "why": "--iはDOM順の連番のまま。フィルタで間引くと残ったカードの立ち上がりが飛び飛びになって、今ある『順に効いてくる』心地よさが崩れる気がする。これは自分には見過ごせない。"
+   },
+   {
+    "title": "件数を示す数字がハードコードのまま置き去りになりやすい",
+    "where": "L7 meta description「12個」 / L300 <b>12</b>PUBLISHED",
+    "why": "tallyアニメーション自体は自動で動くが、meta descriptionは手で直さないと『12個』のまま公開され続ける。小さいことだけど、これは自分の中では地味に許せない部分。"
+   }
+  ]
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 3,
+   "cache_creation_input_tokens": 26278,
+   "cache_read_input_tokens": 26279,
+   "output_tokens": 4041,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23093,
+    "ephemeral_5m_input_tokens": 3185
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 923,
+     "cache_read_input_tokens": 24686,
+     "cache_creation_input_tokens": 3185,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 3185,
+      "ephemeral_1h_input_tokens": 0
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.23941545,
+  "duration_ms": 68232,
+  "session_id": "6bbceb64-d02c-457d-bf9d-b1ed29797909"
+ }
+}

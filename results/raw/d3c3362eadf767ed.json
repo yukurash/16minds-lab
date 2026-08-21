@@ -1,0 +1,72 @@
+{
+ "key": "d3c3362eadf767ed",
+ "tag": "fit/main/incident/esfj/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "Xカード無反応はほぼ確実に再現する事象。OGPタグが皆無",
+    "where": "index.html 3〜11行目 <head> 内",
+    "why": "og:title / og:image / og:description / twitter:card がどこにも無い。7行目の description は通常の meta で、X はこれを読まない。favicon.svg も og:image には使えず、Xがサムネイル・タイトルを出しようがない状態。これは『たまたま』ではなく確実な原因。"
+   },
+   {
+    "title": "スマホ白画面はまず『本当に真っ白か』の切り分けが先。再現条件を絞るべき",
+    "where": "報告内容そのもの（再現手順の情報不足）",
+    "why": "『PCでは見える』だけでは、どの機種・ブラウザ・回線・シークレットモードか不明。GitHub Pagesのキャッシュ反映ラグやブラウザ側キャッシュで一時的に古い版/失敗表示を見ている可能性があり、まずハードリロードと別ブラウザでの再現確認をしないと原因を誤診断しかねない。周りの人にも同じ現象が出ているか、まず聞いて回るのが筋。"
+   },
+   {
+    "title": "opacity:0始まりのCSSアニメーションが不発火だと要素が消えたままになる設計リスク",
+    "where": "50行目 @keyframes rise、55行目 .sect{animation:rise ... both}、108/115行目 .cell の animation",
+    "why": "fill-mode:both は開始前も from{opacity:0} を保持する。iOSの低電力モードなど何らかの理由でCSSアニメーションが発火しないと、セクションやカードが opacity:0 のまま固まり、体感『真っ白』になる。これは実機のWeb Inspectorでopacity値を見れば即断定できる、最も疑うべき技術的原因。"
+   },
+   {
+    "title": "実機Safariのコンソールエラー未確認。JS例外で描画が止まっている可能性も残る",
+    "where": "600〜790行目 <script> 2本",
+    "why": "コード上は致命的な構文エラーは見当たらないが、実機のみで起きる非対応API（matchMedia/MutationObserverの挙動差、-webkit-line-clampの解釈違い等）が例外を出していないかは、PCの目視だけでは分からない。まずSafariの『Webインスペクタ』接続でconsoleを見るのが最短。"
+   },
+   {
+    "title": "『PCでは見えている』は別ブレークポイントの話であり、モバイル分岐の検証にはならない",
+    "where": "66/79/93/104/159/205/235/238/263/700行など複数の @media 分岐",
+    "why": "1080px・700px・640pxと複数の閾値でレイアウトが切り替わる作りのため、PCのウィンドウ幅で見えていても実機の狭い幅（.panel が display:none になる700px以下等）は別ロジックを通る。『PCで見える』を根拠に一部の分岐を除外するのは早計。"
+   }
+  ],
+  "top_recommendation": "まずOGPタグ（og:title/og:image/og:description/twitter:card）を追加してXの件を確実に直しつつ、スマホ白画面は実機のSafariインスペクタでopacity値とconsoleエラーを見て原因を確定させること。みんなが困ってる部分から順に手を打っていきましょう。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23084,
+   "cache_read_input_tokens": 1633,
+   "output_tokens": 5643,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23084,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 5643,
+     "cache_read_input_tokens": 1633,
+     "cache_creation_input_tokens": 23084,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23084
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.2440309,
+  "duration_ms": 87301,
+  "session_id": "3cc4e81e-1093-4b97-a64f-7d9c6c2e07b2"
+ }
+}

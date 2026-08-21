@@ -1,0 +1,45 @@
+{
+ "key": "9b277c638abfd96b",
+ "tag": "pair/portfolio_failures/fwd/istj-esfp/reb/istj",
+ "model": "sonnet",
+ "data": {
+  "target": "「会話が弾んだ」「楽しいに決まってる」という面白さを判断基準に据える点",
+  "rebuttal": "実際のところ、ポートフォリオは雑談のネタ帳ではなく判断材料だ。過去の例では、ボツ企画の話で盛り上がった相手が実際に発注や採用に至った例は聞かない。盛り上がりと信頼は別物だ。見る側が知りたいのは「この人は約束したことを最後までやり遂げるか」であって、「一緒に笑えるか」ではない。楽しさを判断基準にすり替えるのは、実績記録という本来の目的を捨てることになる。データがあるなら見せてほしい。"
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 748,
+   "cache_read_input_tokens": 1402,
+   "output_tokens": 518,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 748,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 518,
+     "cache_read_input_tokens": 1402,
+     "cache_creation_input_tokens": 748,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 748
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.013890600000000001,
+  "duration_ms": 8713,
+  "session_id": "ecae263d-9e8c-4799-a70b-785e6f2caaf3"
+ }
+}

@@ -1,0 +1,72 @@
+{
+ "key": "0f6dc1151b091638",
+ "tag": "fit/main/tech_choice/entp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "カード1件=同じ情報を8箇所に手打ちする複製地獄",
+    "where": "312-326 (.cellのdata-ja/data-desc とその中の .ja/.cd テキストが重複)",
+    "why": "作品を1件足すたびに data-ja と .ja、data-desc と .cd に似た文言を別々に書く必要があり、更新のたびに片方だけ直し忘れる事故が起きうる。ここが素のHTML継続の一番の摩耗点。"
+   },
+   {
+    "title": "paint/typing/roll/nearest はSSG化しても消えない複雑さ",
+    "where": "600-790 <script> 二本（paint関数, MutationObserver, nearest関数）",
+    "why": "SSGが解決するのはHTML生成の手間であって、この凝ったvanilla JSロジックの保守負荷はAstroにしようがHugoにしようがそのまま残る。移行の恩恵を過大評価しがち。"
+   },
+   {
+    "title": "月1-2回・本人1人にビルドパイプラインは重装備",
+    "where": "- （運用フロー全体、GitHub Pages公開）",
+    "why": "SSG導入はnode依存・ビルドコマンド・Actionsという『いつもの手順』を新規に増やす。更新頻度に対してメンテ対象を増やすほうが壊れやすい。"
+   },
+   {
+    "title": "『しない場合の再考条件』が未定義のまま惰性運用になる",
+    "where": "- （意思決定プロセスそのもの）",
+    "why": "条件を先に言語化しないと、規模が変わっても切り替えタイミングを逃す。逆に言えば今回答えを出さないと一生素のHTMLのまま行く。"
+   },
+   {
+    "title": "移行するならAstro一択、Hugoは今の実装と相性が悪い",
+    "where": "- （移行先候補の比較）",
+    "why": "Astroはゼロランタイム静的出力＋コンポーネント分割ができ、今のvanilla JS/CSSをほぼそのまま移植可能。HugoのGoテンプレートはJS密度の高いこのUIと噛み合わない。"
+   }
+  ],
+  "top_recommendation": "今は移行しない。ただし作品データを1つのJS配列/JSONに切り出し、カードと詳細パネルを両方そこから生成するように書き換えろ——これだけでSSGを入れずに複製地獄は消える。",
+  "confidence": 3
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23095,
+   "cache_read_input_tokens": 1614,
+   "output_tokens": 3529,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23095,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 3529,
+     "cache_read_input_tokens": 1614,
+     "cache_creation_input_tokens": 23095,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23095
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.2123662,
+  "duration_ms": 55481,
+  "session_id": "330f7a11-ef4f-4363-bf4a-0a0e6bea1a7b"
+ }
+}

@@ -1,0 +1,72 @@
+{
+ "key": "462e9104b0461605",
+ "tag": "fit/main/naming/infp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "art/artt が「作品」と「記事」を混同させている",
+    "where": "data-art, data-artt, class .art, id #p-art / #p-artt（312, 349, 566-570行）",
+    "why": "このサイト自体が「作品(art)」を並べているのに、data-artは実は解説「記事(article)」のURL。名前だけでは私の心が迷う。data-article-url / data-article-title / .article-link と、素直に区別してあげたい。"
+   },
+   {
+    "title": ".em .nm .ja .mk .cd .st .go 等、一文字二文字クラスが多すぎる",
+    "where": ".em/.nm/.ja/.mk/.cd/.st/.go/.id（117-146行, 630-648行）",
+    "why": "略しすぎて、半年後の自分はHTMLとJSを何度も往復しないと思い出せない。.icon/.name/.tagline/.meta/.mobileSummary/.status/.launchLinkのように、自分に嘘をつかない言葉で書きたい。"
+   },
+   {
+    "title": ".slab とJSコメント「roster」が食い違っている",
+    "where": ".slab（96行）、コメント中の「roster」（306, 613, 650行）",
+    "why": "自分の中では本当は roster と呼んでいたのに、CSSクラス名だけ slab と名付けてしまっている。この揺れは自分自身に正直じゃない気がして落ち着かない。.rosterに統一したい。"
+   },
+   {
+    "title": "p- 接頭辞と p-into の紛らわしさ",
+    "where": "#p-id, #p-ch, #p-into ほか（553-570行）",
+    "why": "p- が panel の略だと外から分からず、p-into は英単語 into と衝突して二重に読みづらい。#panel-id / #panel-install のように panel- と書いてくれた方が、未来の自分は安心できる。"
+   },
+   {
+    "title": ".fx と .cut が抽象的すぎて何のための名前か伝わらない",
+    "where": ".fx（181, 190-200, 767-774行）、.cut（172, 645-647行）",
+    "why": "fx は「何かの効果」としか言っておらず、実際はパネル再生アニメーションの起動フラグ。.panel--reveal や .isLoading、.cutは.no-wipeの方が、半年後の自分の気持ちに寄り添える。"
+   }
+  ],
+  "top_recommendation": "まず art/artt の意味衝突（作品 vs 記事）を解消し、data-article-url / .article-link に改名すること。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23141,
+   "cache_read_input_tokens": 1597,
+   "output_tokens": 4239,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23141,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 4239,
+     "cache_read_input_tokens": 1597,
+     "cache_creation_input_tokens": 23141,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23141
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.22332010000000002,
+  "duration_ms": 52666,
+  "session_id": "8e48065d-081f-4acd-8f30-a436d5133485"
+ }
+}

@@ -1,0 +1,189 @@
+{
+ "key": "38b71753d9ae9435",
+ "tag": "judge/fit/main/refactor/rep0",
+ "model": "opus",
+ "data": {
+  "items": [
+   {
+    "label": "I",
+    "matched": [],
+    "usefulness": 5,
+    "specificity": 5,
+    "unique_points": 2,
+    "rank": 1,
+    "note": "split不一致に加え矢印キーでfocus未移動、type()のsetInterval未clear、paint(0)がMutationObserver登録前という実バグ4件を行番号と再現手順つきで挙げ、構成判断も理由つきで固定している。唯一の指摘が2件あり実装追跡の深さが群を抜く。"
+   },
+   {
+    "label": "C",
+    "matched": [],
+    "usefulness": 5,
+    "specificity": 5,
+    "unique_points": 2,
+    "rank": 2,
+    "note": "誰も気づいていないP.art.hidden=false固定のバグ（コメントと実装の乖離）を特定し、split不一致も押さえた上で、nearest()がDOM実測に依存するからc却下という技術的根拠と撤退条件まで出している。着手順序も明快。"
+   },
+   {
+    "label": "D",
+    "matched": [],
+    "usefulness": 4,
+    "specificity": 5,
+    "unique_points": 3,
+    "rank": 3,
+    "note": "split実バグに加え、パネル初期HTMLとcells[0]データの二重管理、listbox/optionパターン不使用、SVGのsymbol+use化という他の誰も出していない論点を3つ提示。ARIA周りはやや推測混じりだが指摘の射程が広い。"
+   },
+   {
+    "label": "J",
+    "matched": [],
+    "usefulness": 4,
+    "specificity": 5,
+    "unique_points": 1,
+    "rank": 4,
+    "note": "split不一致を「初期HTMLは正しいがpaint(0)で上書きされて壊れる」と因果まで追い、focusズレとcd/data-descの二重管理も具体行で示す。バグ2件優先の順序づけも妥当。Iより指摘数は少ない。"
+   },
+   {
+    "label": "O",
+    "matched": [],
+    "usefulness": 4,
+    "specificity": 5,
+    "unique_points": 1,
+    "rank": 5,
+    "note": "splitバグを行と式で特定し、paint()とMutationObserverの暗黙結合という設計上の火種も挙げ、閾値をREADMEに明文化せよという運用まで踏み込む。ただし実バグは1件のみで検証の深さは上位に劣る。"
+   },
+   {
+    "label": "K",
+    "matched": [],
+    "usefulness": 4,
+    "specificity": 5,
+    "unique_points": 0,
+    "rank": 6,
+    "note": "splitバグと二重記述を行番号つきで簡潔に指摘し、「今日直す、それ以外は触らない」と作業境界を明示。無駄がなく即着手できるが、論点はすべて他者と重複し新規性がない。"
+   },
+   {
+    "label": "B",
+    "matched": [],
+    "usefulness": 3,
+    "specificity": 5,
+    "unique_points": 0,
+    "rank": 7,
+    "note": "splitバグを該当式まで示した点は上位と同等だが「疑いがある／本人に確認してほしい」で止め、自分で確定させていない。a11y指摘も「確かめてほしい」止まりで着手できない。"
+   },
+   {
+    "label": "A",
+    "matched": [],
+    "usefulness": 3,
+    "specificity": 4,
+    "unique_points": 2,
+    "rank": 8,
+    "note": "fetchのCORS問題を回避する同一ファイル内<script type=\"application/json\">案と、追加運用の責任者不在という他にない論点を出した。ただし既存の実バグを1件も検出しておらず、移行作業自体は自力設計が要る。"
+   },
+   {
+    "label": "H",
+    "matched": [],
+    "usefulness": 3,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 9,
+    "note": "一覧用・パネル用・モバイル用で文言がズレている実例を挙げc採用の根拠にし、SVGは対象外という適用範囲まで切った点が実務的。ただしバグ検出はなく、行指定も属性群単位に留まる。"
+   },
+   {
+    "label": "N",
+    "matched": [],
+    "usefulness": 3,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 10,
+    "note": "paint()とfx()の責任分界が曖昧という内部品質の指摘は具体的で、撤退ラインも数値で固定。だがno-JS/クローラー論は他数名と同旨で、表示バグには触れていない。"
+   },
+   {
+    "label": "M",
+    "matched": [],
+    "usefulness": 3,
+    "specificity": 4,
+    "unique_points": 2,
+    "rank": 11,
+    "note": "「JSON化はテキスト構造を設計し直さないと移し替えで終わる」「SEOを守るなら実行時fetchでなく事前生成でありビルド導入の意思決定だ」という前提の掘り下げは鋭い。ただし成果物はすべて判断であり修正箇所の指定がない。"
+   },
+   {
+    "label": "P",
+    "matched": [],
+    "usefulness": 3,
+    "specificity": 4,
+    "unique_points": 0,
+    "rank": 12,
+    "note": "分割せずJS配列+テンプレート化という中間解は現実的で、SVGが残ると情報が2か所に散るという副作用も押さえている。ただし論点はAやHと重なり、既存バグの検出はゼロ。"
+   },
+   {
+    "label": "E",
+    "matched": [],
+    "usefulness": 2,
+    "specificity": 4,
+    "unique_points": 2,
+    "rank": 13,
+    "note": "20件/1500行という閾値の明文化とnearest()複雑度を転換指標に置く発想は評価できるが、大半が設問の立て方への疑義と判断の是非で、コードに対する修正提案がほぼない。"
+   },
+   {
+    "label": "F",
+    "matched": [],
+    "usefulness": 2,
+    "specificity": 3,
+    "unique_points": 1,
+    "rank": 14,
+    "note": "c採用時にローカル確認導線を同時に整えよという指摘は実務的だが、他は「気持ちが削がれる」「優しさを落とさないで」といった動機の話で、どこをどう直すかが決まらない。"
+   },
+   {
+    "label": "L",
+    "matched": [],
+    "usefulness": 2,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 15,
+    "note": "dblclickの発見されにくさという唯一の論点とモバイルの体験差を行付きで挙げたのは救い。ただし判断根拠が終始「肌感」で、覆る条件も主観依存のため他者が検証できない。"
+   },
+   {
+    "label": "G",
+    "matched": [],
+    "usefulness": 1,
+    "specificity": 3,
+    "unique_points": 1,
+    "rank": 16,
+    "note": "全項目が「作者の手記だから触るな」という感想で、コードの欠陥も具体的作業も一つも出ていない。行範囲は書かれているが指す先が常にファイル全体級で、レビューとして機能していない。"
+   }
+  ]
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 2,
+   "cache_creation_input_tokens": 13705,
+   "cache_read_input_tokens": 772,
+   "output_tokens": 5459,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 13705,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 5459,
+     "cache_read_input_tokens": 772,
+     "cache_creation_input_tokens": 13705,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 13705
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.28758300000000003,
+  "duration_ms": 87389,
+  "session_id": "d03fba20-0856-44ad-bd66-f7654a289ae5"
+ }
+}

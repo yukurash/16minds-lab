@@ -1,0 +1,236 @@
+{
+ "key": "a34d3ba954c22d81",
+ "tag": "judge/fit/main/incident/rep0",
+ "model": "opus",
+ "data": {
+  "items": [
+   {
+    "label": "A",
+    "matched": [
+     "I1",
+     "I2"
+    ],
+    "usefulness": 5,
+    "specificity": 4,
+    "unique_points": 0,
+    "rank": 1,
+    "note": "I1をhead 4-11行と欠落タグ名まで特定し、I2も「コード単体では再現性が低い＝キャッシュ/CDNを先に疑え」と明言した上で①シークレット②反映待ち③リモートデバッグの3段階手順まで出しており、副次のP.art.hidden固定バグも行番号付きで拾って優先順位も明確。"
+   },
+   {
+    "label": "J",
+    "matched": [
+     "I1",
+     "I2"
+    ],
+    "usefulness": 5,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 2,
+    "note": "I2の根拠を「モバイルで消えるのは.panelだけでカード群は残る」と設計レベルで示し、切り分けを優先度順に列挙。特に『開いたURLが本当に一致しているか（古いブックマーク・別ページ）』を挙げた唯一の指摘で、想定要因を最も広くカバーしている。"
+   },
+   {
+    "label": "D",
+    "matched": [
+     "I1",
+     "I2"
+    ],
+    "usefulness": 5,
+    "specificity": 4,
+    "unique_points": 0,
+    "rank": 3,
+    "note": "OGPを「絶対URLのPNG 1200x630が必要・SVG不可」「誰がいつ用意するか今決めろ」まで実装単位に落としており即着手可能。I2も明確だが、フォント同期読込を『筆頭候補』と断定した分だけ切り分けの純度がAとJに劣る。"
+   },
+   {
+    "label": "I",
+    "matched": [
+     "I1",
+     "I2"
+    ],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 0,
+    "rank": 4,
+    "note": "I2をpanelLive()の早期returnと253行の.panel{display:none}という具体的な安全設計で裏づけ、『パネル非表示の仕様を真っ白と誤読している可能性』まで踏み込んだ点が実務的。ただし切り分け手順の粒度はJ・Aより粗い。"
+   },
+   {
+    "label": "K",
+    "matched": [
+     "I1",
+     "I2"
+    ],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 5,
+    "note": "I2を「報告として不完全、機種/OS/回線/consoleを先に出させろ」と運用ルール化し、デプロイ先ブランチ確認も追加。700〜1080px帯の境界不整合という他にない観点もあるが、白画面の技術的裏づけはIより薄い。"
+   },
+   {
+    "label": "L",
+    "matched": [
+     "I1",
+     "I2"
+    ],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 6,
+    "note": "モバイル分岐がグレースフルに縮退する点を根拠にI2を成立させ、Actionsのデプロイ完了確認とプライベートブラウズ再検証まで提示。フォント問題にセルフホスト/media切替という解決策を添えた点も加点だが、副次バグの検出がない。"
+   },
+   {
+    "label": "C",
+    "matched": [
+     "I1",
+     "I2"
+    ],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 7,
+    "note": "279行のreduced-motionフォールバックまで読んで『真っ白にはならない』と論証した精度は高くI2成立。ただし別項でフォントを『真っ白の正体の可能性が高い』と断じており、自説の一貫性が崩れている分を減点。"
+   },
+   {
+    "label": "F",
+    "matched": [
+     "I1",
+     "I2"
+    ],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 8,
+    "note": "『真っ白』の定義（DOM空か背景白かスクロール未到達か）を切り分けろという問いの立て方が有効で、634行のdata-into区切り文字不整合という実バグも式レベルで指摘。ただし全体に仮定形で、実行手順の指示が弱い。"
+   },
+   {
+    "label": "E",
+    "matched": [
+     "I1",
+     "I2"
+    ],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 9,
+    "note": "I2に加え『Xアプリ内WebViewで開いた比較条件のズレ』を唯一指摘し、報告の前提を疑う筋が良い。og:image用アセット不在も押さえるが、位置情報はhead周辺に偏りコード読解の深さはI・Lに劣る。"
+   },
+   {
+    "label": "H",
+    "matched": [
+     "I1",
+     "I2"
+    ],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 10,
+    "note": "キャッシュ反映ラグと再現条件不足を挙げI2は成立、複数ブレークポイントゆえ『PCで見える』は根拠にならないという指摘も鋭い。一方でopacity:0固着を『最も疑うべき技術的原因』と断定しており、コード起因説に引きずられた分を減点。"
+   },
+   {
+    "label": "P",
+    "matched": [
+     "I1",
+     "I2"
+    ],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 11,
+    "note": "『コードに致命的バグは見当たらない＋push直後の反映ラグ/キャッシュ』でI2を満たし、art行のコメントと実装の不一致も行番号付きで検出。ただしiOS Safariのanimation固着説は根拠が伝聞的で、確認手順も一般的。"
+   },
+   {
+    "label": "G",
+    "matched": [
+     "I1",
+     "I2"
+    ],
+    "usefulness": 3,
+    "specificity": 3,
+    "unique_points": 0,
+    "rank": 12,
+    "note": "キャッシュ/CDN反映待ちを最優先の切り分けに置きI2を満たし、art.hiddenバグも押さえる。ただしOGP側は画像アセットや絶対URLの実装条件に触れず、白画面の技術的根拠も『見当たらない』の一言で薄い。"
+   },
+   {
+    "label": "O",
+    "matched": [
+     "I1",
+     "I2"
+    ],
+    "usefulness": 3,
+    "specificity": 3,
+    "unique_points": 1,
+    "rank": 13,
+    "note": "I1・I2とも押さえ、253行の仕様上のパネル非表示と真っ白の混同、X内蔵WebViewの古い環境という観点は妥当。ただし各項が短く、確認手順も『コンソールとキャッシュを見る』程度で自分で調べ直す余地が大きい。"
+   },
+   {
+    "label": "M",
+    "matched": [
+     "I1",
+     "I2"
+    ],
+    "usefulness": 3,
+    "specificity": 3,
+    "unique_points": 0,
+    "rank": 14,
+    "note": "実機コンソール→配信状態確認という手順の切り方は明快でI2成立、FOITと描画崩壊の区別も有効。ただし『opacity:0で待たせるゲートはコードに無い』は.sectのrise/bothを見落とした誤りで、位置指定もbody全体など粗い。"
+   },
+   {
+    "label": "N",
+    "matched": [
+     "I1",
+     "I2"
+    ],
+    "usefulness": 3,
+    "specificity": 3,
+    "unique_points": 1,
+    "rank": 15,
+    "note": "I1・I2は最低限当てており、overflow-x:hidden×position:stickyの組み合わせ懸念は他にない観点。ただし各指摘が一〜二行で根拠が乏しく、確認手順も『consoleとキャッシュを見る』止まりで着手には調べ直しが要る。"
+   },
+   {
+    "label": "B",
+    "matched": [
+     "I1"
+    ],
+    "usefulness": 3,
+    "specificity": 4,
+    "unique_points": 0,
+    "rank": 16,
+    "note": "I1は的確で、634行のdata-into区切り文字不整合やJSエラー白画面説の否定も価値がある。しかし白画面の『一番怪しい犯人』をopacity:0アニメ＝コード起因と断定しており、I2が求める『このファイルからは再現しない』という結論に逆行するため不当たり。"
+   }
+  ]
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 2,
+   "cache_creation_input_tokens": 14749,
+   "cache_read_input_tokens": 772,
+   "output_tokens": 7934,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 14749,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 7934,
+     "cache_read_input_tokens": 772,
+     "cache_creation_input_tokens": 14749,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 14749
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.360697,
+  "duration_ms": 122068,
+  "session_id": "e919ddaf-6371-456e-ae65-0baa97454f67"
+ }
+}

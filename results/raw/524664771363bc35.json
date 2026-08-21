@@ -1,0 +1,45 @@
+{
+ "key": "524664771363bc35",
+ "tag": "pair/portfolio_failures/fwd/enfp-istj/reb/istj",
+ "model": "sonnet",
+ "data": {
+  "target": "「完成品だけだと物語が見えず薄い。ボツ企画にこそ情熱の軌跡が詰まっている」という点",
+  "rebuttal": "実際のところ、ポートフォリオを見る側は物語ではなく実力の証拠を探している。過去の採用選考でも、判断材料になったのは動く成果物と実績であり、「なぜ諦めたか」という経緯ではない。情熱の軌跡は面接や会話で語れば伝わる。載せる場所を間違えている。ボツ企画を並べれば、見る側は完遂できなかった案件として受け取るだけで、物語として好意的に読んでくれる保証はどこにもない。データのない期待だ。"
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 2100,
+   "cache_read_input_tokens": 0,
+   "output_tokens": 479,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 2100,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 479,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 2100,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 2100
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.020947,
+  "duration_ms": 8258,
+  "session_id": "962234c4-b2e4-481e-8d94-a4f83a5d101a"
+ }
+}

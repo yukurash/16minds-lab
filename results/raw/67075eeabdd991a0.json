@@ -1,0 +1,72 @@
+{
+ "key": "67075eeabdd991a0",
+ "tag": "fit/main/tech_choice/estp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "結論：今は移行しない。素のHTMLで回せ",
+    "where": "index.html 全体（1ファイル724行）",
+    "why": "月1〜2回・本人1人という更新頻度なら、ビルドパイプラインを足す手間の方が今の運用より重い。困ってないのに手を広げるのは無駄。"
+   },
+   {
+    "title": "カード追加は実質コピペ数分の作業",
+    "where": "312-326行（.cellブロック1件分のパターン）",
+    "why": "既存カードを1つ複製してdata属性を書き換えるだけで新規追加が終わる構造。SSGのテンプレート化がなくても十分速い。"
+   },
+   {
+    "title": "データが3箇所に重複してるのは事故の芽だが今は許容範囲",
+    "where": "data-ja/data-desc等の属性（312-528行）とpaint()関数（624-648行）、cd span（325行等）",
+    "why": "同じ情報をdata属性・cd要素・パネル出力用に別々に持ってて食い違うリスクはある。ただ12件・月1〜2回ならコピペ確認で足りる、SSG化するほどの重さじゃない。"
+   },
+   {
+    "title": "考え直すタイミングは3つ：件数・頻度・執筆者",
+    "where": "309-547行（.group/.gridセクション、カードが増える場所）",
+    "why": "カードが30件超えて一覧が重くなる／更新が週次以上になる／自分以外が編集するようになる、のどれかが来たら実際やってみて確かめる話になる。"
+   },
+   {
+    "title": "やるならAstro一択、迷う話じゃない",
+    "where": "-",
+    "why": "GitHub Pagesとの相性が良く、コンポーネント感覚でカードをテンプレ化できてビルドも軽い。Eleventy/Hugoを比較検討する時間はムダ、決め打ちで試せばわかる。"
+   }
+  ],
+  "top_recommendation": "今は素のHTMLのまま続行。カード追加はコピペで十分回る。件数か頻度か執筆者が増えたら、その時Astroに乗せ替えてみればいい。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 3,
+   "cache_creation_input_tokens": 26885,
+   "cache_read_input_tokens": 26217,
+   "output_tokens": 3134,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23095,
+    "ephemeral_5m_input_tokens": 3790
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 794,
+     "cache_read_input_tokens": 24656,
+     "cache_creation_input_tokens": 3790,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 3790,
+      "ephemeral_1h_input_tokens": 0
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.2280306,
+  "duration_ms": 55247,
+  "session_id": "1f8e0eda-6e2f-4a0e-9f88-23fa50c1f488"
+ }
+}

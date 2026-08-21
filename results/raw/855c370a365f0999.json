@@ -1,0 +1,72 @@
+{
+ "key": "855c370a365f0999",
+ "tag": "fit/main/design_review/intj/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "単一ファイル構成の本質：短期の単純さと引き換えに変更の局所性を売っている",
+    "where": "index.html 全体（1-799行、HTML/CSS/JS混在）",
+    "why": "依存ゼロ・デプロイ単純という利得は得ているが、CSS1文字の変更でもファイル全体が再取得されキャッシュが効かない。今12個のカードで読めているのは規模がまだ小さいだけで、構造の健全性を示す根拠にはならない。"
+   },
+   {
+    "title": "MutationObserverでDOM属性変化を監視しfx()を発火する暗黙の副作用連鎖",
+    "where": "776行目 new MutationObserver(fx).observe(slab,{attributeFilter:['aria-current']})",
+    "why": "paint()がaria-currentを書き換える→Observerが検知→アニメーション発火、という間接呼び出し構造。フィルタ機能やソート機能を足してaria-currentを触る箇所が増えた瞬間、意図しない演出が多重発火する。これが最初に壊れる場所だ。"
+   },
+   {
+    "title": "CSSのbreakpointをgetComputedStyleで読み取りJSの分岐に使う結合",
+    "where": "615行目 panelLive()、620行目 reveal()、657行目・713行目の条件分岐",
+    "why": "1080px・700pxの閾値がCSSとJSの両方に暗黙で存在する。CSS側だけbreakpointを変更すればJSの挙動が予告なく変わる。レイアウトとロジックが分離されておらず、片方の変更がもう片方を静かに壊す。"
+   },
+   {
+    "title": "コンテンツが全てdata-*属性にベタ書きされ、更新経路がHTML編集一本しかない",
+    "where": "312-545行目 各<a class=\"cell\" data-ja= data-desc= ...>",
+    "why": "12個は許容範囲だが、20個・30個に増える、多言語化する、CMS化するといった展開を一切見込んでいない。長期で見れば、コンテンツ更新のたびに巨大HTMLを人力編集する運用コストが線形に増える。"
+   },
+   {
+    "title": "cells配列のインデックスとDOM順序への暗黙依存がスケールしない",
+    "where": "611行目 let cur=0、673-710行目 nearest()（getBoundingClientRect依存）",
+    "why": "nearest()は実測レイアウト座標で次カードを決めており、非表示要素や動的フィルタが入ると0,0,0,0座標に化けて破綻する。将来ジャンル絞り込みを足した瞬間、ここが最初に壊れる第二候補だ。"
+   }
+  ],
+  "top_recommendation": "state-in-DOM設計（属性変化の監視で副作用を起こす仕組み）を単一のstateオブジェクト駆動に置き換えろ。次の機能追加で確実に破綻する。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23040,
+   "cache_read_input_tokens": 1788,
+   "output_tokens": 4479,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23040,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 4479,
+     "cache_read_input_tokens": 1788,
+     "cache_creation_input_tokens": 23040,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23040
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.22628740000000003,
+  "duration_ms": 69364,
+  "session_id": "82338e02-ce59-45f6-81e0-86f82767898d"
+ }
+}

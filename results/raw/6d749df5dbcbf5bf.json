@@ -1,0 +1,45 @@
+{
+ "key": "6d749df5dbcbf5bf",
+ "tag": "pair/portfolio_failures/fwd/intj-enfp/reb/enfp",
+ "model": "sonnet",
+ "data": {
+  "target": "「結果ではなく意思決定の構造を分析付きで示せ」という、分析フォーマットへの限定",
+  "rebuttal": "それって結局、情熱を「構造」って型にはめて冷凍しちゃう感じがする。ボツ企画の一番面白いところって、なぜその瞬間ワクワクして、どこで心が折れたかっていう生々しいドラマなんだよね。分析だけ載せても「賢い人だな」で終わっちゃって、見る人の心とは繋がらない。専門性の信頼より先に、共感で人と繋がることの方が自己表現としては本質だと思う。分析はあくまで物語のスパイスであって、主役にしちゃダメ。"
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 709,
+   "cache_read_input_tokens": 1438,
+   "output_tokens": 561,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 709,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 561,
+     "cache_read_input_tokens": 1438,
+     "cache_creation_input_tokens": 709,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 709
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.014278399999999998,
+  "duration_ms": 11644,
+  "session_id": "3235073c-41ce-4ca2-bf8f-e4c387c29f39"
+ }
+}

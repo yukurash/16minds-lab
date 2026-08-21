@@ -1,0 +1,72 @@
+{
+ "key": "9c388198d097a74a",
+ "tag": "fit/main/incident/istj/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "X埋め込み不具合はOGP/Twitter Cardタグの完全な欠如が原因",
+    "where": "head内 7〜11行目周辺（og:title, og:image, og:description, twitter:card が一つも存在しない）",
+    "why": "実際のところ、X のクローラーはJSを実行せずmetaタグのみを見る。descriptionメタはあるがog系が皆無なので、サムネもタイトルも出ないのは当然の結果。過去の例でもこのパターンは100%再現する。"
+   },
+   {
+    "title": "真っ白報告はまず実機consoleとネットワークタブを見るのが先",
+    "where": "-",
+    "why": "データはあるのか、が先決。コード自体に致命的なバグは見当たらず、憶測で箇所を潰す前に実機ログ（Safari Web Inspector等）でエラーの有無を確認する手順が抜けている。"
+   },
+   {
+    "title": "animation-fill-mode:bothでopacity:0のまま固着する既知挙動を疑う",
+    "where": ".sect（55行目）、.cell（108〜116行目）の animation:rise ... both",
+    "why": "iOS Safariではタブ切替やバックグラウンド復帰時にCSSアニメーションが完了扱いにならず、fromの opacity:0 のまま止まる不具合が過去に確認されている。真っ白＝背景色ではなく要素が消えている可能性がある。"
+   },
+   {
+    "title": "「push直後にスマホで確認」は反映タイムラグ・キャッシュの再現しない事例の可能性",
+    "where": "-",
+    "why": "GitHub Pagesの反映には数分かかることがあり、PCとスマホで参照タイミングやCDNキャッシュが異なれば片方だけ古い/新しい状態を見ることになる。時間を置いて再確認しないと切り分けが誤る。"
+   },
+   {
+    "title": "data-art無しカードでも解説記事行が消えないコメントと実装の不一致",
+    "where": "script内 640〜643行目（P.art.hidden = false が固定、undefined分岐なし）／該当カード 374, 388行目",
+    "why": "コメントには『記事が無い作品は行ごと隠す』とあるが実装が伴っておらず、href=undefinedのリンクが表示され続ける。約束（コメント）と実行が一致していない。"
+   }
+  ],
+  "top_recommendation": "OGP/Twitter Cardタグを即追加（確実な原因）。真っ白は憶測で直さず、まず実機のconsoleとネットワークタブでエラーの有無を確認せよ。",
+  "confidence": 3
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 3,
+   "cache_creation_input_tokens": 29273,
+   "cache_read_input_tokens": 26266,
+   "output_tokens": 7055,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23084,
+    "ephemeral_5m_input_tokens": 6189
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 934,
+     "cache_read_input_tokens": 24675,
+     "cache_creation_input_tokens": 6189,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 6189,
+      "ephemeral_1h_input_tokens": 0
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.29581055,
+  "duration_ms": 100264,
+  "session_id": "dfa53e34-a169-4e14-89d3-3fb58bcf25aa"
+ }
+}

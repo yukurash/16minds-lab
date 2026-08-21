@@ -1,0 +1,72 @@
+{
+ "key": "7ca5a4b01149ae49",
+ "tag": "fit/main/naming/isfp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "クラス名 `.id` がHTML属性`id`と衝突する感覚、しかも中身が意味不明",
+    "where": "CSS: 131行目 `.cell .id` / HTML: 324, 345行目など `<span class=\"id\">AG</span>` / JS: 553行目 `id=\"p-id\"`",
+    "why": "なんとなくだけど、`.id`ってクラス名を見るたびに一瞬「え、これHTML属性のidの話？」って手が止まる。しかも中身が\"AG\"\"CL\"みたいな2文字だけだと、半年後の自分は絶対に「これ何の略だっけ」って迷う。肌感としてここが一番危ない。"
+   },
+   {
+    "title": "`.em` がSVGアイコンのラッパーなのに絵文字っぽく読める",
+    "where": "CSS: 117行目 `.cell .em` / HTML: 317行目 `<span class=\"em\">`",
+    "why": "`em`って書いてあると自分の中では真っ先にCSSの単位かemphasisタグを連想しちゃう。中身は絵文字じゃなくてSVGのアイコンだから、これは正直「合わない」ネーミング。"
+   },
+   {
+    "title": "panelのid接頭辞が略語すぎて、フィールドの中身を覚えていられない",
+    "where": "HTML: 553〜569行目 `p-ch` `p-into` `p-tech` `p-go` `p-host` `p-art` `p-artt` / JS: 605〜610行目 `P = {ch, into, tech, desc, go, host, art, artt}`",
+    "why": "`p-into`が「インストール先」、`p-ch`が「チャンネル」だって今回説明されて初めて分かった。半年後の自分がコード開いて、パッと意味を拾えるとは思えない。なんとなくだけど、ここは素朴にフルネームで書いてほしい。"
+   },
+   {
+    "title": "`.nm` `.ja` `.mk` `.cd` のような1〜2文字の中身説明クラスが並びすぎ",
+    "where": "CSS: 120, 125, 130, 137行目（`.cell .nm/.ja/.mk/.cd`）",
+    "why": "一個一個は小さい違和感でも、並んだときに「これは自分には読み切れないな」って感じる。特に`.mk`と`.cd`は今回改めて中身を読むまで役割が想像できなかった。"
+   },
+   {
+    "title": "改名の方向性：短縮を捨てて、素朴に「見たまま」の名前にしたい",
+    "where": "全体（.cell→.work-card、.nm→.title、.ja→.tagline、.id→.category-code、.mk→.markers、.cd→.mobile-summary、p-into→p-install-to、p-go→p-open-link など）",
+    "why": "かっこよさや短さより、半年後に開いたときに「あ、これはこういう役割だったな」って肌でわかることの方が、私にとってはずっと大事。装飾的な省略より素朴な言葉を選びたい。"
+   }
+  ],
+  "top_recommendation": "まず `.id` クラスと `id=\"p-id\"` を `.category-code` / `p-code` のようなフルネームに直し、HTML属性idとの混同をなくすこと。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 3,
+   "cache_creation_input_tokens": 25706,
+   "cache_read_input_tokens": 26327,
+   "output_tokens": 3692,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23141,
+    "ephemeral_5m_input_tokens": 2565
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 1164,
+     "cache_read_input_tokens": 24734,
+     "cache_creation_input_tokens": 2565,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 2565,
+      "ephemeral_1h_input_tokens": 0
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.23215885,
+  "duration_ms": 48099,
+  "session_id": "e48feaca-a0dc-4cf6-beff-ceed81b7c8dd"
+ }
+}
