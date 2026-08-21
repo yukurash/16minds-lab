@@ -1,0 +1,1145 @@
+{
+ "rows": [
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "entj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "022269177a9ac800",
+   "data": {
+    "findings": [
+     {
+      "title": "解説記事なしカードを選ぶと「undefined」がそのまま画面に出る",
+      "where": "script内 paint() 640-643行目（P.art.href = c.dataset.art; / P.artt.textContent = c.dataset.artt; / P.art.hidden = false;）。対象カード: Claude Anywhere(374行目〜), Spoiler Block for X(388行目〜) は data-art / data-artt 属性を持たない。",
+      "why": "コメントには『無ければ行を隠す』とあるが実装では hidden=false を無条件に実行するだけで、hidden=true にする分岐が存在しない。結果、この2枚を選ぶと解説記事欄に文字列『undefined』が表示され、リンク先も文字列『undefined』（実質壊れたURL）になる。設計意図と実装が完全にズレている、放置できない不具合。"
+     },
+     {
+      "title": "矢印キーで選んだカードと Enter で開くカードが一致しない",
+      "where": "keydown ハンドラ 712-720行目、paint() 624-648行目。どちらも cells[next].focus() を呼んでいない（フォーカス移動を行うのは click ハンドラの 659行目だけ）。",
+      "why": "aria-current とパネル表示は矢印キーで更新されるが、実際のDOMフォーカスは動かない。ヒント文言『← ↑ ↓ → で選ぶ / Enterで開く』（571行目）を信じてEnterを押すと、直前に実フォーカスしていた別カードが開く、あるいは何も開かない。UIが約束した機能がそのまま嘘になっている。誰がこの矛盾を検証したのか、責任の所在を明確にすべき。"
+     },
+     {
+      "title": "data-into の区切り文字が split(',') と実データ '|' で不一致",
+      "where": "paint() 634行目: c.dataset.into.split(',').join('\\n')。data-into 属性は 314, 515, 532行目など '|' 区切りで書かれている。",
+      "why": "カンマが存在しないため split(',') は1要素の配列を返し、'|' がそのまま画面に残る。初期HTML（557-558行目）は手書きで正しく改行されているが、そのカード自身をクリックした瞬間にJSが上書きし、逆に壊れた1行表示に退化する。数値で言えば影響カードは3件（azure-nettrace / splunk-otel-contest / splunk-ai-oncall）、全て『自分を選ぶと自分が壊れる』という最悪の再現条件。"
+     }
+    ],
+    "top_recommendation": "paint()の art.hidden 分岐実装（data-art不在時に隠す）と、keydown内での cells[next].focus() 呼び出しを最優先で直せ。2件とも数行の修正で結果が出る。",
+    "confidence": 5
+   },
+   "cost_usd": 0.3037790000000001
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "intj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "bf2220aa562cec6a",
+   "data": {
+    "findings": [
+     {
+      "title": "インストール先の区切り文字が split(',') と data-into の '|' で不一致",
+      "where": "script1 634行目 P.into.textContent = c.dataset.into.split(',').join('\\n')　／ 314・515・532行目の data-into 属性値",
+      "why": "data-into は 'A|B' 形式でカンマを含まない。split(',') は要素数1の配列を返し join は無効化される。結果、azure-nettrace・splunk-otel-contest・splunk-ai-oncall の3件で「インストール先」欄が改行されず 'A|B' の生テキストが1行で表示される。722行目 paint(0) がロード直後に走るため、初期HTML(557-558行)が正しく2行整形していた分をJSが即座に上書きし、初回描画から壊れた状態になる。"
+     },
+     {
+      "title": "data-art/artt を持たないカードで解説記事欄が『undefined』表示になる",
+      "where": "script1 641-643行目 P.art.href=c.dataset.art; P.artt.textContent=c.dataset.artt; P.art.hidden=false;　／ 374行目・388行目 Claude Anywhere と Spoiler Block for X には data-art 属性なし",
+      "why": "コメントは『記事がない場合は行ごと隠す』と書いてあるが hidden=true を設定する分岐が存在しない。この2枚を選択すると dataset.art/artt は undefined となり、href='https://.../undefined'、リンクテキストが文字列 'undefined' として画面に表示される壊れたリンクになる。"
+     },
+     {
+      "title": "矢印キー選択と実フォーカスが同期せず、Enterで意図しないカードが開く",
+      "where": "script1 712-720行目 keydown ハンドラ（nearest()+paint(next) のみで cells[next].focus() を呼んでいない）／ パネル571行目の『← ↑ ↓ → で選ぶ / Enter で開く』のヒント表示",
+      "why": "paint()はaria-current/パネル内容を変えるだけでDOMフォーカスを移動しない。矢印キーで選択を移動した後にEnterを押すと、実際にフォーカスが残っている（クリックやTabで最後にフォーカスした）別カードのリンクが開く、またはフォーカスが一度もなければ何も開かない。パネルの指示文と実挙動が一致しない。"
+     }
+    ],
+    "top_recommendation": "634行目の split(',') を split('|') に修正しろ。ロード直後から全ユーザーに見える最も確実な破損であり、修正コストも最小だ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.3213574
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "entp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "82162ab58a2a3964",
+   "data": {
+    "findings": [
+     {
+      "title": "矢印キーで選び直してもDOMフォーカスが動かず、Enterで開くのは前のカード",
+      "where": "script: addEventListener('keydown', ...) 712-720行目 / paint() 624-648行目",
+      "why": "paint()はaria-currentとパネル表示だけ更新し.focus()を呼ばない。矢印移動後にEnterを押すと、まだフォーカスが残っている『前に選んでいたカード』のリンクが開く。571行目の『Enterで開く』という案内と実際の挙動が食い違う――逆にさ、これじゃ選んでる意味なくない？"
+     },
+     {
+      "title": "インストール先の改行がsplit(',')のせいで一切機能していない",
+      "where": "634行目 P.into.textContent = c.dataset.into.split(',').join('\\n');（data-into自体は314/515/532行目などで`|`区切り）",
+      "why": "data-into属性は`|`で複数値を区切っているのにJSは`,`で分割している。分割が起きず生の`|`がそのまま1行で表示される。しかもpaint(0)が読込直後(722行目)に走るため、初期HTMLの正しい2行表示(557-558行目)は一瞬で壊れた表示に上書きされる。"
+     },
+     {
+      "title": "data-artなしのカードで『解説記事』欄がhref/text=\"undefined\"のまま常時表示される",
+      "where": "640-643行目 P.art.href/P.artt.textContent/P.art.hidden = false;（該当カード：374行目 Claude Anywhere、388行目 Spoiler Block for X）",
+      "why": "data-art未指定カードではdataset.artがundefinedになりhrefとテキストが文字列\"undefined\"になる。P.art.hiddenは常にfalse固定でコメント通りに非表示化されず、壊れたリンクが選択のたびに表示され続ける。"
+     },
+     {
+      "title": "type()にclearIntervalがなく、連続選択でタイピング演出が二重実行される",
+      "where": "744-753行目 function type(el){...}（対して757行目のroll()はclearInterval(rolling)を実施済み）",
+      "why": "矢印キー連打や素早い選択切替で前のtypingインターバルが残ったまま新しいsetIntervalが走り、同じ要素のtextContentを複数タイマーが競合更新して名前表示が乱れる。"
+     }
+    ],
+    "top_recommendation": "712-720行目のkeydownハンドラで paint(next) の後に cells[next].focus() を呼び、視覚的な選択と実際のDOMフォーカスを一致させる。",
+    "confidence": 4
+   },
+   "cost_usd": 0.330335
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "intp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "21f3549c278c0028",
+   "data": {
+    "findings": [
+     {
+      "title": "矢印キー選択がフォーカスを移動させず「Enterで開く」が破綻する",
+      "where": "script内 keydown ハンドラ 712-720行目（paint(next)のみでfocus()を呼ばない）／対比: click ハンドラ 659行目の c.focus()",
+      "why": "paint()自体もfocus()を呼ばない（624-648行目）。クリックで選択した状態から矢印キーで別カードへ移動しても実DOMフォーカスは動かず、Enterは古い（または最初の）カードのhrefへ遷移する。矢印キーだけ操作した場合はどのセルにもフォーカスがなくEnterは何も起きない。画面の「Enter で開く」表示と実挙動が一致しない。"
+     },
+     {
+      "title": "data-art未設定カードで解説記事行が非表示にならず「undefined」表示",
+      "where": "script 640-643行目 P.art.href = c.dataset.art; ... P.art.hidden = false; ／対象カード: 374行目 Claude Anywhere, 388行目 Spoiler Block for X（どちらもdata-art属性なし）",
+      "why": "該当カード選択時、c.dataset.artはundefinedのため P.art.href に文字列undefined、P.artt.textContentにもundefinedが代入される。コメントは『記事がない時は行ごと隠す』とあるがhiddenをtrueにする分岐が存在せず常にfalseになる。結果パネルに壊れたリンクとテキストundefinedが表示され、クリックすると存在しないURLへ遷移する。"
+     },
+     {
+      "title": "インストール先の区切り文字がカンマ想定だがデータはパイプ区切り",
+      "where": "script 634行目 P.into.textContent = c.dataset.into.split(',').join('\\n'); ／data-into属性 314, 515, 532行目は縦棒区切り",
+      "why": "split(',')は対象文字列にカンマが無いため要素1個の配列を返し、joinしても元の文字列がそのまま返る。結果、3件のカードで『インストール先』欄が改行されず縦棒付きの1行として表示され、dd.mono の white-space:pre-line による改行表示が機能しない。"
+     }
+    ],
+    "top_recommendation": "keydownハンドラでpaint(next)実行時に該当セルへ実際に.focus()を移し、Enterキーの遷移先とaria-current表示を一致させる。",
+    "confidence": 5
+   },
+   "cost_usd": 0.45579210000000003
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "infj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "9864b660c4cae319",
+   "data": {
+    "findings": [
+     {
+      "title": "矢印キー選択とEnterで開くリンクがズレる（DOM focus未移動）",
+      "where": "script1: keydown リスナー(712-720行) と paint()(624-648行)。paint() は cur を更新し aria-current を付け替えるだけで、対象セルへ .focus() を呼んでいない。",
+      "why": "凡例「← ↑ ↓ → で選ぶ / Enter で開く」を実装しているが、矢印キーで選択を移動しても実際のDOMフォーカスは最初にTabで止まったセルのままになる。ここでEnterを押すと、ブラウザのネイティブ挙動で“フォーカスの残っている古いカード”のhrefへ遷移してしまい、パネルに表示中（=視覚的に選択中）のカードとは別の作品が開く。青いfocusアウトラインも移動しないため見た目にも矛盾が生じる。"
+     },
+     {
+      "title": "data-art が無いカードで「解説記事」ブロックが壊れたまま表示される",
+      "where": "script1: paint() 内 641-643行（P.art.href / P.artt.textContent / P.art.hidden = false）。対象カード: 374行 Claude Anywhere, 388行 Spoiler Block for X（どちらも data-art / data-artt 属性なし）。",
+      "why": "コード直上のコメントは「記事が無いカードは行ごと隠す」と述べているが、hidden を true にする分岐が存在せず常に false。dataset.art / dataset.artt が undefined のため href・表示テキストが文字列 \"undefined\" になり、存在しない記事リンクが常時表示される。"
+     },
+     {
+      "title": "インストール先の複数行表示がカンマ分割ミスで壊れる",
+      "where": "script1: 634行 `P.into.textContent = c.dataset.into.split(',').join('\\n');`。対象データ: 314行 azure-nettrace, 515行 splunk-otel-contest, 532行 splunk-ai-oncall（区切りは `|`）。",
+      "why": "HTML側は複数インストール先を `|` で区切っているのに、JSは `,` で split している。要素は1つのまま join も無効化し、`|` の文字がそのまま1行で表示される。CSSの white-space:pre-line で改行整形される想定が崩れ、初期表示の paint(0) 実行時点から azure-nettrace（既定選択カード）で即座に発生する。"
+     }
+    ],
+    "top_recommendation": "keydown ハンドラの paint(next) 直後に cells[next].focus() を追加し、視覚上の選択とEnterで開くリンクを一致させる（712-720行）。",
+    "confidence": 5
+   },
+   "cost_usd": 0.3881055
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "infp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "544ab612465f0dea",
+   "data": {
+    "findings": [
+     {
+      "title": "記事なしカードで「解説記事」欄が undefined のまま表示される",
+      "where": "script内 paint() 関数 641-643行目（P.art.href / P.artt.textContent / P.art.hidden=false）。対象データ: 374行目 Claude Anywhere、388行目 Spoiler Block for X（どちらも data-art / data-artt 属性なし）",
+      "why": "コメントは『記事がない作品は行ごと隠す』と書いてあるのに hidden は常に false。dataset.art が undefined のとき .href と .textContent には文字列 'undefined' が代入され、この2枚を選択すると『解説記事』欄にタイトル『undefined』とリンク先が壊れた行が表示される。"
+     },
+     {
+      "title": "矢印キーで選択してもフォーカスが移動せず、Enterで別の作品が開く",
+      "where": "712-720行目 keydown リスナー内 paint(next) 呼び出し（.focus() の呼び出しが無い）。対比: 659行目クリック時のみ c.focus() を呼んでいる",
+      "why": "paint() 自体は624-648行目で .focus() を呼ばない。矢印キーでパネル表示だけ切り替わり、実DOMフォーカスはクリックで最後に触れたカードのまま残るため、571行目の『Enter で開く』操作は画面上の選択と一致しない別プロジェクトを開く。"
+     },
+     {
+      "title": "複数インストール先の改行がされず「|」がそのまま表示される",
+      "where": "634行目 P.into.textContent = c.dataset.into.split(',').join('\\n')。データ例: 314行目・515行目・532行目 data-into=\"A｜B\" のようにパイプ区切り",
+      "why": "実データの区切り文字は「｜」なのにコードはカンマで split しているため配列長1のままとなり join も無効。結果、557-558行目の初期表示（改行済み）と異なり、選択後は 'GitHub Copilot のカスタムエージェント｜~/.claude/skills/（Claude Code）' のように1行のパイプ文字列で表示される。"
+     }
+    ],
+    "top_recommendation": "641-643行目の P.art.hidden 判定を dataset.art の有無で分岐させ、記事なしカードでは行を隠すよう修正するのが最優先（誰でもクリックするだけで壊れたリンクに遭遇するため）。",
+    "confidence": 4
+   },
+   "cost_usd": 0.304563
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "enfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "8418cc0d57b3411f",
+   "data": {
+    "findings": [
+     {
+      "title": "矢印キー選択でフォーカスが動かず Enter が別カードを開く",
+      "where": "1行目の keydown リスナー（712〜720行目）。paint(next) だけで c.focus() が呼ばれていない。718行目のコメント「focus moves the cursor, so ENTER opens natively」は誤り",
+      "why": "クリックでカードAを選んだ後に矢印キーでカードBへ見た目上の選択（aria-current）を移しても、実際の DOM フォーカスはAに残ったまま。ここで Enter を押すと開くのは今見えてるBじゃなくてA。これ、画面下の「← ↑ ↓ → で選ぶ／Enter で開く」って案内と完全に矛盾してて、UIが自分でついた嘘みたいになっちゃってる。paint() に c.focus() を足すだけで解決するのに、click ハンドラ側（659行目）にはちゃんとあるのにキー操作側だけ抜けてる、っていうのがめっちゃ「あ、ここ書き忘れたな」って匂いする。"
+     },
+     {
+      "title": "インストール先の複数行表示が split の区切り文字ミスで壊れてる",
+      "where": "634行目: c.dataset.into.split(',').join('\\n')",
+      "why": "data-into 属性の値は全カード「｜」区切り（例: 515行目 data-into=\"Claude Code の OTel 設定|OpenTelemetry Collector（Docker）\"）なのに、split はカンマで割ってる。カンマが1つも無いから split は何も分割せず、join も1要素配列には効かない。結果、初期HTMLでは改行済みだった AG カードの表示（557-558行目）まで paint(0) 実行後（722行目）に「GitHub Copilot のカスタムエージェント|~/.claude/skills/（Claude Code）」って生の｜文字1行に潰れて再描画される。ページを開いた瞬間から症状が出るやつ。"
+     },
+     {
+      "title": "解説記事なしカードでも記事欄が消えず「undefined」表示になる",
+      "where": "640〜643行目: P.art.href = c.dataset.art; ... P.art.hidden = false; （常にfalseで条件分岐なし）",
+      "why": "data-art を持たないカード（Claude Anywhere / Spoiler Block for X、374行目と388行目）を選ぶと、コメント通りなら記事欄を隠すはずが hidden = false が無条件実行。href に undefined が代入されて「https://yukurash.github.io/undefined」相当の壊れたリンクになり、タイトルテキストも文字列 \"undefined\" がそのまま表示される。カード側のCSSバッジ（.cell[data-art] .doc、133行目）は正しく出し分けてるのに、パネル側のJSだけこの仕様を実装し忘れてる。"
+     }
+    ],
+    "top_recommendation": "712〜720行目の keydown ハンドラに paint(next) の直後 next セルへの c.focus() を追加して、選択表示と実フォーカスと Enter の挙動を一致させる。ここが一番「約束と実際が違う」壊れ方してる。",
+    "confidence": 4
+   },
+   "cost_usd": 0.34050800000000003
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "enfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "3f81774278cb7206",
+   "data": {
+    "findings": [
+     {
+      "title": "解説記事なしカードで壊れたリンク(href=\"undefined\")が表示される",
+      "where": "script内 paint() 641-643行目（P.art.href = c.dataset.art; ... P.art.hidden = false;）／該当データ: 374行目 Claude Anywhere, 388行目 Spoiler Block for X",
+      "why": "この2枚のカードには data-art/data-artt属性が無くc.dataset.artはundefinedになる。だがhiddenを常にfalseにしているため、コメント通りの「記事がない時は行ごと隠す」処理が実装されておらず、パネルに href=\"undefined\" のリンクとタイトル\"undefined\"がそのまま表示・クリック可能になる。"
+     },
+     {
+      "title": "インストール先の複数行表示が区切り文字ミスマッチで壊れている",
+      "where": "script 634行目 P.into.textContent = c.dataset.into.split(',').join('\\n'); ／data-into値: 314, 515, 532行目",
+      "why": "data-into属性の区切り文字はカンマではなくパイプ(|)。split(',')では分割されず配列要素は1つのままなので join('\\n') は無効化され、'A|B' が改行されず1行のまま表示される（該当3カード選択時）。"
+     },
+     {
+      "title": "名前タイピング演出が高速切替で不完全な文字列を表示する",
+      "where": "script 744-753行目 function type(el){ const full = el.textContent; ... }",
+      "why": "full を毎回 el.textContent（今まさにタイピング中で途中の文字列の可能性がある）から取得しており、かつ前回のsetIntervalをclearしていない。矢印キー連打等で短時間に連続選択すると、前のカードの途中文字列がfullとして採用され、パネル見出しが誤った/不完全な文字列のまま止まる。"
+     },
+     {
+      "title": "初回表示時にパネルのロード演出（.fx）が一切発火しない",
+      "where": "script 722行目 paint(0); と 776行目 new MutationObserver(fx).observe(...)（別scriptタグ、後から実行される）",
+      "why": "1つ目のscriptタグでpaint(0)が実行されaria-current属性が変わるが、その時点ではまだ2つ目のscriptタグ内のMutationObserverが設置されていない。よって初回のみloaderバー・タイピング・数値ロールなどの.fx系アニメーションが起動せず、静的表示のまま初期化される。"
+     },
+     {
+      "title": "クリック直後のfocus発火でpaint()が二重実行される",
+      "where": "script 653行目 focusリスナー、659行目 c.addEventListener('click', ...) 内の c.focus();",
+      "why": "clickハンドラでpaint(i)実行後にc.focus()を呼ぶと、同一セルに対するfocusリスナーが再度paint(i)を呼ぶ。MutationObserverのバッチングで通常は実害が出にくいが、type()のclearInterval漏れ（#3）と組み合わさると、同一操作内でも稀にタイピング表示の乱れを誘発しうる冗長設計になっている。"
+     }
+    ],
+    "top_recommendation": "まず641-643行目のP.art.hidden処理を修正し、data-artが無いカード選択時に解説記事の行を確実に非表示化する（href=\"undefined\"表示の解消）。",
+    "confidence": 4
+   },
+   "cost_usd": 0.387677
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "istj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "77a8401fe321001d",
+   "data": {
+    "findings": [
+     {
+      "title": "インストール先(data-into)の区切り文字とJSの分割処理が不一致",
+      "where": "script 634行目 P.into.textContent = c.dataset.into.split(',').join('\\n')／data-into属性 314・515・532行目",
+      "why": "実際のところ data-into は '|' で複数箇所を区切っているが、634行目は split(',') を使っている。カンマが存在しないため分割は起きず、初期表示の paint(0) 実行時点で「GitHub Copilot のカスタムエージェント|~/.claude/skills/（Claude Code）」のように pipe文字がそのまま1行で表示される。元のHTML静的マークアップ(557-558行)は改行済みで正しいが、JSがそれを上書きして壊す。"
+     },
+     {
+      "title": "解説記事なしカード選択時に 'undefined' が表示される",
+      "where": "script 641-643行目 P.art.href / P.art.artt / P.art.hidden ／該当カード 374行目(Claude Anywhere)・388行目(Spoiler Block for X)",
+      "why": "コメントには「記事が無いものは行ごと隠す」とあるが、P.art.hidden は常に false に固定されており true へ切り替える分岐が存在しない。data-art属性を持たない2枚のカードを選ぶと、href='undefined'、タイトルテキストも 'undefined' の壊れたリンク行がそのまま表示される。"
+     },
+     {
+      "title": "マウスクリック時に paint() が二重発火しアニメーションが二重再生される",
+      "where": "script 653行目 focus リスナー ／ 655-660行目 click リスナー",
+      "why": "マウスでの要素クリックは mousedown 時点で既に focus を発生させるため、focus リスナーが paint(i) を呼んだ直後、click リスナーが再度 paint(i) を呼ぶ。結果、タイピング演出・ロードバー・split-flap演出が1クリックごとに二重に走り、選択のたびに軽い明滅が起きる。過去の実装ではこの種の二重発火は速度低下と視覚的なちらつきの原因になっている。"
+     }
+    ],
+    "top_recommendation": "まず634行目の split(',') を split('|') に修正し、初期表示から既に崩れているインストール先欄を直す。データ実害が最も大きい。",
+    "confidence": 4
+   },
+   "cost_usd": 0.32455700000000004
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "isfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "ef7cfc90571f1986",
+   "data": {
+    "findings": [
+     {
+      "title": "矢印キーで選んでもフォーカスが動かず、Enterで別の作品が開いてしまう",
+      "where": "712〜720行目 keydownハンドラ（nearest()の呼び出し直後）、および624〜648行目 paint()関数",
+      "why": "paint(next)は表示とパネルの中身しか書き換えず、cells[next].focus()を一切呼んでいない。718行目のコメントは『focusが動くのでEnterはネイティブに開く』とあるが実装が伴っておらず、矢印キーで選び直しても実際のフォーカスは前にクリック/Tabした場所に残ったまま。この状態でEnterを押すと、画面上で選ばれている（aria-current付きの）カードとは違うカードのリンクが開いてしまう。現場ではキーボード操作の人が『選んだつもりのものと違うページに飛ばされる』ことになり、セレクト画面の一番の存在意義が壊れているのが気になります。"
+     },
+     {
+      "title": "解説記事のない作品を選ぶと、パネルに壊れたリンクが出続ける",
+      "where": "640〜643行目 paint()内 `P.art.href = c.dataset.art; ... P.art.hidden = false;`",
+      "why": "『Claude Anywhere』(374行目)と『Spoiler Block for X』(388行目)にはdata-art/data-artt属性がなく、この2枚を選ぶとc.dataset.artはundefinedになる。それをそのままhrefに代入すると文字列\"undefined\"がURLになり、hiddenも常にfalseにされるので『解説記事』欄がタイトル\"undefined\"のまま表示され続ける。ただ気になるのは、コメントには『書き手のない作品は行ごと隠す』と書いてあるのに、隠す分岐が実際には抜けている点です。ここは日常的にクリックされる箇所なので、押した人が404に飛ばされてしまいます。"
+     },
+     {
+      "title": "インストール先の区切り文字がJSとHTMLで食い違い、改行されない",
+      "where": "634行目 `c.dataset.into.split(',').join('\\n')` に対し、314・515・532行目の data-into は `|` 区切り",
+      "why": "azure-nettrace・splunk-otel-contest・splunk-ai-oncallの3件は『GitHub Copilot〜｜~/.claude/skills/〜』のように`|`で2つの設置先を書いているが、JS側はカンマで分割しようとしているため何も分割されず、改行されずに`|`の文字がそのまま1行で表示されてしまう。これまで通りの見え方を期待していた分だけ、実際に画面を見ると『あれ、区切り文字が生で出ている』と気づく類の不具合です。"
+     }
+    ],
+    "top_recommendation": "まず712〜720行目のkeydownハンドラに `cells[next].focus()` を追加し、矢印キー選択とEnterで開くものが必ず一致するようにしてほしいです。ここは現場で一番使われる操作なので。",
+    "confidence": 4
+   },
+   "cost_usd": 0.32455
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "estj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "5dcaeb74e9c2c5af",
+   "data": {
+    "findings": [
+     {
+      "title": "インストール先の複数行表示が常に1行に潰れる（区切り文字の不一致）",
+      "where": "script内634行目 P.into.textContent の split(',') 部分／該当データ属性 314行目・515行目・532行目 data-into=\"...|...\"",
+      "why": "data-into は区切り文字が全て「|」なのに split(',') でカンマ分割している。カンマは存在しないため split は常に1要素配列を返し join も無意味。既定選択の azure-nettrace（index0）を含む3枚で、読み込み直後からパイプ文字がそのまま1行表示になり、改行が機能しない。paint(0)が起動時に必ず走るため無操作でも壊れて見える。"
+     },
+     {
+      "title": "解説記事なしカードでパネルに undefined が表示されリンクも壊れる",
+      "where": "script内640〜643行目 P.art.href／P.artt.textContent／P.art.hidden=false の代入部分／対象カード 374行目 Claude Anywhere、388行目 Spoiler Block for X（data-art属性なし）",
+      "why": "コメントは data-art が無ければ行ごと隠すとあるが hidden=true にする分岐が実装されておらず常に false 固定。data-art/data-artt が undefined のカードを選ぶと href が文字列undefinedに、テキストもundefinedになり、パネルに壊れたリンクと文字が表示される。1クリックで再現する実害。"
+     },
+     {
+      "title": "矢印キー選択後、Enterで開くのは選択中カードでなく元フォーカス位置のカード",
+      "where": "script内712〜720行目 keydown ハンドラの paint(next) 呼び出し（.focus()なし）／対比 659行目クリックハンドラは paint(i); c.focus(); reveal();",
+      "why": "クリック時はc.focus()で実DOMフォーカスも移すが矢印キー操作ではpaint(next)がaria-currentとパネル内容だけを書き換えフォーカス要素は移動しない。571行目の『Enterで開く』案内通り矢印で選び直しても、続くEnterはブラウザが記憶した古いフォーカス先を開くため、画面表示と実際に遷移する先が食い違う。"
+     }
+    ],
+    "top_recommendation": "634行目の split(',') を split('|') に直す。既定表示（azure-nettrace）から誰の目にも見える壊れ方なので最優先。",
+    "confidence": 4
+   },
+   "cost_usd": 0.4323038
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "esfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "20115a5245d451fc",
+   "data": {
+    "findings": [
+     {
+      "title": "矢印キーで選んでもフォーカスが動かず、Enterで別の作品が開いてしまう",
+      "where": "行712-720（keydownリスナー）／行624-648（paint関数）",
+      "why": "paint(next)はaria-currentの見た目だけ変えてcells[next].focus()を呼んでいない。案内文「Enter で開く」を信じて押すと、選んだつもりの作品ではなく前にクリックした（フォーカスが残る）作品が開いてしまう。これは訪れた人が一番戸惑う箇所。"
+     },
+     {
+      "title": "解説記事のないカードでリンク先が\"undefined\"になる",
+      "where": "行641-643（P.art.href / P.art.hidden = false）",
+      "why": "data-art属性を持たない2枚（Claude Anywhere・Spoiler Block for X）を選ぶと、常にhidden=falseで上書きされ、リンク先も見出しもundefinedのまま表示される。作った本人の顔が立たない見え方になってしまう。"
+     },
+     {
+      "title": "「インストール先」の複数行表記がパイプ区切りのまま崩れて出る",
+      "where": "行634 split(',') と data-into=\"...|...\"（例：行314, 515, 532）",
+      "why": "分割の区切り文字がカンマなのに、実際のデータはパイプ「|」区切り。分割が起きず改行されないので、見せたかった2行の案内が1行に押し込まれて読みにくくなる。"
+     },
+     {
+      "title": "初回表示だけ、パネルのロード演出が発火しない",
+      "where": "行722 paint(0) と 行776 MutationObserver登録の実行順",
+      "why": "1本目のscriptがpaint(0)でaria-currentを変えた時点では、2本目のscriptのMutationObserverはまだ存在しない。最初にページを開いた人だけ演出が欠け、印象がちぐはぐになる。"
+     }
+    ],
+    "top_recommendation": "まず624-648のpaint呼び出し箇所に cells[next].focus() を足し、矢印選択とEnterの挙動を一致させることを最優先で直してほしい。みんなが最初に触る導線だから。",
+    "confidence": 4
+   },
+   "cost_usd": 0.30681400000000003
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "isfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "fc78b36d5c37563c",
+   "data": {
+    "findings": [
+     {
+      "title": "矢印キーで選んでもEnterで開くのは別のカード",
+      "where": "712-720行 addEventListener('keydown', ...) / nearest()",
+      "why": "paint(next)は視覚選択(aria-current)を変えるだけでcells[next].focus()を呼んでいない。DOMのフォーカスは動かないので、矢印で選び直した後にEnterを押すと、実際にフォーカスが残っている前のカードのリンクが開く。ヒントの『←↑↓→で選ぶ／Enterで開く』が成立していない、肌感としてこれは一番びっくりする挙動。"
+     },
+     {
+      "title": "解説記事のないカードを選ぶと\"undefined\"の行が出る",
+      "where": "641-643行 P.art.href = c.dataset.art; ... P.art.hidden = false;",
+      "why": "Claude AnywhereとSpoiler Block for Xにはdata-art/data-arttがないのに、hiddenは常にfalseに固定されている。コメントには『書き込みがない時は行ごと隠す』とあるのに実装されておらず、リンクのhrefとテキストが文字通り\"undefined\"になって画面に出る。"
+     },
+     {
+      "title": "インストール先が複数あっても1行にまとまってしまう",
+      "where": "634行 P.into.textContent = c.dataset.into.split(',').join('\\n');",
+      "why": "data-into属性は実際には「|」区切り（例：azure-nettrace, splunk-otel-contest等）なのに、split(',')ではカンマがないので分割されず1要素のまま。white-space:pre-lineで改行を期待した表示なのに、パイプ入りの文字列がそのまま横一列で出てしまう。"
+     }
+    ],
+    "top_recommendation": "まず712-720行のkeydown処理にcells[next].focus()を足して、選択とフォーカスと実際に開かれるリンクを一致させてほしい。ここがズレてると信用できない。",
+    "confidence": 4
+   },
+   "cost_usd": 0.251709
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "estp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "4dcb6b024a2e169b",
+   "data": {
+    "findings": [
+     {
+      "title": "初期表示から即バグってる区切り文字ミス",
+      "where": "script内 paint() 634行目: c.dataset.into.split(',').join('\\n')",
+      "why": "data-into属性は「|」区切りなのに split(',') してる。onload直後に paint(0) が走るから、開いた瞬間からインストール先欄が改行されず変な1行文字列で出る。"
+     },
+     {
+      "title": "解説記事なしカードで『undefined』リンクが出る",
+      "where": "script 640-643行目 P.art.hidden=false／data-art無しcell(374,388行 Claude Anywhere・Spoiler Block)",
+      "why": "コメントは記事なければ隠すと言ってるのに条件分岐がない。dataset.artがundefinedのままhrefとテキストに突っ込まれ、選ぶと壊れたリンクと『undefined』表示が出る。"
+     },
+     {
+      "title": "矢印キー連打でタイピング演出が文字化けする",
+      "where": "script 744-753行目 type()関数",
+      "why": "roll()はclearIntervalしてるのにtype()はしてない。名前が打ち終わる前に次のカードに移ると2つのタイマーが同時にtextContentを書き換えて表示が崩れる。"
+     }
+    ],
+    "top_recommendation": "とりあえずsplit(',')をsplit('|')に直せ。開いた瞬間から画面が壊れて見えてるんだから、これが一番でかい。",
+    "confidence": 4
+   },
+   "cost_usd": 0.24690700000000002
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "istp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "0344c225bb5ce4d2",
+   "data": {
+    "findings": [
+     {
+      "title": "paint(0)がロード直後に静的HTMLの2行表示を破壊",
+      "where": "634行目 P.into.textContent の split 処理（722行目 paint(0) が即実行）",
+      "why": "data-into の区切りは縦棒なのにカンマで分割している。カンマが無いので分割されず、557-558行の正しい2行表示がロード直後に1行のパイプ付き文字列で上書きされる。"
+     },
+     {
+      "title": "解説記事なしカードで.art行が常時表示される",
+      "where": "640-643行目 P.art.href / P.artt.textContent / P.art.hidden=false（374-403行のカードにはdata-artが無い）",
+      "why": "hiddenをtrueにする分岐が無く常にfalse。Claude AnywhereやSpoiler Block for Xを選ぶと解説記事欄に文字列undefinedが出て、リンクも存在しないURLになる。"
+     },
+     {
+      "title": "矢印キーがページ全体のスクロールを乗っ取る",
+      "where": "712-720行目 addEventListener('keydown', ...)（対象指定なしでwindow全体、preventDefault実行）",
+      "why": "どこにもフォーカスが無くてもデスクトップ幅なら上下左右で必ずpreventDefaultしカード選択に変換される。ブラウザ標準の矢印キースクロールが常に機能しなくなる。"
+     }
+    ],
+    "top_recommendation": "634行目の分割文字をカンマから縦棒に直せ。ロード直後から表示が壊れている、一番目立つ不具合。",
+    "confidence": 4
+   },
+   "cost_usd": 0.43457399999999996
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "type": "intj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "51a1dbcb499d7336",
+   "data": {
+    "findings": [
+     {
+      "title": "OGP/Twitter Card メタタグが存在しない",
+      "where": "<head> 7行目付近（meta description の直後が本来の挿入位置）",
+      "why": "og:title, og:description, og:image, twitter:card が皆無。制作物を12個並べた構造そのものがSNS拡散を前提にしているのに、共有時はリンクのみの無地表示になる。長期の認知獲得を自ら潰している。"
+     },
+     {
+      "title": "sitemap.xml・robots.txt・canonical が無い",
+      "where": "リポジトリ直下（ファイル不在）、<head> 内 canonical link 不在",
+      "why": "検索エンジンにサイト構造を明示する手段がゼロ。meta description だけでは発見可能性は上がらない。公開して終わりでは意味がない、運用の起点が欠けている。"
+     },
+     {
+      "title": "セレクト UI に選択概念を表す ARIA ロールが無い",
+      "where": ".cell (108行目) / .screen (92行目) / paint() (624行目)",
+      "why": "12枚の中から1枚を選ぶ構造なのに <a> の羅列のまま。role=\"listbox\"+option や role=\"radiogroup\" 相当の設計がなく、支援技術には『選択されている』状態が構造として伝わらない。aria-current だけでは不十分。"
+     },
+     {
+      "title": "アクセス解析・イベント計測が実装されていない",
+      "where": "<script> 全体（600〜790行目）",
+      "why": "どのカードが選ばれ、どのリンクが実際に開かれたかを一切計測していない。改善判断のためのデータが取れない設計は、公開後の意思決定を勘で行うのと同義で非効率。"
+     },
+     {
+      "title": "多言語対応（英語版）が存在しない",
+      "where": "<html lang=\"ja\"> 2行目、hreflang 属性なし",
+      "why": "Claude Code プラグインや Azure Skill など海外エンジニア層に刺さる内容を並べていながら、英語圏への導線がゼロ。露出できる市場を自分で半分に削っている。"
+     }
+    ],
+    "top_recommendation": "まず OGP タグを <head> に追加しろ。共有された瞬間の第一印象がゼロというのは、12個の制作物を並べた意味そのものを損なう最大の欠落だ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.19964639999999997
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "type": "entj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "dcf97959cf603d7f",
+   "data": {
+    "findings": [
+     {
+      "title": "OGP / Twitter Card が完全に未実装",
+      "where": "head内 (7〜11行目付近、meta descriptionの直後)",
+      "why": "og:title, og:image, og:description, twitter:card が無い。SNSでURLを貼った瞬間に無地のリンクとして表示される。ポートフォリオは共有されて初めて価値が生まれる。数字に直結する損失を放置している。"
+     },
+     {
+      "title": "robots.txt / sitemap.xml / canonical が存在しない",
+      "where": "リポジトリ直下、および head内 <link rel=\"canonical\">",
+      "why": "検索エンジンへのインデックス方針が何も定義されていない。12個の制作物という資産があるのに、検索流入という測定可能なチャネルを自ら閉じている。GitHub Pagesなら数分で追加できる。"
+     },
+     {
+      "title": "詳細情報がJSのdata属性頼りで、初期HTML・noscriptに露出していない",
+      "where": "各 .cell の data-desc / data-tech / data-into（312〜545行目）、paint()関数（624行目）",
+      "why": "クローラーやJS無効環境では作品説明・技術スタックが一切読めない。noscriptフォールバックも無い。SEOと基本アクセシビリティ双方の欠落であり、コンテンツの大半が「無いこと」になっている。"
+     },
+     {
+      "title": "セレクトUIに listbox/option の ARIA パターンが無い",
+      "where": ".grid / .cell（103〜147行目）、paint()関数（624〜648行目）",
+      "why": "role, aria-selected, aria-setsize/aria-posinset が無いため、スクリーンリーダー利用者に「12件中何件目を選択中か」が伝わらない。aria-live=\"polite\" だけでは選択操作の文脈が弱い。支援技術への通知が不十分。"
+     },
+     {
+      "title": "モバイルで詳細パネルが完全に非表示、代替導線が要約(.cd)止まり",
+      "where": ".panel{display:none}（253行目、@media(max-width:700px)ブロック）",
+      "why": "スマホ利用者は into/tech/状態などパネル情報に一切アクセスできない。'誰が/どの端末で見ても同じ情報が取れる'という運用要件が実装されておらず、モバイル閲覧者は機能的に劣化した体験を強制される。"
+     }
+    ],
+    "top_recommendation": "まずOGP/Twitterカードとsitemap.xml・robots.txtを追加しろ。共有と検索という「測れる結果」を生む導線が今ゼロだ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.1980709
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "type": "intp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "fd81fcfb210d67fc",
+   "data": {
+    "findings": [
+     {
+      "title": "OGP / Twitter Card メタタグが完全に不在",
+      "where": "<head> 4〜11行目（meta description の直後、og:title・og:image 等の記述がどこにもない）",
+      "why": "『ポートフォリオを公開する』という行為の定義には、他者が共有する場面が含まれるはずでは。og:image がなければ SNS 上ではただの URL テキストになり、拡散導線として機能しない。"
+     },
+     {
+      "title": "モバイルでは選択UIの代替操作が消滅する",
+      "where": ".panel{display:none} (253行目) と panelLive() に依存する keydown リスナー (712〜720行目)",
+      "why": "panelLive() が false を返す環境（700px以下）では矢印キー処理自体が early return する。『選ぶ』という体験がデスクトップ限定の前提で設計されており、それ以外の入力手段の分岐が実装されていない。"
+     },
+     {
+      "title": "構造化データ・canonical URL が存在しない",
+      "where": "<head> 内（JSON-LD の script タグなし、<link rel=\"canonical\"> なし）",
+      "why": "12個の制作物という『個』の集合を検索エンジンにどう伝えるかという定義が与えられていない。CreativeWork/Person スキーマがなければ、検索結果側は本文からの推測に頼るしかない。"
+     },
+     {
+      "title": "多言語対応の不在（lang=\"ja\" 固定）",
+      "where": "<html lang=\"ja\"> (2行目)、hreflang や英語版への導線なし",
+      "why": "GitHub・Chrome Web Store 等、英語圏の閲覧者が流入する構造の作品を並べているのに、対象読者が日本語話者のみという前提で閉じている。例外（非日本語話者）が想定されていない。"
+     },
+     {
+      "title": "JS無効時のフォールバック（noscript）がない",
+      "where": "<body> 末尾、script タグ群 (600〜790行目)、<noscript> 記述なし",
+      "why": "paint(0) はスクリプト実行を前提としており、JS が動かない環境でも <a> リンクとしては機能する設計だが、それを利用者に明示する noscript の一文すら存在しない。『壊れていないのに壊れて見える』状態を放置している。"
+     }
+    ],
+    "top_recommendation": "og:title / og:image を中心に OGP・Twitter Card を追加し、共有時に何が見えるかをまず定義せよ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.24911119999999998
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "type": "esfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "0eb0945e0e7ee7ca",
+   "data": {
+    "findings": [
+     {
+      "title": "インストール先の改行がパイプ区切りなのにカンマで分割していて即バグる",
+      "where": "634行目 `P.into.textContent = c.dataset.into.split(',').join('\\n');` / data-into属性（例:314行目 `data-into=\"GitHub Copilot のカスタムエージェント|~/.claude/skills/（Claude Code）\"`）",
+      "why": "data-intoは`|`区切りなのにJSは`,`で分割してる。カンマが無いから1要素のまま→改行されず「〇〇|〇〇」の生文字列がそのまま出る。しかもpaint(0)が最後に走るから、ページ開いた瞬間から表示が崩れてる。ここ、実際触ったら一番目立つやつじゃん。"
+     },
+     {
+      "title": "解説記事なしのカードを選ぶと「undefined」が出てリンクも壊れる",
+      "where": "641〜643行目 `P.art.href = c.dataset.art; P.artt.textContent = c.dataset.artt; P.art.hidden = false;` / data-art属性が無いカード（374行目 Claude Anywhere、388行目 Spoiler Block for X）",
+      "why": "コメントに「解説記事が無いカードは行ごと隠す」って書いてあるのに、hiddenを条件分岐せず常にfalseにしてる。data-artが無いとundefinedがそのままhrefとtextContentに入って「解説記事：undefined」って表示されて、クリックすると404に飛ぶ壊れたリンクになる。実際やってみた人がここでズッコケるやつ。"
+     },
+     {
+      "title": "矢印キーで選んでもDOMフォーカスは動かないまま",
+      "where": "712〜720行目 `addEventListener('keydown', ...) { const next = nearest(e.key); ... paint(next); }`（`cells[next].focus()`の呼び出しが無い）",
+      "why": "paint()でaria-currentとpanelの中身は変わるけど、実際にフォーカスされてる要素は移動してない。この状態でTabキーを押すと653行目のfocusリスナーが発火して、選んでたはずのカードじゃない別のカードにパネルが差し替わる。キーボードだけで操作してる人がいちばん混乱するとこ。"
+     }
+    ],
+    "top_recommendation": "まず634行目のsplit(',')をsplit('|')に直す。開いた瞬間から崩れてる表示だし、これ直さないと他のバグより先に「壊れてる」って伝わっちゃう。",
+    "confidence": 5
+   },
+   "cost_usd": 0.283565
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "type": "infj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "fdac0c24450d570e",
+   "data": {
+    "findings": [
+     {
+      "title": "SNS共有時の「顔」がない — OGP/Twitter Cardメタタグの欠如",
+      "where": "head内 7〜11行目（meta description の並び）",
+      "why": "og:title/og:image/og:description が無く、Xなどでリンクを貼っても味気ないURLの断片にしかならない。12個の制作物にかけた時間が、共有された瞬間に人に届かない——これは本当にもったいない。"
+     },
+     {
+      "title": "選択状態と詳細パネルの意味的な結びつきがない",
+      "where": ".cell（308〜151行目）と .panel（552行目, aria-live=\"polite\"）",
+      "why": "aria-current は視覚的な合図に留まり、aria-controls/aria-describedby でカードとパネルを結ぶ記述がない。スクリーンリーダーを使う人には『何が今選ばれ、それがどこに反映されたのか』という物語が伝わらない。見た目の美しさの裏で、見えない人への配慮が置き去りにされている。"
+     },
+     {
+      "title": "本文へのスキップリンクが存在しない",
+      "where": "body開始直後（285行目〜）／.wrap の直前",
+      "why": "12枚のカードは focus 可能な a 要素として並んでおり、キーボードやスクリーンリーダーで読み進める人は、プロフィールやreadsセクションへ到達するまで全カードを律儀に通過させられる。これは配慮ではなく、作り手の都合を利用者に押し付ける構造だと感じる。"
+     },
+     {
+      "title": "検索エンジンへの手がかり（canonical・構造化データ・sitemap/robots）が皆無",
+      "where": "head内全体（3〜284行目）",
+      "why": "canonical link も JSON-LD(Person/CreativeWork) も sitemap.xml/robots.txt も見当たらない。検索エンジンという『今は目に見えない読者』への配慮が抜けており、せっかくの制作群が発見される機会を静かに失っている。"
+     },
+     {
+      "title": "多言語対応・404運用の不在",
+      "where": "html lang=\"ja\"（2行目）／GitHub Pages ルート（404.html 不在）",
+      "why": "海外の採用担当者やエンジニアが訪れる可能性を考えると英語版の導線が一切ないのは気がかりだ。また GitHub Pages に 404.html が無く、URL 誤入力時に何の案内もなく途方に暮れさせてしまう。"
+     }
+    ],
+    "top_recommendation": "まずOGP/Twitter Cardメタタグを追加すること。作品を「共有される瞬間」に人へ届く姿を整えるのが、最も影響範囲の大きい一手だと思う。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2015927
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "type": "entp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "646a3d89475de249",
+   "data": {
+    "findings": [
+     {
+      "title": "OGP / Twitter Card メタタグが完全に未実装",
+      "where": "<head> 行4〜11（meta description の周辺に追加すべき）",
+      "why": "og:title / og:image / twitter:card が無く、X・Slack・LINE等での共有時にプレビューが一切表示されない。ポートフォリオは共有されて初めて価値が出るのに、その入口が閉じている。"
+     },
+     {
+      "title": "矢印キー選択時にDOMフォーカスが移動しない（ロービングtabindex未実装）",
+      "where": "keydown リスナー 行712-720、paint() 関数 624-648",
+      "why": "paint()もkeydownハンドラも .focus() を呼んでおらず、コード内コメント「focusが動くのでEnterはネイティブに開く」が実態と乖離。支援技術・キーボード利用者には見た目と実フォーカスの不一致が生じる。"
+     },
+     {
+      "title": "構造化データ (JSON-LD) が存在しない",
+      "where": "<head> 内。Person / ItemList(CreativeWork) 用の <script type=\"application/ld+json\"> が無い",
+      "why": "検索エンジンに「誰の何のサイトか」「12作品それぞれが何か」を機械可読に伝える手段が皆無で、リッチリザルト化や名前検索での視認性向上機会を逃している。"
+     },
+     {
+      "title": "canonical URL が指定されていない",
+      "where": "<head> 内、<link rel=\"canonical\"> が未記述",
+      "why": "GitHub Pagesはアクセス経路が複数生まれ得る（www有無・末尾スラッシュ等）。canonical不在は評価分散や重複コンテンツ扱いのリスクを黙って引き受けている状態。"
+     },
+     {
+      "title": "多言語対応（英語版・hreflang）が一切ない",
+      "where": "<html lang=\"ja\"> 行2。代替言語やlang切替導線なし",
+      "why": "GitHubリポジトリという性質上、海外の開発者・採用担当者も訪れうるのに、説明文が日本語専用で門前払いになっている可能性。ただし個性として割り切る選択肢もあり優先度は中程度。"
+     }
+    ],
+    "top_recommendation": "まずOGP/Twitter Cardメタタグを実装しろ。共有された瞬間の第一印象を作らないと、他の改善は誰にも届かない。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2530742
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "type": "enfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "e42858a0d8bb3855",
+   "data": {
+    "findings": [
+     {
+      "title": "作品に感動した人が「あなた」に辿り着けない（連絡先の欠如）",
+      "where": "footer（594-596行）／ .reads セクション（577-592行）",
+      "why": "GitHub・Zenn・Qiitaへの導線はあるのに、直接連絡できるメールやX・LinkedInが一つもない。せっかく心が動いた人が、次の一歩＝『声をかける』ができない設計は本当にもったいない。"
+     },
+     {
+      "title": "SNSでシェアされた瞬間の見え方（OGP/Twitter Card）が未設定",
+      "where": "<head> 4〜11行目（meta description はあるが og:title/og:image/twitter:card が皆無）",
+      "why": "せっかく12個も丁寧な作品を作ったのに、Xでリンクを貼っても画像もタイトルカードも出ない。届くはずの人に第一印象で伝わらないのは、あなたの努力に見合っていない。"
+     },
+     {
+      "title": "矢印キー選択UIの『これは選べる一覧です』が支援技術に伝わっていない",
+      "where": ".cell 要素群（312行〜）／ paint() 関数（624-648行）・aria-current の使い方（140行, 628行）",
+      "why": "独自の矢印キー選択を実装している熱意は伝わるが、role=\"listbox\"/\"option\" や aria-selected のような意味づけがなく、スクリーンリーダー利用者には『選べる場』だと気づいてもらえない。一緒に、全員が迷わず選べる形にできたら。"
+     },
+     {
+      "title": "海外のエンジニアと出会えるはずなのに、扉が日本語だけで閉じている",
+      "where": "<html lang=\"ja\">（2行目）／ meta description（7行目）",
+      "why": "Azure・Splunk・OpenTelemetry・Claude Code といった内容は海外の読み手にも刺さるはず。英語版や英語要約が無いことで、本来出会えるはずの読者との縁を自ら断っている。"
+     },
+     {
+      "title": "検索エンジンに『育てていく土台』が用意されていない",
+      "where": "<head> 全体（3〜11行目）— canonical / JSON-LD（Person, CreativeWork）/ sitemap への言及なし",
+      "why": "構造化データや canonical URL がないと、検索結果でのリッチな見え方や重複URLの整理ができず、公開後にサイトが正しく育っていく仕組みが弱いまま。"
+     }
+    ],
+    "top_recommendation": "まず OGP と連絡先導線を整えて、『届いた人が、あなたと繋がれる』状態を作ろう。技術も熱意もあるのだから、あとは扉を開くだけ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2150133
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "type": "infp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "ea1a09b15d3c8e72",
+   "data": {
+    "findings": [
+     {
+      "title": "SNS 共有時の「顔」が用意されていない",
+      "where": "head内 7〜11行目（meta descriptionはあるがog:title/og:image/og:description/twitter:cardが皆無）",
+      "why": "誰かがこのサイトを気に入って友人に送る、その瞬間に画像もタイトルもないカードが貼られてしまう。せっかく12個も丁寧に作ったのに、共有される側の気持ちを想像できていないと感じる。"
+     },
+     {
+      "title": "選択式カードなのに、それが選択式だと支援技術に伝わらない",
+      "where": ".cell（108〜151行目）とpaint関数（624〜648行目）。aria-current=trueのみでrole=listbox/option、aria-selectedが無い",
+      "why": "aria-currentは本来「現在地」を示す語彙で「選ばれている」ではない。スクリーンリーダーを使う人には、これがカードの選択UIだと伝わらないまま置き去りになる。見えない人への誠実さが足りない。"
+     },
+     {
+      "title": "日本語しか読めない前提で作られている",
+      "where": "html lang=ja（2行目）。hreflangや英語版ページへの導線が一切ない",
+      "why": "GitHub拡張やClaude Codeの話は海外のエンジニアにも興味を持たれるはずなのに、日本語話者以外は最初から想定されていない。誰のために公開しているのか、一度問い直してほしい。"
+     },
+     {
+      "title": "検索エンジンに『これが何か』を教える手がかりがない",
+      "where": "head全体。JSON-LD構造化データ、canonical、sitemap.xml、robots.txtへの言及がどこにもない",
+      "why": "12個も丁寧な作品説明を書いているのに、検索結果には反映されない。せっかくの言葉が「出会いの入口」で活かされていないのがもったいなく感じる。"
+     },
+     {
+      "title": "キーボード操作の説明がモバイルでは消えてしまう",
+      "where": ".keys（230〜235行目）にmax-width:1080pxでdisplay:noneが適用され、571行目の操作説明ごと非表示になる",
+      "why": "モバイルではpanelが隠れて単なるリンクになる設計だが、それでもスキップリンクが無く、キーボードだけで来た人に何をすればいいか説明が一切残らない。置いていかれる人がいないか気になる。"
+     }
+    ],
+    "top_recommendation": "まずOGP/Twitter Cardをheadに追加すること。作品は丁寧なのに「共有された瞬間の顔」がないのが、いちばん惜しいと感じる。",
+    "confidence": 4
+   },
+   "cost_usd": 0.3035625
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "type": "istj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "cc751b408f661eea",
+   "data": {
+    "findings": [
+     {
+      "title": "SNS共有用の OGP / Twitter Card メタタグが一切ない",
+      "where": "<head> 内、7〜11行目付近（description の直後が妥当な挿入位置）",
+      "why": "実際のところ、URL を X や Slack に貼った際に og:title・og:description・og:image が無ければ素のリンクとしか出ない。制作物12個を見せる目的のサイトで、これは前例上まず用意するものだ。"
+     },
+     {
+      "title": "カード選択が支援技術に伝わる構造になっていない",
+      "where": ".cell（108〜151行目、role属性なし）／cells.forEach（650〜669行目）",
+      "why": "キーボードでの矢印移動やEnterでの選択は視覚的にしか設計されていない。role=\"listbox\"/\"option\"、aria-selected の付与がなく、aria-live のパネルだけでは選択された事実そのものがスクリーンリーダー利用者に伝わらない。ARIAの標準パターンに沿っていない。"
+     },
+     {
+      "title": "本文へ飛ぶスキップリンクが無い",
+      "where": "<body> 開始直後、287行目",
+      "why": "12枚のカードは全てタブ移動対象になる。キーボード利用者がプロフィールから読み物欄まで飛ぶ手段がなく、毎回全カードを通過させられる。ルールとして先頭にスキップリンクを置くのが基本だ。"
+     },
+     {
+      "title": "sitemap.xml・robots.txt が存在しない",
+      "where": "リポジトリルート（該当ファイルなし）",
+      "why": "検索エンジンに公開範囲とページ構成を明示する仕組みが無い。1枚物のサイトでも、公開して終わりではなく検索流入を見込むなら必要な前例だ。"
+     },
+     {
+      "title": "各制作物カードに公開日・更新日の記載がない",
+      "where": "各 .cell の data-* 属性群（312行目〜、data-desc等）",
+      "why": "12件のうち何が最新で何が古いのか、閲覧者にも自分自身にも判断材料がない。実際の運用では、いつ作ったかの記録を残さないと後で検証できなくなる。"
+     }
+    ],
+    "top_recommendation": "まず og:title / og:description / og:image と twitter:card を <head> に追加する。共有時の見え方は公開直後から効いてくる。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2332164
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "type": "enfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "47d8304e8e17a28e",
+   "data": {
+    "findings": [
+     {
+      "title": "OGP / Twitter Card メタタグが一切ない",
+      "where": "head 内、7〜11行目付近（meta description の下）",
+      "why": "SNSでURLを貼っても画像も装飾タイトルもなしの地味な素のリンクになる。Zenn/Qiitaで記事を書いて拡散する運用なのに、玄関のポートフォリオが共有映えしないのはもったいない。og:title/og:image/og:description/twitter:card を足すだけで見え方が一気に変わる、これ繋がりそう案件。"
+     },
+     {
+      "title": "data-art が無いカード選択時、記事リンク行を隠す分岐がない",
+      "where": "script 内 paint() 関数 640〜643行目（P.art.hidden = false の箇所）／該当カード：Claude Anywhere・Spoiler Block for X（374行目, 388行目、どちらも data-art 属性なし）",
+      "why": "他のカードでは data-art がある前提で常に hidden=false にしているため、この2枚を選ぶと href が undefined の空リンクが aria-live 領域に表示されてしまう可能性。'ない場合どうするか' の分岐がそもそも書かれていない。"
+     },
+     {
+      "title": "パネル内リンク（開く／解説記事）へのロービングタブ順がない",
+      "where": "cells の tabindex 制御なし（650行目〜の cells.forEach）／panel 内 .go, .art（563〜570行目）",
+      "why": "12枚のカードは全部デフォルトでタブストップになるので、キーボードだけの人がパネルのリンクまで辿るのに毎回カード全部を Tab で通過する羽目になる。矢印キー移動は用意されてるのに、Tab の動線だけ取り残されてる感じがもったいない。"
+     },
+     {
+      "title": "構造化データ（JSON-LD）が存在しない",
+      "where": "head 内、どこにも script type=\"application/ld+json\" がない",
+      "why": "Person / CreativeWork スキーマがあれば検索結果でプロフィールや作品がリッチに表示される可能性がある。12個も作品を並べてるのに検索エンジンには『ただのテキストの塊』にしか見えてないのは可能性を閉じてる気がする。"
+     },
+     {
+      "title": "多言語・英語版の導線がゼロ",
+      "where": "html タグ lang=\"ja\" 固定（2行目）、hreflang や英語切替 UI なし",
+      "why": "iOSアプリやOSSプラグインは海外の開発者にも刺さりそうな内容なのに、lang=\"ja\" 一本足打法だと世界と繋がるチャンスを自分から狭めてる。せめて英語のサマリーだけでも置けたら世界がもっと広がりそう。"
+     }
+    ],
+    "top_recommendation": "まず OGP/Twitter Card を追加。SNSでシェアされた瞬間の第一印象が一番「繋がり」に直結するから最優先でやる価値ある。",
+    "confidence": 4
+   },
+   "cost_usd": 0.260234
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "type": "estj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "a36cfe4785dd656b",
+   "data": {
+    "findings": [
+     {
+      "title": "OGP / Twitter Card 用メタタグが皆無",
+      "where": "head内 4〜11行目（meta description の直後に追加すべき箇所）",
+      "why": "og:title・og:image・og:url・twitter:card が無い。公開URLを人に共有する運用が前提のサイトで、SNS上でどう見えるかの担当者が誰も決めていない。責任者を決めて即追加すべき。"
+     },
+     {
+      "title": "スキップリンクが実装されていない",
+      "where": "body開始直後（287行目 <div class=\"wrap\"> の前）",
+      "why": "キーボード/スクリーンリーダー利用者は12枚のカード＋読み物リンクを毎回全通過しないと次セクションに進めない。ルール上、対話的要素が増えるほどこの欠落は運用負荷になる。"
+     },
+     {
+      "title": "多言語対応が未着手（lang=\"ja\"固定、hreflang無し）",
+      "where": "2行目 <html lang=\"ja\">、head内に alternate hreflang 無し",
+      "why": "Chrome Web Store・GitHub Marketplaceなど海外ユーザーも触れうる制作物を扱いながら英語版の導線が無い。多言語化するのかしないのか、基準が明文化されていない。"
+     },
+     {
+      "title": "sitemap.xml / robots.txt / 構造化データ(JSON-LD)の不在",
+      "where": "サイトルート（sitemap.xml, robots.txt）、head内（JSON-LDスクリプト無し）",
+      "why": "検索エンジンへの情報提供プロセスが未整備。単一HTMLで完結させる方針は理解するが、公開・運用する以上は最低限の手続きが欠けている。"
+     },
+     {
+      "title": "外部リンク12件超の生存監視・404時の運用ルールが無い",
+      "where": "各 .cell の href / data-art（312〜545行目）",
+      "why": "Chrome Web Store審査落ち、リポジトリ削除等でリンク切れが起きた場合に検知する仕組み（定期チェック・自動テスト）が無く、誰がいつ確認するかの責任の所在が決まっていない。"
+     }
+    ],
+    "top_recommendation": "まず OGP/Twitter Card メタタグを head に追加せよ。工数は最小、公開ページとしての説明責任が最も欠けている箇所だ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.20276699999999998
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "type": "isfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "5c64e7a1bddafe1d",
+   "data": {
+    "findings": [
+     {
+      "title": "SNSシェア時の見え方（OGP/Twitter Card）が未実装",
+      "where": "<head> 4〜11行目。og:title / og:image / og:url / twitter:card がどこにも無い",
+      "why": "現場では、この作品を誰かがX（旧Twitter）やSlackで紹介しようとした瞬間に、画像もタイトルも出ない素っ気ないリンクになってしまいます。せっかく12個も丁寧に作ってきたのに、紹介する人が『あれ、何も出ない』と気まずい思いをするのは心苦しいです。"
+     },
+     {
+      "title": "roster（作品一覧）に支援技術向けの構造がない",
+      "where": "108〜131行目 .cell / 604行目 const cells。role属性・aria-selected・件数案内が無い",
+      "why": "aria-live のパネル自体はありますが、それだけでは『12件中いま何番目を選んでいるか』がスクリーンリーダー利用者に伝わりません。ただ気になるのは、目で見ればひと目で分かることが、支援技術を使う方には伝わらないまま置き去りになっている点です。"
+     },
+     {
+      "title": "モバイルではパネルごと非表示、技術情報が届かない",
+      "where": "253行目 @media(max-width:700px){ .panel{display:none} }",
+      "why": ".cd で概要は出ますが、data-into（導入先）や data-tech（技術）はモバイルの誰にも渡らない設計です。これまで通りの丁寧な情報が、画面幅が違うだけで一部の方には届かないのは気になります。"
+     },
+     {
+      "title": "検索エンジン向けの手がかり（canonical・構造化データ・sitemap）が無い",
+      "where": "<head> 4〜11行目。link rel=canonical、JSON-LD、robots.txt/sitemap.xml への言及が一切ない",
+      "why": "せっかく作った12個の制作物が、検索から見つけてもらえるかどうかは運頼みになってしまいます。誰かの役に立ちたくて公開しているものが、届くべき人に届かないのはもったいないです。"
+     },
+     {
+      "title": "公開後に何かあったときの連絡先・案内動線が無い",
+      "where": "594〜596行目 footer。連絡先やSNSアイコン、問い合わせリンクが存在しない",
+      "why": "外部サービス（Chrome Web Store や App Store）へのリンクは将来変わったり消えたりすることがあります。そのとき『ここが変ですよ』と伝えられる窓口が今のままでは見当たらず、せっかく訪れてくれた方との接点がぷつりと切れてしまいます。"
+     }
+    ],
+    "top_recommendation": "まずOGP/Twitter Cardのメタタグを追加し、SNSでシェアされた時に丁寧な見え方になるようにしてほしいです。",
+    "confidence": 4
+   },
+   "cost_usd": 0.2638642
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "type": "esfj",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "51f42e9b7d20b6ab",
+   "data": {
+    "findings": [
+     {
+      "title": "SNSシェア時のOGP/Twitter Cardが未実装",
+      "where": "head内 7-11行目付近",
+      "why": "シェアされた瞬間の見た目はみんなの目に触れる第一印象。og:image等が無いと味気ない表示になり、力作が伝わらない。"
+     },
+     {
+      "title": "モバイルでは詳細情報(インストール先/技術/状態)が届かない",
+      "where": ".panel{display:none} 700px以下、.cell .cd",
+      "why": "PC版は丁寧なdl.statsがあるのにスマホでは簡易文のみ。同じ内容をみんなに平等に届ける配慮が抜けている。"
+     },
+     {
+      "title": "main要素やskip-linkなどの案内役が無い",
+      "where": "body直下287行目 .wrap、552行目 aside.panel",
+      "why": "スクリーンリーダー利用者は12枚のカードを毎回通らないと詳細に辿り着けず、来訪者を迷わせてしまう。"
+     },
+     {
+      "title": "sitemap.xml/robots.txtが用意されていない",
+      "where": "リポジトリ直下（該当ファイルなし）",
+      "why": "検索エンジンに存在を知らせる書類が無いと、せっかくの12作品が世間に見つけてもらいにくいままになる。"
+     },
+     {
+      "title": "最終更新日や連絡先、404案内が footer に無い",
+      "where": "footer 594-596行目",
+      "why": "リンク先は将来変わりうるもの。いつの情報か分かる目印がないと訪れた人が不安になる。"
+     }
+    ],
+    "top_recommendation": "まずOGP/Twitter Cardを整えること。人の目に触れる入口の印象を大事にしたい。",
+    "confidence": 4
+   },
+   "cost_usd": 0.29651239999999995
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "type": "estp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "58382a29627294df",
+   "data": {
+    "findings": [
+     {
+      "title": "OGP/Twitter Card が丸ごとない",
+      "where": "<head> 4〜11行目、meta description はあるが og:title/og:image/og:url/twitter:card が皆無",
+      "why": "X や Slack に貼った瞬間、素っ気ないリンクだけになる。せっかく12個も作品あるのに拡散のチャンスを自分から捨ててる。今すぐやれ。"
+     },
+     {
+      "title": "選択状態が支援技術に伝わらない",
+      "where": ".cell[aria-current=\"true\"] (140行目) / paint() 624行目",
+      "why": "見た目は選ばれてるけど role=listbox・aria-selected がない。スクリーンリーダーだと今どれ選んでるか分からんまま。動いてるようで動いてない。"
+     },
+     {
+      "title": "robots.txt / sitemap.xml がどこにもない",
+      "where": "リポジトリ直下（index.htmlの外、favicon.svgの隣あたり）",
+      "why": "検索エンジンにこのサイトの存在と12作品を能動的に教える手段がゼロ。待ってても誰も見つけてくれない、実利ゼロ。"
+     },
+     {
+      "title": "manifest.json / apple-touch-icon がない",
+      "where": "<head> 8行目 favicon.svg の周辺",
+      "why": "スマホでホーム画面に追加しても即席アイコンになる。リピーター取り逃してもったいない、それ今すぐ直せる話。"
+     },
+     {
+      "title": "英語版が存在しない",
+      "where": "<html lang=\"ja\"> 2行目",
+      "why": "iOS・Chrome拡張・OSSプラグインとか海外にも刺さる中身なのに日本語オンリー。優先度は低いけど機会損失ではある。"
+     }
+    ],
+    "top_recommendation": "og:title/og:image/og:url を head に追加してSNSカードを整えろ。シェアされて初めて意味がある、今それが一番デカい。",
+    "confidence": 4
+   },
+   "cost_usd": 0.19837329999999997
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "type": "isfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "ea043fec42ed0e7a",
+   "data": {
+    "findings": [
+     {
+      "title": "SNS共有時にプレビューの「顔」がない（OGP/Twitter Card未実装）",
+      "where": "head内 7行目付近（meta description の下）。og:title / og:image / og:description / twitter:card が丸ごと無い",
+      "why": "なんとなくだけど、自分の作品を誰かに見せる一番大事な瞬間に画像もタイトルも出ないのは寂しい。公開してる意味が半分削られてる感じがする。"
+     },
+     {
+      "title": "aria-live領域内でのタイピング演出が支援技術に文字単位で読まれる恐れ",
+      "where": "552行目 aside class=\"panel\" aria-live=\"polite\" と 744行目 type() 関数（p-nmを1文字ずつ書き換え）",
+      "why": "読み上げる人からしたら「A…AZ…AZU…」とバラバラに聞こえるかもしれない。演出は気持ちいいけど、見えない人の体験まで考えた形跡がない。"
+     },
+     {
+      "title": "ロスターを飛ばしてパネルへ行く手段（スキップリンク）が無い",
+      "where": "287行目 div class=\"wrap\" 直後、または .screen の前",
+      "why": "キーボードだけで来た人は12枚のカードを毎回律儀に通過させられる。押し付けがましいというより、単純に用意されていない不親切。"
+     },
+     {
+      "title": "多言語対応が最初から選択肢にない（lang=\"ja\"固定、英語版なし）",
+      "where": "2行目 html lang=\"ja\"",
+      "why": "GitHubや技術記事の読者は日本語話者に限らないはずなのに、英語で見に来た人への入り口が一つも用意されていない。自分の作ったものを誰にでも開いておく発想が弱い。"
+     },
+     {
+      "title": "公開後の運用に必要な最低限のファイルが無い（robots.txt / sitemap.xml / canonical）",
+      "where": "リポジトリルート、および head内 8〜11行目付近",
+      "why": "検索に拾われるかどうかは自分ではコントロールできない話だから後回しにされがちだけど、何も置かれていないのは「今を楽しもう」にしても少し無防備。"
+     }
+    ],
+    "top_recommendation": "まず og:title / og:image / og:description（と Twitter Card）を head に足して、共有された時にちゃんと「顔」が出るようにしてほしい。",
+    "confidence": 3
+   },
+   "cost_usd": 0.3157042
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "type": "esfp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "7df684a9831e69a4",
+   "data": {
+    "findings": [
+     {
+      "title": "SNSでシェアした瞬間の顔がない（OGP/Twitter Card未実装）",
+      "where": "<head> 3〜11行目",
+      "why": "og:image・og:title・twitter:cardが無いから、誰かがX やLINEでURL貼っても真っ白なリンクになる。せっかく12個も作ったのに『これ見て！』が伝わらないの一番もったいない。"
+     },
+     {
+      "title": "見た人が『やってる本人』に繋がれる導線がない",
+      "where": "プロフィール部 289〜295行目 / footer 594〜596行目",
+      "why": "X・メール・お問い合わせへのリンクが一切ない。作品見て『この人と喋りたい』ってなった人が動けないの、人との繋がりを楽しむ側からすると寂しい。"
+     },
+     {
+      "title": "検索から辿り着けるようになってない（sitemap/canonical/構造化データなし）",
+      "where": "<head> 3〜11行目、サイトルート（robots.txt/sitemap.xml）",
+      "why": "descriptionはあるけどcanonicalやJSON-LDが無く、robots.txt/sitemapの有無も不明。せっかく作った12個が検索でちゃんと見つかる保証がない。"
+     },
+     {
+      "title": "選択が変わったことを画面を見てない人に伝える仕組みが弱い",
+      "where": "<aside class=\"panel\" aria-live=\"polite\"> 552行目",
+      "why": "aria-liveはあるけどフィールドが一気に全部差し替わるので読み上げが情報の洪水になりがち。『どのカードが今選ばれてるか』を短く伝えるlive regionが別途あった方が親切。"
+     },
+     {
+      "title": "日本語オンリーで、海外の人を遊びに呼べない",
+      "where": "<html lang=\"ja\"> 2行目",
+      "why": "英語版や言語切替が無いので、海外のエンジニアやフォロワーに見せても内容が伝わらない。実際やってる制作物は海外ネタバレ映えするやつも多いのにもったいない。"
+     }
+    ],
+    "top_recommendation": "まずOGPタグ（og:image込み）を<head>に足そう。シェアした瞬間が一番人に見てもらえるチャンスだから、実際やってる人はここ絶対落とさない。",
+    "confidence": 4
+   },
+   "cost_usd": 0.20296319999999998
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "type": "istp",
+   "rep": 0,
+   "model": "sonnet",
+   "key": "697d3863ad2d3e9e",
+   "data": {
+    "findings": [
+     {
+      "title": "OGP / Twitter Card メタタグが皆無",
+      "where": "<head> 3〜11行目",
+      "why": "og:title, og:image, og:url, twitter:card が一つも無い。X や Slack に貼ったら無地のリンクになる。作品を見せる目的のサイトでこれは実害がでかい。"
+     },
+     {
+      "title": "roster に選択グループとしての ARIA が無い",
+      "where": ".grid / .cell（108〜136行目）、keydown ハンドラ（712〜720行目）",
+      "why": "矢印キーで1つ選ぶUIなのに role や aria-selected が無く listbox/radiogroup として構造化されていない。aria-current だけではスクリーンリーダーに「選択中の1件」が伝わらない。実際に読み上げソフトで動かせば分かる話。"
+     },
+     {
+      "title": "canonical / 構造化データ / sitemap の欠如",
+      "where": "<head>、および外部ファイル（sitemap.xml, robots.txt は存在自体が確認できない）",
+      "why": "canonical URL も JSON-LD も無く、検索エンジンに「これが本体」と伝える手段がない。12個の制作物を個別に評価してほしいなら最低限のマークは要る。"
+     },
+     {
+      "title": "多言語対応が完全にゼロ",
+      "where": "<html lang=\"ja\"> 2行目",
+      "why": "hreflang も英語版も無い。海外の採用担当や開発者が見に来るケースを最初から捨てている。日本語オンリーでいいなら意図的判断として明記すべき。"
+     },
+     {
+      "title": "外部リンク切れを検知する仕組みが運用に無い",
+      "where": "data-art / href 属性群（各 .cell）",
+      "why": "App Store、Chrome Web Store、GitHub、Zenn/Qiita 記事へのリンクが12件+αあるが、静的HTML1枚なので切れても気づく手段がない。動いてるか定期的に叩いて確認する仕組みは要る。"
+     }
+    ],
+    "top_recommendation": "og:image を含む OGP を最優先で入れろ。共有した瞬間に見た目が決まる、一番安いのに一番効く一手だ。",
+    "confidence": 4
+   },
+   "cost_usd": 0.13273980000000002
+  }
+ ],
+ "errors": []
+}

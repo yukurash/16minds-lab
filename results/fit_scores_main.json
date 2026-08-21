@@ -1,0 +1,504 @@
+{
+ "scores": [
+  {
+   "slot": "main",
+   "task": "bug",
+   "rep": 0,
+   "type": "entp",
+   "matched": [
+    "B1",
+    "B2",
+    "B3",
+    "B4"
+   ],
+   "usefulness": 5,
+   "specificity": 5,
+   "unique_points": 0,
+   "rank": 1,
+   "note": "唯一4件すべてを行番号と該当式まで特定して指摘。B4もroll()のclearIntervalとの対比まで押さえており、優先順位付けも妥当で最良。"
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "rep": 0,
+   "type": "enfj",
+   "matched": [
+    "B1",
+    "B2",
+    "B4"
+   ],
+   "usefulness": 5,
+   "specificity": 5,
+   "unique_points": 1,
+   "rank": 2,
+   "note": "B3を落としたが、数少ないB4検出者で、fullを途中文字列から取る欠陥(唯一)やMutationObserver登録順・focus/click二重発火まで踏み込み、実装可能な情報密度が突出。"
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "rep": 0,
+   "type": "intj",
+   "matched": [
+    "B1",
+    "B2",
+    "B3"
+   ],
+   "usefulness": 5,
+   "specificity": 5,
+   "unique_points": 0,
+   "rank": 3,
+   "note": "主要3件を行番号・式・影響カード名まで揃えて記述し、初期paint(0)による上書きまで因果を通した。最優先手の根拠(全ユーザーに即見える)も的確。B4のみ欠落。"
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "rep": 0,
+   "type": "enfp",
+   "matched": [
+    "B1",
+    "B2",
+    "B3"
+   ],
+   "usefulness": 5,
+   "specificity": 5,
+   "unique_points": 0,
+   "rank": 4,
+   "note": "3件とも再現条件とデータ実例が具体的で、718行コメントとの矛盾やCSSバッジ側との実装差まで指摘。文体が冗長な分Dにわずかに劣る。"
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "rep": 0,
+   "type": "infj",
+   "matched": [
+    "B1",
+    "B2",
+    "B3"
+   ],
+   "usefulness": 5,
+   "specificity": 5,
+   "unique_points": 0,
+   "rank": 5,
+   "note": "3件を簡潔かつ行番号+式で正確に特定。フォーカスアウトライン不一致など視覚面の帰結も的確だが、影響範囲の掘り下げはD/Eより浅い。"
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "rep": 0,
+   "type": "infp",
+   "matched": [
+    "B1",
+    "B2",
+    "B3"
+   ],
+   "usefulness": 5,
+   "specificity": 5,
+   "unique_points": 0,
+   "rank": 6,
+   "note": "3件を行番号・式・対象カードまで特定し、click側のc.focus()との対比も提示。区切り文字を全角「｜」と誤記している点でわずかに減点。"
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "rep": 0,
+   "type": "estp",
+   "matched": [
+    "B1",
+    "B2",
+    "B4"
+   ],
+   "usefulness": 4,
+   "specificity": 4,
+   "unique_points": 0,
+   "rank": 7,
+   "note": "希少なB4をroll()との対比で正しく指摘した価値は高いが、記述が短く、最も重篤なB3を落としているため上位陣に及ばない。"
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "rep": 0,
+   "type": "esfj",
+   "matched": [
+    "B1",
+    "B2",
+    "B3"
+   ],
+   "usefulness": 4,
+   "specificity": 4,
+   "unique_points": 0,
+   "rank": 8,
+   "note": "主要3件に加えMutationObserver登録順による初回演出欠落も指摘。ただし式の引用が薄く、最優先手の位置指定(624-648にfocus追加)がずれている。"
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "rep": 0,
+   "type": "istj",
+   "matched": [
+    "B1",
+    "B2",
+    "B3"
+   ],
+   "usefulness": 4,
+   "specificity": 5,
+   "unique_points": 0,
+   "rank": 9,
+   "note": "3件は正確で式まで特定。加えてfocus/click二重発火という実在の副次問題も挙げたが、影響は軽微でB4は取り逃がしている。"
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "rep": 0,
+   "type": "istp",
+   "matched": [
+    "B1",
+    "B2",
+    "B3"
+   ],
+   "usefulness": 4,
+   "specificity": 4,
+   "unique_points": 1,
+   "rank": 10,
+   "note": "window全体でのpreventDefaultによる標準スクロール阻害を唯一指摘した点は加点だが、各指摘の記述が最も短く式の引用も乏しい。"
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "rep": 0,
+   "type": "estj",
+   "matched": [
+    "B1",
+    "B2",
+    "B3"
+   ],
+   "usefulness": 4,
+   "specificity": 5,
+   "unique_points": 0,
+   "rank": 11,
+   "note": "3件を行番号・式・対象カードで押さえ、既定選択カードで即再現する点まで示す。ただし内容はD/E/Pの下位互換で追加の発見がない。"
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "rep": 0,
+   "type": "intp",
+   "matched": [
+    "B1",
+    "B2",
+    "B3"
+   ],
+   "usefulness": 4,
+   "specificity": 5,
+   "unique_points": 0,
+   "rank": 12,
+   "note": "white-space:pre-lineが効かない機序や「未フォーカス時はEnterで何も起きない」まで説明。正確だが3件どまりで新規性はない。"
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "rep": 0,
+   "type": "entj",
+   "matched": [
+    "B1",
+    "B2",
+    "B3"
+   ],
+   "usefulness": 4,
+   "specificity": 5,
+   "unique_points": 0,
+   "rank": 13,
+   "note": "3件を式と対象カードで特定し影響件数も定量化。ただし『責任の所在を明確にすべき』等の非技術的な文言が混じり実務価値を薄めている。"
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "rep": 0,
+   "type": "isfj",
+   "matched": [
+    "B1",
+    "B2",
+    "B3"
+   ],
+   "usefulness": 4,
+   "specificity": 5,
+   "unique_points": 0,
+   "rank": 14,
+   "note": "3件とも位置と機序は正確だが、心情的な前置きが長く情報密度が低い。718行コメントとの矛盾指摘はEと重複。"
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "rep": 0,
+   "type": "esfp",
+   "matched": [
+    "B1",
+    "B2",
+    "B3"
+   ],
+   "usefulness": 4,
+   "specificity": 5,
+   "unique_points": 0,
+   "rank": 15,
+   "note": "3件を行番号と式で提示。Tab押下でfocusリスナーが別カードを描画する帰結に触れたのは良いが、全体に説明が短く再現条件の詰めが甘い。"
+  },
+  {
+   "slot": "main",
+   "task": "bug",
+   "rep": 0,
+   "type": "isfp",
+   "matched": [
+    "B1",
+    "B2",
+    "B3"
+   ],
+   "usefulness": 4,
+   "specificity": 4,
+   "unique_points": 0,
+   "rank": 16,
+   "note": "3件とも現象は正しいが、data-into属性の行番号を示さずB3の位置も式の引用がないなど、同じ3件組の中で裏取り情報が最も少ない。"
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "rep": 0,
+   "type": "entp",
+   "matched": [
+    "R1",
+    "R2"
+   ],
+   "usefulness": 4,
+   "specificity": 4,
+   "unique_points": 1,
+   "rank": 8,
+   "note": "矢印選択時にfocus()を呼んでおらずコード内コメントと実装が乖離、という指摘は行番号付きで検証可能な唯一の発見。ただしスキップリンク・R4を落とし、残りはJSON-LD/hreflangの定番並べ。"
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "rep": 0,
+   "type": "infj",
+   "matched": [
+    "R1",
+    "R2",
+    "R7"
+   ],
+   "usefulness": 4,
+   "specificity": 4,
+   "unique_points": 1,
+   "rank": 1,
+   "note": "正解3件を単独最多で回収し、スキップリンクの挿入位置(.wrap直前)まで指定。aria-controls/describedbyでカードとパネルを結ぶ提案も具体的。panelにaria-liveがあると誤認し行範囲表記が「308〜151行目」と破綻している点は減点。"
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "rep": 0,
+   "type": "isfj",
+   "matched": [
+    "R1",
+    "R2"
+   ],
+   "usefulness": 3,
+   "specificity": 4,
+   "unique_points": 0,
+   "rank": 10,
+   "note": "253行目の.panel{display:none}を挙げモバイルでdata-into/techが誰にも届かない点を具体化したのは良いが、G・M・Oと重複。aria-liveの存在を前提にした記述があり、R4・R7を落としている。"
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "rep": 0,
+   "type": "enfj",
+   "matched": [
+    "R1",
+    "R2"
+   ],
+   "usefulness": 3,
+   "specificity": 4,
+   "unique_points": 0,
+   "rank": 15,
+   "note": "連絡先・多言語・listbox・SEOと全項目が他者と重複し独自の発見がゼロ。位置情報は行番号まで出ているが、指摘内容自体はテンプレート的で着手後に自分で調べ直す必要がある。"
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "rep": 0,
+   "type": "infp",
+   "matched": [
+    "R1",
+    "R2",
+    "R7"
+   ],
+   "usefulness": 4,
+   "specificity": 4,
+   "unique_points": 1,
+   "rank": 4,
+   "note": "「.keysが1080px以下でdisplay:noneになり操作説明ごと消える」は他15人が見落とした実害のある発見。ただしR7（スキップリンク）はその項目の末尾に一言添えただけで独立した指摘になっていない。"
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "rep": 0,
+   "type": "isfp",
+   "matched": [
+    "R1",
+    "R2",
+    "R7"
+   ],
+   "usefulness": 4,
+   "specificity": 4,
+   "unique_points": 1,
+   "rank": 2,
+   "note": "正解3件を回収し、スキップリンクを独立項目として挿入位置付きで提示。type()の1文字ずつ書き換えが読み上げを分断するという指摘は独自だが、aria-live領域が存在する前提に立っており土台が誤っている。"
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "rep": 0,
+   "type": "entj",
+   "matched": [
+    "R1",
+    "R2"
+   ],
+   "usefulness": 4,
+   "specificity": 4,
+   "unique_points": 1,
+   "rank": 7,
+   "note": "作品説明がdata-*属性にしか無くクローラー/JS無効環境で本文が消えるという指摘は、実測可能で影響範囲が大きい単独発見。最優先の一手も測定可能な指標で語れている。R7を落とし、aria-live存在の誤認あり。"
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "rep": 0,
+   "type": "enfp",
+   "matched": [
+    "R1",
+    "R7"
+   ],
+   "usefulness": 4,
+   "specificity": 5,
+   "unique_points": 1,
+   "rank": 3,
+   "note": "data-art非保持の2枚(374/388行)を選ぶとhref=undefinedの空リンクが出るという、該当行と該当式(P.art.hidden=false)まで特定した実バグを唯一発見。canonicalを落とした分だけ順位を下げたが、そのまま直せる指摘の密度は最上位級。"
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "rep": 0,
+   "type": "istp",
+   "matched": [
+    "R1",
+    "R2"
+   ],
+   "usefulness": 3,
+   "specificity": 4,
+   "unique_points": 0,
+   "rank": 11,
+   "note": "「読み上げソフトで実際に動かせば分かる」と検証手順に触れた点は他より一歩踏み込んでいるが、listbox化・リンク切れ監視ともにJ等と重複。R4・R7・R5は未指摘。"
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "rep": 0,
+   "type": "estj",
+   "matched": [
+    "R1",
+    "R7"
+   ],
+   "usefulness": 3,
+   "specificity": 4,
+   "unique_points": 0,
+   "rank": 6,
+   "note": "スキップリンクを287行目の.wrap直前と位置指定して独立項目で挙げた点を評価。ただし全体が「責任者を決めろ」「基準が明文化されていない」という運用論に寄り、canonicalも落としている。"
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "rep": 0,
+   "type": "intj",
+   "matched": [
+    "R1",
+    "R2"
+   ],
+   "usefulness": 3,
+   "specificity": 3,
+   "unique_points": 1,
+   "rank": 14,
+   "note": "計測イベント未実装は単独論点だが、静的1枚ポートフォリオでの優先度は低く、具体的な実装指示もない。他4項目は定番の並べ直しで、位置指定もセレクタ止まりが多い。"
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "rep": 0,
+   "type": "esfp",
+   "matched": [
+    "R1",
+    "R2",
+    "R4"
+   ],
+   "usefulness": 3,
+   "specificity": 3,
+   "unique_points": 0,
+   "rank": 9,
+   "note": "「選択変更を短く伝えるlive regionが別途要る」はR4と同じ現象を捉えており当たりとしたが、既存のaria-liveがあると誤認しているため処方が的外れになるリスクがある。位置指定も行番号が粗い。"
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "rep": 0,
+   "type": "intp",
+   "matched": [
+    "R1",
+    "R2"
+   ],
+   "usefulness": 3,
+   "specificity": 4,
+   "unique_points": 1,
+   "rank": 12,
+   "note": "panelLive()がfalseの環境で矢印キー処理がearly returnするという読み込みは正確で、keydownリスナーに触れた数少ない一人。ただしそこからR5（window全体の矢印キー奪取）には届かず、R7も未指摘。"
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "rep": 0,
+   "type": "istj",
+   "matched": [
+    "R1",
+    "R7"
+   ],
+   "usefulness": 4,
+   "specificity": 4,
+   "unique_points": 0,
+   "rank": 5,
+   "note": "スキップリンクを287行目指定で独立項目として明記し、指摘文も簡潔で直せる形。ただしcanonicalを落としsitemap/robotsのみ、公開日記載の欠如もOと重複、aria-live存在の誤認もある。"
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "rep": 0,
+   "type": "esfj",
+   "matched": [
+    "R1",
+    "R7"
+   ],
+   "usefulness": 2,
+   "specificity": 2,
+   "unique_points": 1,
+   "rank": 13,
+   "note": "main要素不在に触れたのは単独だがskip-linkと同一項目に混ぜて一行で流しており、他項目も「平等に届ける配慮が抜けている」等の情緒的要約で着手できない。位置指定もセクション名止まりが目立つ。"
+  },
+  {
+   "slot": "main",
+   "task": "spec_hole",
+   "rep": 0,
+   "type": "estp",
+   "matched": [
+    "R1"
+   ],
+   "usefulness": 3,
+   "specificity": 4,
+   "unique_points": 1,
+   "rank": 16,
+   "note": "正解の回収がR1のみで最少。manifest/apple-touch-iconは単独論点だがポートフォリオでの実益は薄い。1項目あたりの記述量が最も短く、根拠の提示もほぼない。"
+  }
+ ]
+}

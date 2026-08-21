@@ -1,0 +1,62 @@
+{
+ "key": "0eb0945e0e7ee7ca",
+ "tag": "fit/main/bug/esfp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "インストール先の改行がパイプ区切りなのにカンマで分割していて即バグる",
+    "where": "634行目 `P.into.textContent = c.dataset.into.split(',').join('\\n');` / data-into属性（例:314行目 `data-into=\"GitHub Copilot のカスタムエージェント|~/.claude/skills/（Claude Code）\"`）",
+    "why": "data-intoは`|`区切りなのにJSは`,`で分割してる。カンマが無いから1要素のまま→改行されず「〇〇|〇〇」の生文字列がそのまま出る。しかもpaint(0)が最後に走るから、ページ開いた瞬間から表示が崩れてる。ここ、実際触ったら一番目立つやつじゃん。"
+   },
+   {
+    "title": "解説記事なしのカードを選ぶと「undefined」が出てリンクも壊れる",
+    "where": "641〜643行目 `P.art.href = c.dataset.art; P.artt.textContent = c.dataset.artt; P.art.hidden = false;` / data-art属性が無いカード（374行目 Claude Anywhere、388行目 Spoiler Block for X）",
+    "why": "コメントに「解説記事が無いカードは行ごと隠す」って書いてあるのに、hiddenを条件分岐せず常にfalseにしてる。data-artが無いとundefinedがそのままhrefとtextContentに入って「解説記事：undefined」って表示されて、クリックすると404に飛ぶ壊れたリンクになる。実際やってみた人がここでズッコケるやつ。"
+   },
+   {
+    "title": "矢印キーで選んでもDOMフォーカスは動かないまま",
+    "where": "712〜720行目 `addEventListener('keydown', ...) { const next = nearest(e.key); ... paint(next); }`（`cells[next].focus()`の呼び出しが無い）",
+    "why": "paint()でaria-currentとpanelの中身は変わるけど、実際にフォーカスされてる要素は移動してない。この状態でTabキーを押すと653行目のfocusリスナーが発火して、選んでたはずのカードじゃない別のカードにパネルが差し替わる。キーボードだけで操作してる人がいちばん混乱するとこ。"
+   }
+  ],
+  "top_recommendation": "まず634行目のsplit(',')をsplit('|')に直す。開いた瞬間から崩れてる表示だし、これ直さないと他のバグより先に「壊れてる」って伝わっちゃう。",
+  "confidence": 5
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 24710,
+   "cache_read_input_tokens": 0,
+   "output_tokens": 7664,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 24710,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 7664,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 24710,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 24710
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.283565,
+  "duration_ms": 104245,
+  "session_id": "b742497e-bc02-4799-a999-b0da9d63c118"
+ }
+}

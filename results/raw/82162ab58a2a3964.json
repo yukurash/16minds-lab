@@ -1,0 +1,67 @@
+{
+ "key": "82162ab58a2a3964",
+ "tag": "fit/main/bug/entp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "矢印キーで選び直してもDOMフォーカスが動かず、Enterで開くのは前のカード",
+    "where": "script: addEventListener('keydown', ...) 712-720行目 / paint() 624-648行目",
+    "why": "paint()はaria-currentとパネル表示だけ更新し.focus()を呼ばない。矢印移動後にEnterを押すと、まだフォーカスが残っている『前に選んでいたカード』のリンクが開く。571行目の『Enterで開く』という案内と実際の挙動が食い違う――逆にさ、これじゃ選んでる意味なくない？"
+   },
+   {
+    "title": "インストール先の改行がsplit(',')のせいで一切機能していない",
+    "where": "634行目 P.into.textContent = c.dataset.into.split(',').join('\\n');（data-into自体は314/515/532行目などで`|`区切り）",
+    "why": "data-into属性は`|`で複数値を区切っているのにJSは`,`で分割している。分割が起きず生の`|`がそのまま1行で表示される。しかもpaint(0)が読込直後(722行目)に走るため、初期HTMLの正しい2行表示(557-558行目)は一瞬で壊れた表示に上書きされる。"
+   },
+   {
+    "title": "data-artなしのカードで『解説記事』欄がhref/text=\"undefined\"のまま常時表示される",
+    "where": "640-643行目 P.art.href/P.artt.textContent/P.art.hidden = false;（該当カード：374行目 Claude Anywhere、388行目 Spoiler Block for X）",
+    "why": "data-art未指定カードではdataset.artがundefinedになりhrefとテキストが文字列\"undefined\"になる。P.art.hiddenは常にfalse固定でコメント通りに非表示化されず、壊れたリンクが選択のたびに表示され続ける。"
+   },
+   {
+    "title": "type()にclearIntervalがなく、連続選択でタイピング演出が二重実行される",
+    "where": "744-753行目 function type(el){...}（対して757行目のroll()はclearInterval(rolling)を実施済み）",
+    "why": "矢印キー連打や素早い選択切替で前のtypingインターバルが残ったまま新しいsetIntervalが走り、同じ要素のtextContentを複数タイマーが競合更新して名前表示が乱れる。"
+   }
+  ],
+  "top_recommendation": "712-720行目のkeydownハンドラで paint(next) の後に cells[next].focus() を呼び、視覚的な選択と実際のDOMフォーカスを一致させる。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 24680,
+   "cache_read_input_tokens": 0,
+   "output_tokens": 10794,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 24680,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 10794,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 24680,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 24680
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.330335,
+  "duration_ms": 121357,
+  "session_id": "98f25f74-df70-4828-b52e-e8e1f7eb795b"
+ }
+}

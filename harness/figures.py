@@ -42,13 +42,12 @@ def fit_matrix(slot: str = "main") -> tuple[np.ndarray, list[str]]:
     scores = json.loads(p.read_text(encoding="utf-8"))["scores"]
     n_ans = _answer_counts()
 
+    # ヒートマップの値は「そのタスク内での順位」を 0-1 に正規化したもの。
+    # 検出率は尺度がタスクごとに違うので、別途 detection_table() で出す。
+    n = len(TYPES)
     acc: dict[tuple[str, str], list[float]] = defaultdict(list)
     for s in scores:
-        if s["task"] in OBJECTIVE:
-            v = len(set(s["matched"])) / max(1, n_ans.get(s["task"], 1))
-        else:
-            v = (s["usefulness"] + s["specificity"]) / 6.0
-        acc[(s["type"], s["task"])].append(v)
+        acc[(s["type"], s["task"])].append((n - s["rank"]) / (n - 1))
 
     tasks = TF.ORDER
     m = np.full((len(TYPES), len(tasks)), np.nan)
@@ -58,6 +57,28 @@ def fit_matrix(slot: str = "main") -> tuple[np.ndarray, list[str]]:
             if vs:
                 m[i, j] = sum(vs) / len(vs)
     return m, tasks
+
+
+def detection_table(slot: str = "main") -> None:
+    """客観指標のある3タスクの検出率を表で出す。"""
+    p = RESULTS / f"fit_scores_{slot}.json"
+    scores = json.loads(p.read_text(encoding="utf-8"))["scores"]
+    n_ans = _answer_counts()
+    acc: dict[tuple[str, str], list[float]] = defaultdict(list)
+    for s in scores:
+        if s["task"] in OBJECTIVE:
+            acc[(s["type"], s["task"])].append(len(set(s["matched"])) / max(1, n_ans.get(s["task"], 1)))
+    tasks = [t for t in TF.ORDER if t in OBJECTIVE]
+    lines = ["| type | " + " | ".join(tasks) + " | mean |", "|---|" + "---|" * (len(tasks) + 1)]
+    for t in TYPES:
+        vals = [sum(acc[(t, k)]) / len(acc[(t, k)]) if acc.get((t, k)) else float("nan") for k in tasks]
+        ok = [v for v in vals if v == v]
+        lines.append(f"| {t} | " + " | ".join(f"{v:.2f}" for v in vals) + f" | {sum(ok)/len(ok):.2f} |" if ok else f"| {t} | - |")
+    out = "
+".join(lines)
+    (RESULTS / f"detection_{slot}.md").write_text(out + "
+", encoding="utf-8")
+    print(out)
 
 
 def pair_matrix(topic: str = "portfolio_failures", side: str = "fwd") -> np.ndarray:
@@ -97,8 +118,9 @@ def main() -> None:
     if (RESULTS / "fit_scores_main.json").exists():
         m, tasks = fit_matrix("main")
         _heat(m, tasks, TYPES,
-              "16-minds fitness: type x task (higher is better)",
-              "score (0-1)", FIG / "fitness.png")
+              "16-minds fitness: type x task (rank-normalised, higher is better)",
+              "normalised rank (0-1)", FIG / "fitness.png")
+        detection_table("main")
 
     for topic in ("portfolio_failures", "article_axis"):
         if (RESULTS / f"pair_scores_{topic}.json").exists():

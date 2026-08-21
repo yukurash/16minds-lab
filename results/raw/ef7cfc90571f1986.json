@@ -1,0 +1,62 @@
+{
+ "key": "ef7cfc90571f1986",
+ "tag": "fit/main/bug/isfj/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "矢印キーで選んでもフォーカスが動かず、Enterで別の作品が開いてしまう",
+    "where": "712〜720行目 keydownハンドラ（nearest()の呼び出し直後）、および624〜648行目 paint()関数",
+    "why": "paint(next)は表示とパネルの中身しか書き換えず、cells[next].focus()を一切呼んでいない。718行目のコメントは『focusが動くのでEnterはネイティブに開く』とあるが実装が伴っておらず、矢印キーで選び直しても実際のフォーカスは前にクリック/Tabした場所に残ったまま。この状態でEnterを押すと、画面上で選ばれている（aria-current付きの）カードとは違うカードのリンクが開いてしまう。現場ではキーボード操作の人が『選んだつもりのものと違うページに飛ばされる』ことになり、セレクト画面の一番の存在意義が壊れているのが気になります。"
+   },
+   {
+    "title": "解説記事のない作品を選ぶと、パネルに壊れたリンクが出続ける",
+    "where": "640〜643行目 paint()内 `P.art.href = c.dataset.art; ... P.art.hidden = false;`",
+    "why": "『Claude Anywhere』(374行目)と『Spoiler Block for X』(388行目)にはdata-art/data-artt属性がなく、この2枚を選ぶとc.dataset.artはundefinedになる。それをそのままhrefに代入すると文字列\"undefined\"がURLになり、hiddenも常にfalseにされるので『解説記事』欄がタイトル\"undefined\"のまま表示され続ける。ただ気になるのは、コメントには『書き手のない作品は行ごと隠す』と書いてあるのに、隠す分岐が実際には抜けている点です。ここは日常的にクリックされる箇所なので、押した人が404に飛ばされてしまいます。"
+   },
+   {
+    "title": "インストール先の区切り文字がJSとHTMLで食い違い、改行されない",
+    "where": "634行目 `c.dataset.into.split(',').join('\\n')` に対し、314・515・532行目の data-into は `|` 区切り",
+    "why": "azure-nettrace・splunk-otel-contest・splunk-ai-oncallの3件は『GitHub Copilot〜｜~/.claude/skills/〜』のように`|`で2つの設置先を書いているが、JS側はカンマで分割しようとしているため何も分割されず、改行されずに`|`の文字がそのまま1行で表示されてしまう。これまで通りの見え方を期待していた分だけ、実際に画面を見ると『あれ、区切り文字が生で出ている』と気づく類の不具合です。"
+   }
+  ],
+  "top_recommendation": "まず712〜720行目のkeydownハンドラに `cells[next].focus()` を追加し、矢印キー選択とEnterで開くものが必ず一致するようにしてほしいです。ここは現場で一番使われる操作なので。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 24690,
+   "cache_read_input_tokens": 0,
+   "output_tokens": 10404,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 24690,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 10404,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 24690,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 24690
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.32455,
+  "duration_ms": 137537,
+  "session_id": "621bca1e-9639-47d2-9599-1e0a23f14118"
+ }
+}

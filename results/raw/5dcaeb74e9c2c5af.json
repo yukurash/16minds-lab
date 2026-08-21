@@ -1,0 +1,62 @@
+{
+ "key": "5dcaeb74e9c2c5af",
+ "tag": "fit/main/bug/estj/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "インストール先の複数行表示が常に1行に潰れる（区切り文字の不一致）",
+    "where": "script内634行目 P.into.textContent の split(',') 部分／該当データ属性 314行目・515行目・532行目 data-into=\"...|...\"",
+    "why": "data-into は区切り文字が全て「|」なのに split(',') でカンマ分割している。カンマは存在しないため split は常に1要素配列を返し join も無意味。既定選択の azure-nettrace（index0）を含む3枚で、読み込み直後からパイプ文字がそのまま1行表示になり、改行が機能しない。paint(0)が起動時に必ず走るため無操作でも壊れて見える。"
+   },
+   {
+    "title": "解説記事なしカードでパネルに undefined が表示されリンクも壊れる",
+    "where": "script内640〜643行目 P.art.href／P.artt.textContent／P.art.hidden=false の代入部分／対象カード 374行目 Claude Anywhere、388行目 Spoiler Block for X（data-art属性なし）",
+    "why": "コメントは data-art が無ければ行ごと隠すとあるが hidden=true にする分岐が実装されておらず常に false 固定。data-art/data-artt が undefined のカードを選ぶと href が文字列undefinedに、テキストもundefinedになり、パネルに壊れたリンクと文字が表示される。1クリックで再現する実害。"
+   },
+   {
+    "title": "矢印キー選択後、Enterで開くのは選択中カードでなく元フォーカス位置のカード",
+    "where": "script内712〜720行目 keydown ハンドラの paint(next) 呼び出し（.focus()なし）／対比 659行目クリックハンドラは paint(i); c.focus(); reveal();",
+    "why": "クリック時はc.focus()で実DOMフォーカスも移すが矢印キー操作ではpaint(next)がaria-currentとパネル内容だけを書き換えフォーカス要素は移動しない。571行目の『Enterで開く』案内通り矢印で選び直しても、続くEnterはブラウザが記憶した古いフォーカス先を開くため、画面表示と実際に遷移する先が食い違う。"
+   }
+  ],
+  "top_recommendation": "634行目の split(',') を split('|') に直す。既定表示（azure-nettrace）から誰の目にも見える壊れ方なので最優先。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 7,
+   "cache_creation_input_tokens": 35198,
+   "cache_read_input_tokens": 91476,
+   "output_tokens": 11558,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 35198,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 1221,
+     "cache_read_input_tokens": 33927,
+     "cache_creation_input_tokens": 1271,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 1271
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.4323038,
+  "duration_ms": 123173,
+  "session_id": "3e2c6ad4-a6da-4b9d-8aa6-9e2daf5aaddc"
+ }
+}

@@ -1,0 +1,240 @@
+{
+ "key": "977f0372cb206fea",
+ "tag": "judge/fit/main/spec_hole/rep0",
+ "model": "opus",
+ "data": {
+  "items": [
+   {
+    "label": "A",
+    "matched": [
+     "R1",
+     "R2"
+    ],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 8,
+    "note": "矢印選択時にfocus()を呼んでおらずコード内コメントと実装が乖離、という指摘は行番号付きで検証可能な唯一の発見。ただしスキップリンク・R4を落とし、残りはJSON-LD/hreflangの定番並べ。"
+   },
+   {
+    "label": "B",
+    "matched": [
+     "R1",
+     "R2",
+     "R7"
+    ],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 1,
+    "note": "正解3件を単独最多で回収し、スキップリンクの挿入位置(.wrap直前)まで指定。aria-controls/describedbyでカードとパネルを結ぶ提案も具体的。panelにaria-liveがあると誤認し行範囲表記が「308〜151行目」と破綻している点は減点。"
+   },
+   {
+    "label": "C",
+    "matched": [
+     "R1",
+     "R2"
+    ],
+    "usefulness": 3,
+    "specificity": 4,
+    "unique_points": 0,
+    "rank": 10,
+    "note": "253行目の.panel{display:none}を挙げモバイルでdata-into/techが誰にも届かない点を具体化したのは良いが、G・M・Oと重複。aria-liveの存在を前提にした記述があり、R4・R7を落としている。"
+   },
+   {
+    "label": "D",
+    "matched": [
+     "R1",
+     "R2"
+    ],
+    "usefulness": 3,
+    "specificity": 4,
+    "unique_points": 0,
+    "rank": 15,
+    "note": "連絡先・多言語・listbox・SEOと全項目が他者と重複し独自の発見がゼロ。位置情報は行番号まで出ているが、指摘内容自体はテンプレート的で着手後に自分で調べ直す必要がある。"
+   },
+   {
+    "label": "E",
+    "matched": [
+     "R1",
+     "R2",
+     "R7"
+    ],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 4,
+    "note": "「.keysが1080px以下でdisplay:noneになり操作説明ごと消える」は他15人が見落とした実害のある発見。ただしR7（スキップリンク）はその項目の末尾に一言添えただけで独立した指摘になっていない。"
+   },
+   {
+    "label": "F",
+    "matched": [
+     "R1",
+     "R2",
+     "R7"
+    ],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 2,
+    "note": "正解3件を回収し、スキップリンクを独立項目として挿入位置付きで提示。type()の1文字ずつ書き換えが読み上げを分断するという指摘は独自だが、aria-live領域が存在する前提に立っており土台が誤っている。"
+   },
+   {
+    "label": "G",
+    "matched": [
+     "R1",
+     "R2"
+    ],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 7,
+    "note": "作品説明がdata-*属性にしか無くクローラー/JS無効環境で本文が消えるという指摘は、実測可能で影響範囲が大きい単独発見。最優先の一手も測定可能な指標で語れている。R7を落とし、aria-live存在の誤認あり。"
+   },
+   {
+    "label": "H",
+    "matched": [
+     "R1",
+     "R7"
+    ],
+    "usefulness": 4,
+    "specificity": 5,
+    "unique_points": 1,
+    "rank": 3,
+    "note": "data-art非保持の2枚(374/388行)を選ぶとhref=undefinedの空リンクが出るという、該当行と該当式(P.art.hidden=false)まで特定した実バグを唯一発見。canonicalを落とした分だけ順位を下げたが、そのまま直せる指摘の密度は最上位級。"
+   },
+   {
+    "label": "I",
+    "matched": [
+     "R1",
+     "R2"
+    ],
+    "usefulness": 3,
+    "specificity": 4,
+    "unique_points": 0,
+    "rank": 11,
+    "note": "「読み上げソフトで実際に動かせば分かる」と検証手順に触れた点は他より一歩踏み込んでいるが、listbox化・リンク切れ監視ともにJ等と重複。R4・R7・R5は未指摘。"
+   },
+   {
+    "label": "J",
+    "matched": [
+     "R1",
+     "R7"
+    ],
+    "usefulness": 3,
+    "specificity": 4,
+    "unique_points": 0,
+    "rank": 6,
+    "note": "スキップリンクを287行目の.wrap直前と位置指定して独立項目で挙げた点を評価。ただし全体が「責任者を決めろ」「基準が明文化されていない」という運用論に寄り、canonicalも落としている。"
+   },
+   {
+    "label": "K",
+    "matched": [
+     "R1",
+     "R2"
+    ],
+    "usefulness": 3,
+    "specificity": 3,
+    "unique_points": 1,
+    "rank": 14,
+    "note": "計測イベント未実装は単独論点だが、静的1枚ポートフォリオでの優先度は低く、具体的な実装指示もない。他4項目は定番の並べ直しで、位置指定もセレクタ止まりが多い。"
+   },
+   {
+    "label": "L",
+    "matched": [
+     "R1",
+     "R2",
+     "R4"
+    ],
+    "usefulness": 3,
+    "specificity": 3,
+    "unique_points": 0,
+    "rank": 9,
+    "note": "「選択変更を短く伝えるlive regionが別途要る」はR4と同じ現象を捉えており当たりとしたが、既存のaria-liveがあると誤認しているため処方が的外れになるリスクがある。位置指定も行番号が粗い。"
+   },
+   {
+    "label": "M",
+    "matched": [
+     "R1",
+     "R2"
+    ],
+    "usefulness": 3,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 12,
+    "note": "panelLive()がfalseの環境で矢印キー処理がearly returnするという読み込みは正確で、keydownリスナーに触れた数少ない一人。ただしそこからR5（window全体の矢印キー奪取）には届かず、R7も未指摘。"
+   },
+   {
+    "label": "N",
+    "matched": [
+     "R1",
+     "R7"
+    ],
+    "usefulness": 4,
+    "specificity": 4,
+    "unique_points": 0,
+    "rank": 5,
+    "note": "スキップリンクを287行目指定で独立項目として明記し、指摘文も簡潔で直せる形。ただしcanonicalを落としsitemap/robotsのみ、公開日記載の欠如もOと重複、aria-live存在の誤認もある。"
+   },
+   {
+    "label": "O",
+    "matched": [
+     "R1",
+     "R7"
+    ],
+    "usefulness": 2,
+    "specificity": 2,
+    "unique_points": 1,
+    "rank": 13,
+    "note": "main要素不在に触れたのは単独だがskip-linkと同一項目に混ぜて一行で流しており、他項目も「平等に届ける配慮が抜けている」等の情緒的要約で着手できない。位置指定もセクション名止まりが目立つ。"
+   },
+   {
+    "label": "P",
+    "matched": [
+     "R1"
+    ],
+    "usefulness": 3,
+    "specificity": 4,
+    "unique_points": 1,
+    "rank": 16,
+    "note": "正解の回収がR1のみで最少。manifest/apple-touch-iconは単独論点だがポートフォリオでの実益は薄い。1項目あたりの記述量が最も短く、根拠の提示もほぼない。"
+   }
+  ]
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 2,
+   "cache_creation_input_tokens": 13663,
+   "cache_read_input_tokens": 772,
+   "output_tokens": 9167,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 13663,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 9167,
+     "cache_read_input_tokens": 772,
+     "cache_creation_input_tokens": 13663,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 13663
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.379625,
+  "duration_ms": 133645,
+  "session_id": "f926ac95-3be3-46b6-b6c9-a338501dd8a6"
+ }
+}

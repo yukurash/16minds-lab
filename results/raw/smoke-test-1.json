@@ -1,0 +1,52 @@
+{
+ "key": "smoke-test-1",
+ "tag": "smoke",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "入力の型検証が皆無",
+    "where": "function f(a){ return a.map(x=>x*2) }",
+    "why": "aが配列でない場合（null/undefined/オブジェクト等）にTypeErrorで即座に破綻する。暗黙の契約に依存する設計は長期的な保守コストを増大させる。"
+   }
+  ],
+  "top_recommendation": "Array.isArray(a)によるガード節を先頭に追加し、契約を明示的にコードへ落とし込め。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 2,
+   "cache_creation_input_tokens": 2026,
+   "cache_read_input_tokens": 0,
+   "output_tokens": 617,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 2026,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 617,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 2026,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 2026
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.022080000000000002,
+  "duration_ms": 11456,
+  "session_id": "9a852ce2-f8fb-4664-96b0-d2347e7017d5"
+ }
+}
