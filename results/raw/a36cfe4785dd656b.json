@@ -1,0 +1,72 @@
+{
+ "key": "a36cfe4785dd656b",
+ "tag": "fit/main/spec_hole/estj/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "OGP / Twitter Card 用メタタグが皆無",
+    "where": "head内 4〜11行目（meta description の直後に追加すべき箇所）",
+    "why": "og:title・og:image・og:url・twitter:card が無い。公開URLを人に共有する運用が前提のサイトで、SNS上でどう見えるかの担当者が誰も決めていない。責任者を決めて即追加すべき。"
+   },
+   {
+    "title": "スキップリンクが実装されていない",
+    "where": "body開始直後（287行目 <div class=\"wrap\"> の前）",
+    "why": "キーボード/スクリーンリーダー利用者は12枚のカード＋読み物リンクを毎回全通過しないと次セクションに進めない。ルール上、対話的要素が増えるほどこの欠落は運用負荷になる。"
+   },
+   {
+    "title": "多言語対応が未着手（lang=\"ja\"固定、hreflang無し）",
+    "where": "2行目 <html lang=\"ja\">、head内に alternate hreflang 無し",
+    "why": "Chrome Web Store・GitHub Marketplaceなど海外ユーザーも触れうる制作物を扱いながら英語版の導線が無い。多言語化するのかしないのか、基準が明文化されていない。"
+   },
+   {
+    "title": "sitemap.xml / robots.txt / 構造化データ(JSON-LD)の不在",
+    "where": "サイトルート（sitemap.xml, robots.txt）、head内（JSON-LDスクリプト無し）",
+    "why": "検索エンジンへの情報提供プロセスが未整備。単一HTMLで完結させる方針は理解するが、公開・運用する以上は最低限の手続きが欠けている。"
+   },
+   {
+    "title": "外部リンク12件超の生存監視・404時の運用ルールが無い",
+    "where": "各 .cell の href / data-art（312〜545行目）",
+    "why": "Chrome Web Store審査落ち、リポジトリ削除等でリンク切れが起きた場合に検知する仕組み（定期チェック・自動テスト）が無く、誰がいつ確認するかの責任の所在が決まっていない。"
+   }
+  ],
+  "top_recommendation": "まず OGP/Twitter Card メタタグを head に追加せよ。工数は最小、公開ページとしての説明責任が最も欠けている箇所だ。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23066,
+   "cache_read_input_tokens": 1590,
+   "output_tokens": 2902,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23066,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 2902,
+     "cache_read_input_tokens": 1590,
+     "cache_creation_input_tokens": 23066,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23066
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.20276699999999998,
+  "duration_ms": 46655,
+  "session_id": "319622b0-f511-4ecd-aab6-9591ffc76a21"
+ }
+}

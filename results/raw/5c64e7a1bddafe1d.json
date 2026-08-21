@@ -1,0 +1,72 @@
+{
+ "key": "5c64e7a1bddafe1d",
+ "tag": "fit/main/spec_hole/isfj/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "SNSシェア時の見え方（OGP/Twitter Card）が未実装",
+    "where": "<head> 4〜11行目。og:title / og:image / og:url / twitter:card がどこにも無い",
+    "why": "現場では、この作品を誰かがX（旧Twitter）やSlackで紹介しようとした瞬間に、画像もタイトルも出ない素っ気ないリンクになってしまいます。せっかく12個も丁寧に作ってきたのに、紹介する人が『あれ、何も出ない』と気まずい思いをするのは心苦しいです。"
+   },
+   {
+    "title": "roster（作品一覧）に支援技術向けの構造がない",
+    "where": "108〜131行目 .cell / 604行目 const cells。role属性・aria-selected・件数案内が無い",
+    "why": "aria-live のパネル自体はありますが、それだけでは『12件中いま何番目を選んでいるか』がスクリーンリーダー利用者に伝わりません。ただ気になるのは、目で見ればひと目で分かることが、支援技術を使う方には伝わらないまま置き去りになっている点です。"
+   },
+   {
+    "title": "モバイルではパネルごと非表示、技術情報が届かない",
+    "where": "253行目 @media(max-width:700px){ .panel{display:none} }",
+    "why": ".cd で概要は出ますが、data-into（導入先）や data-tech（技術）はモバイルの誰にも渡らない設計です。これまで通りの丁寧な情報が、画面幅が違うだけで一部の方には届かないのは気になります。"
+   },
+   {
+    "title": "検索エンジン向けの手がかり（canonical・構造化データ・sitemap）が無い",
+    "where": "<head> 4〜11行目。link rel=canonical、JSON-LD、robots.txt/sitemap.xml への言及が一切ない",
+    "why": "せっかく作った12個の制作物が、検索から見つけてもらえるかどうかは運頼みになってしまいます。誰かの役に立ちたくて公開しているものが、届くべき人に届かないのはもったいないです。"
+   },
+   {
+    "title": "公開後に何かあったときの連絡先・案内動線が無い",
+    "where": "594〜596行目 footer。連絡先やSNSアイコン、問い合わせリンクが存在しない",
+    "why": "外部サービス（Chrome Web Store や App Store）へのリンクは将来変わったり消えたりすることがあります。そのとき『ここが変ですよ』と伝えられる窓口が今のままでは見当たらず、せっかく訪れてくれた方との接点がぷつりと切れてしまいます。"
+   }
+  ],
+  "top_recommendation": "まずOGP/Twitter Cardのメタタグを追加し、SNSでシェアされた時に丁寧な見え方になるようにしてほしいです。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 3,
+   "cache_creation_input_tokens": 26965,
+   "cache_read_input_tokens": 26314,
+   "output_tokens": 4920,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 26965,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 1088,
+     "cache_read_input_tokens": 24690,
+     "cache_creation_input_tokens": 3899,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 3899
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.2638642,
+  "duration_ms": 62671,
+  "session_id": "06c3c31a-ce23-4776-957d-2559853c192b"
+ }
+}

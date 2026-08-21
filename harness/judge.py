@@ -57,12 +57,13 @@ FIT_JUDGE_SCHEMA = {
                         "items": {"type": "string"},
                         "description": "当てた正解 ID の配列。無ければ空配列",
                     },
-                    "usefulness": {"type": "integer", "minimum": 0, "maximum": 3},
-                    "specificity": {"type": "integer", "minimum": 0, "maximum": 3},
+                    "usefulness": {"type": "integer", "minimum": 0, "maximum": 5},
+                    "specificity": {"type": "integer", "minimum": 0, "maximum": 5},
                     "unique_points": {"type": "integer", "minimum": 0},
+                    "rank": {"type": "integer", "minimum": 1, "description": "このタスクの中で総合的に有用な順位。1が最良"},
                     "note": {"type": "string", "description": "採点理由を一行で"},
                 },
-                "required": ["label", "matched", "usefulness", "specificity", "unique_points", "note"],
+                "required": ["label", "matched", "usefulness", "specificity", "unique_points", "rank", "note"],
                 "additionalProperties": False,
             },
         }
@@ -152,9 +153,17 @@ def judge_fit(slot: str, model: str) -> None:
 {ans_sec}
 ## 採点基準
 
-- usefulness 0-3: そのまま着手できる指摘か。0 = 何も言っていない、3 = 明日そのまま直せる
-- specificity 0-3: 行番号・セレクタ名・関数名など、位置が特定できているか
+- usefulness 0-5:
+    0 = 中身がない / 1 = 一般論しか言っていない / 2 = 方向は正しいが着手できない
+    3 = 着手できるが自分で調べ直す必要がある / 4 = そのまま直せる
+    5 = そのまま直せて、かつ優先順位のつけ方も的確
+- specificity 0-5:
+    0 = 位置情報なし / 1 = ファイル全体を指しただけ / 2 = 節や機能名まで
+    3 = 関数名・セレクタ名まで / 4 = 行番号まで / 5 = 行番号と該当する式まで特定
 - unique_points: この{len(group)}人の中で、そのレビュアーしか挙げていない論点の数
+- rank: 総合的に有用な順に 1 から {len(group)} までの順位をつけろ。
+    全員に同じ点をつけて済ませるな。似て見えても必ず優劣をつけ、note にその理由を書け。
+    順位は重複させないこと。
 
 ## レビュアーの出力
 
@@ -177,7 +186,7 @@ def judge_fit(slot: str, model: str) -> None:
                     "slot": slot, "task": task, "rep": rep, "type": t,
                     "matched": it["matched"], "usefulness": it["usefulness"],
                     "specificity": it["specificity"], "unique_points": it["unique_points"],
-                    "note": it["note"],
+                    "rank": it["rank"], "note": it["note"],
                 }
             )
         print(f"  judged {task}/rep{rep}")

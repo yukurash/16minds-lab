@@ -1,0 +1,72 @@
+{
+ "key": "47d8304e8e17a28e",
+ "tag": "fit/main/spec_hole/enfp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "OGP / Twitter Card メタタグが一切ない",
+    "where": "head 内、7〜11行目付近（meta description の下）",
+    "why": "SNSでURLを貼っても画像も装飾タイトルもなしの地味な素のリンクになる。Zenn/Qiitaで記事を書いて拡散する運用なのに、玄関のポートフォリオが共有映えしないのはもったいない。og:title/og:image/og:description/twitter:card を足すだけで見え方が一気に変わる、これ繋がりそう案件。"
+   },
+   {
+    "title": "data-art が無いカード選択時、記事リンク行を隠す分岐がない",
+    "where": "script 内 paint() 関数 640〜643行目（P.art.hidden = false の箇所）／該当カード：Claude Anywhere・Spoiler Block for X（374行目, 388行目、どちらも data-art 属性なし）",
+    "why": "他のカードでは data-art がある前提で常に hidden=false にしているため、この2枚を選ぶと href が undefined の空リンクが aria-live 領域に表示されてしまう可能性。'ない場合どうするか' の分岐がそもそも書かれていない。"
+   },
+   {
+    "title": "パネル内リンク（開く／解説記事）へのロービングタブ順がない",
+    "where": "cells の tabindex 制御なし（650行目〜の cells.forEach）／panel 内 .go, .art（563〜570行目）",
+    "why": "12枚のカードは全部デフォルトでタブストップになるので、キーボードだけの人がパネルのリンクまで辿るのに毎回カード全部を Tab で通過する羽目になる。矢印キー移動は用意されてるのに、Tab の動線だけ取り残されてる感じがもったいない。"
+   },
+   {
+    "title": "構造化データ（JSON-LD）が存在しない",
+    "where": "head 内、どこにも script type=\"application/ld+json\" がない",
+    "why": "Person / CreativeWork スキーマがあれば検索結果でプロフィールや作品がリッチに表示される可能性がある。12個も作品を並べてるのに検索エンジンには『ただのテキストの塊』にしか見えてないのは可能性を閉じてる気がする。"
+   },
+   {
+    "title": "多言語・英語版の導線がゼロ",
+    "where": "html タグ lang=\"ja\" 固定（2行目）、hreflang や英語切替 UI なし",
+    "why": "iOSアプリやOSSプラグインは海外の開発者にも刺さりそうな内容なのに、lang=\"ja\" 一本足打法だと世界と繋がるチャンスを自分から狭めてる。せめて英語のサマリーだけでも置けたら世界がもっと広がりそう。"
+   }
+  ],
+  "top_recommendation": "まず OGP/Twitter Card を追加。SNSでシェアされた瞬間の第一印象が一番「繋がり」に直結するから最優先でやる価値ある。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 3,
+   "cache_creation_input_tokens": 26803,
+   "cache_read_input_tokens": 26320,
+   "output_tokens": 4744,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 26803,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 1072,
+     "cache_read_input_tokens": 24693,
+     "cache_creation_input_tokens": 3737,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 3737
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.260234,
+  "duration_ms": 69316,
+  "session_id": "cf4bd213-d795-46c8-93a1-abc38c1a8cc1"
+ }
+}

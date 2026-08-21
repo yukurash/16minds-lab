@@ -1,0 +1,72 @@
+{
+ "key": "646a3d89475de249",
+ "tag": "fit/main/spec_hole/entp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "OGP / Twitter Card メタタグが完全に未実装",
+    "where": "<head> 行4〜11（meta description の周辺に追加すべき）",
+    "why": "og:title / og:image / twitter:card が無く、X・Slack・LINE等での共有時にプレビューが一切表示されない。ポートフォリオは共有されて初めて価値が出るのに、その入口が閉じている。"
+   },
+   {
+    "title": "矢印キー選択時にDOMフォーカスが移動しない（ロービングtabindex未実装）",
+    "where": "keydown リスナー 行712-720、paint() 関数 624-648",
+    "why": "paint()もkeydownハンドラも .focus() を呼んでおらず、コード内コメント「focusが動くのでEnterはネイティブに開く」が実態と乖離。支援技術・キーボード利用者には見た目と実フォーカスの不一致が生じる。"
+   },
+   {
+    "title": "構造化データ (JSON-LD) が存在しない",
+    "where": "<head> 内。Person / ItemList(CreativeWork) 用の <script type=\"application/ld+json\"> が無い",
+    "why": "検索エンジンに「誰の何のサイトか」「12作品それぞれが何か」を機械可読に伝える手段が皆無で、リッチリザルト化や名前検索での視認性向上機会を逃している。"
+   },
+   {
+    "title": "canonical URL が指定されていない",
+    "where": "<head> 内、<link rel=\"canonical\"> が未記述",
+    "why": "GitHub Pagesはアクセス経路が複数生まれ得る（www有無・末尾スラッシュ等）。canonical不在は評価分散や重複コンテンツ扱いのリスクを黙って引き受けている状態。"
+   },
+   {
+    "title": "多言語対応（英語版・hreflang）が一切ない",
+    "where": "<html lang=\"ja\"> 行2。代替言語やlang切替導線なし",
+    "why": "GitHubリポジトリという性質上、海外の開発者・採用担当者も訪れうるのに、説明文が日本語専用で門前払いになっている可能性。ただし個性として割り切る選択肢もあり優先度は中程度。"
+   }
+  ],
+  "top_recommendation": "まずOGP/Twitter Cardメタタグを実装しろ。共有された瞬間の第一印象を作らないと、他の改善は誰にも届かない。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23066,
+   "cache_read_input_tokens": 1614,
+   "output_tokens": 6255,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23066,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 6255,
+     "cache_read_input_tokens": 1614,
+     "cache_creation_input_tokens": 23066,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23066
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.2530742,
+  "duration_ms": 86396,
+  "session_id": "087949d9-d42d-4e54-826b-90bea50df11c"
+ }
+}

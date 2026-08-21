@@ -1,0 +1,62 @@
+{
+ "key": "21f3549c278c0028",
+ "tag": "fit/main/bug/intp/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "矢印キー選択がフォーカスを移動させず「Enterで開く」が破綻する",
+    "where": "script内 keydown ハンドラ 712-720行目（paint(next)のみでfocus()を呼ばない）／対比: click ハンドラ 659行目の c.focus()",
+    "why": "paint()自体もfocus()を呼ばない（624-648行目）。クリックで選択した状態から矢印キーで別カードへ移動しても実DOMフォーカスは動かず、Enterは古い（または最初の）カードのhrefへ遷移する。矢印キーだけ操作した場合はどのセルにもフォーカスがなくEnterは何も起きない。画面の「Enter で開く」表示と実挙動が一致しない。"
+   },
+   {
+    "title": "data-art未設定カードで解説記事行が非表示にならず「undefined」表示",
+    "where": "script 640-643行目 P.art.href = c.dataset.art; ... P.art.hidden = false; ／対象カード: 374行目 Claude Anywhere, 388行目 Spoiler Block for X（どちらもdata-art属性なし）",
+    "why": "該当カード選択時、c.dataset.artはundefinedのため P.art.href に文字列undefined、P.artt.textContentにもundefinedが代入される。コメントは『記事がない時は行ごと隠す』とあるがhiddenをtrueにする分岐が存在せず常にfalseになる。結果パネルに壊れたリンクとテキストundefinedが表示され、クリックすると存在しないURLへ遷移する。"
+   },
+   {
+    "title": "インストール先の区切り文字がカンマ想定だがデータはパイプ区切り",
+    "where": "script 634行目 P.into.textContent = c.dataset.into.split(',').join('\\n'); ／data-into属性 314, 515, 532行目は縦棒区切り",
+    "why": "split(',')は対象文字列にカンマが無いため要素1個の配列を返し、joinしても元の文字列がそのまま返る。結果、3件のカードで『インストール先』欄が改行されず縦棒付きの1行として表示され、dd.mono の white-space:pre-line による改行表示が機能しない。"
+   }
+  ],
+  "top_recommendation": "keydownハンドラでpaint(next)実行時に該当セルへ実際に.focus()を移し、Enterキーの遷移先とaria-current表示を一致させる。",
+  "confidence": 5
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 5,
+   "cache_creation_input_tokens": 36831,
+   "cache_read_input_tokens": 60547,
+   "output_tokens": 13090,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 36831,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 1115,
+     "cache_read_input_tokens": 35827,
+     "cache_creation_input_tokens": 1004,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 1004
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.45579210000000003,
+  "duration_ms": 141917,
+  "session_id": "1e443106-f66d-4800-a0a3-8e7465c06d45"
+ }
+}

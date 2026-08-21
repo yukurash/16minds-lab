@@ -1,0 +1,72 @@
+{
+ "key": "51a1dbcb499d7336",
+ "tag": "fit/main/spec_hole/intj/rep0",
+ "model": "sonnet",
+ "data": {
+  "findings": [
+   {
+    "title": "OGP/Twitter Card メタタグが存在しない",
+    "where": "<head> 7行目付近（meta description の直後が本来の挿入位置）",
+    "why": "og:title, og:description, og:image, twitter:card が皆無。制作物を12個並べた構造そのものがSNS拡散を前提にしているのに、共有時はリンクのみの無地表示になる。長期の認知獲得を自ら潰している。"
+   },
+   {
+    "title": "sitemap.xml・robots.txt・canonical が無い",
+    "where": "リポジトリ直下（ファイル不在）、<head> 内 canonical link 不在",
+    "why": "検索エンジンにサイト構造を明示する手段がゼロ。meta description だけでは発見可能性は上がらない。公開して終わりでは意味がない、運用の起点が欠けている。"
+   },
+   {
+    "title": "セレクト UI に選択概念を表す ARIA ロールが無い",
+    "where": ".cell (108行目) / .screen (92行目) / paint() (624行目)",
+    "why": "12枚の中から1枚を選ぶ構造なのに <a> の羅列のまま。role=\"listbox\"+option や role=\"radiogroup\" 相当の設計がなく、支援技術には『選択されている』状態が構造として伝わらない。aria-current だけでは不十分。"
+   },
+   {
+    "title": "アクセス解析・イベント計測が実装されていない",
+    "where": "<script> 全体（600〜790行目）",
+    "why": "どのカードが選ばれ、どのリンクが実際に開かれたかを一切計測していない。改善判断のためのデータが取れない設計は、公開後の意思決定を勘で行うのと同義で非効率。"
+   },
+   {
+    "title": "多言語対応（英語版）が存在しない",
+    "where": "<html lang=\"ja\"> 2行目、hreflang 属性なし",
+    "why": "Claude Code プラグインや Azure Skill など海外エンジニア層に刺さる内容を並べていながら、英語圏への導線がゼロ。露出できる市場を自分で半分に削っている。"
+   }
+  ],
+  "top_recommendation": "まず OGP タグを <head> に追加しろ。共有された瞬間の第一印象がゼロというのは、12個の制作物を並べた意味そのものを損なう最大の欠落だ。",
+  "confidence": 4
+ },
+ "meta": {
+  "attempt": 1,
+  "usage": {
+   "input_tokens": 1,
+   "cache_creation_input_tokens": 23066,
+   "cache_read_input_tokens": 1788,
+   "output_tokens": 2690,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 23066,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 1,
+     "output_tokens": 2690,
+     "cache_read_input_tokens": 1788,
+     "cache_creation_input_tokens": 23066,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 23066
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard"
+  },
+  "cost_usd": 0.19964639999999997,
+  "duration_ms": 45715,
+  "session_id": "edaefcce-f48b-4387-ba52-8d76e47110be"
+ }
+}
