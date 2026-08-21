@@ -5,3 +5,6 @@ __pycache__/
 
 # 実験完了まで封印（ハッシュのみ RULES.md に先出し）
 fixtures/ANSWERS.md
+
+# 実験中は生ログをコミットしない。完了時に専用のPRでまとめて公開する
+results/
